@@ -237,12 +237,6 @@ int main( int argc, char *argv[] )
                                             }
                                         }
                                     }
-                                    /* printf("testing hole[%d]: %s\n", players, Deck_maskString(gPlayerCards[players])); */
-                                    /* printf("hole[0]: %s\n", Deck_maskString(gPlayerCards[0])); */
-                                    /* printf("hole[1]: %s\n", Deck_maskString(gPlayerCards[1])); */
-                                    /* printf("board: %s\n", Deck_maskString(board)); */
-                                    /* printf("handval: %d, bestHand: %d\n", handval[players], bestHand); */
-                                    /* printf("handType: %d\n", handval[players] >> 12); */
 
                                     if (handval[players] > bestHand) {
                                         nWinners = 1;
@@ -296,15 +290,15 @@ int main( int argc, char *argv[] )
                                               for (i=0;i<nBoardCards;i++) {
                                                   boardCards[i] = (4 * StdDeck_RANK(boardCards[i])) + StdDeck_SUIT(boardCards[i]) + 1;
                                               }
-                                              for (b1=0; b1<5; b1++) {
+                                              for (b1=0; b1<nBoardCards; b1++) {
                                                   b11 =  HR[53 + boardCards[b1]];
-                                                  for (b2=b1+1; b2<5; b2++) {
+                                                  for (b2=b1+1; b2<nBoardCards; b2++) {
                                                       b12 = HR[b11 + boardCards[b2]];
-                                                      for (b3=b2+1; b3<5; b3++) {
+                                                      for (b3=b2+1; b3<nBoardCards; b3++) {
                                                           b13 = HR[b12 + boardCards[b3]];
-                                                          for (h1=0; h1<4; h1++) {
+                                                          for (h1=0; h1<nPlayerCards; h1++) {
                                                               h11 = HR[b13 + playerCards[h1]];
-                                                              for (h2=h1+1; h2<4; h2++) {
+                                                              for (h2=h1+1; h2<nPlayerCards; h2++) {
                                                                   h12 = HR[h11 + playerCards[h2]];
                                                                   h13 = HR[h12 + 0];
                                                                   if (h13 > handval[players])
@@ -315,7 +309,7 @@ int main( int argc, char *argv[] )
                                                   }
                                               }
                                           }
-
+                                          
                                           if (handval[players] > bestHand) {
                                               nWinners = 1;
                                               bestHand = handval[players];
@@ -323,25 +317,26 @@ int main( int argc, char *argv[] )
                                           else if (handval[players] == bestHand) 
                                               ++nWinners;
                                       }
-
+                                      
                                       for (i=0; i<gNPlayers; i++) {
-                                          if (handval[players] == bestHand) {
+                                          if (handval[i] == bestHand) {
                                               if (nWinners == 1) {
-                                                  ++winCount[players];
-                                                  ev[players] += 1.0;
+                                                  ++winCount[i];
+                                                  ev[i] += 1.0;
                                               }
                                               else {
-                                                  ++tieCount[players];
-                                                  ev[players] += (1.0 / nWinners);
+                                                  ++tieCount[i];
+                                                  ev[i] += (1.0 / nWinners);
                                               };
                                           }
                                           else
-                                              ++loseCount[players];
+                                              ++loseCount[i];
                                       }
                                   }
                                   );
     }
-    printf("%ld boards", handCount);
+    
+            printf("%ld boards", handCount);
     if (gNCommon > 0) 
         printf(" containing %s ", Deck_maskString(gCommonCards));
     if (gNDead) 
