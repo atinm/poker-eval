@@ -22,6 +22,28 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+/* Usage:
+   Generate the HandRanks.dat file using examples/generate_table by building that and copy
+   to the examples/ directory.
+
+   Monte-carlo simulation using 2+2 lookup tables
+   $ ./omahacmpn -lut -m 100000 ad jh ts 7c  6d th ks ac --
+   Loading HandRanks.DAT file...complete.
+
+   100000 boards
+   cards            win  %win       loss  %lose       tie  %tie      EV
+   Ts 7c Ad Jh    43517  43.52     48490  48.49      7993   7.99      47.51%
+   Ks Ac 6d Th    48490  48.49     43517  43.52      7993   7.99      52.49%
+
+   Simulation using pokersource omaha enumeration
+   $ ./omahacmpn ad jh ts 7c  6d th ks ac --
+   1086008 boards
+   cards            win  %win       loss  %lose       tie  %tie      EV
+   Ts 7c Ad Jh   473562  43.61    526022  48.44     86424   7.96      47.58%
+   Ks Ac 6d Th   526022  48.44    473562  43.61     86424   7.96      52.42%
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
