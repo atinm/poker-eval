@@ -1,0 +1,297 @@
+2008: license GPLv3+ added to poker-eval 
+
+The license of poker-eval was GPLv2 without the "or later" clause
+allowing the user to upgrade to GPLv3 until March 2008. Loic Dachary
+<loic@dachary.org> contacted the copyright holders to ask their
+agreement to release under the GPLv3+ (i.e. GPLv3 with the "or later"
+clause allowing the user to chose between GPLv3 and any later version
+of it). Their agreement was recorded in this file in March 2008 and
+the poker-eval license was upgraded accordingly.
+
+----------------------------------------------------------------------
+Loic Dachary wrote this message to copyright holders:
+
+> Hi,
+> 
+> I would like to license poker-eval so that software released under the 
+> GPL v3 version can use it.
+> At the moment this is prevented because it is licensed under the GPL v2 
+> and does not contain
+> a provision that would allow the users to use GPL v3 if they want to.
+> 
+> Please let me know if you agree to license the work you've done for 
+> poker-eval under the GPLv3 (or later).
+> 
+> If you don't we can discuss the implications further and try to find 
+> another solution.
+> 
+> Cheers
+
+----------------------------------------------------------------------
+Brian Goetz <brian@briangoetz.com>
+----------------------------------------------------------------------
+X-Mozilla-Status: 0013
+X-Mozilla-Status2: 00000000
+Return-Path: <brian@briangoetz.com>
+X-Original-To: loic@dachary.org
+Delivered-To: loic@dachary.org
+Received: by smtp.dmail.dachary.org (Postfix, from userid 65534)
+	id 093EA4C5015; Thu, 20 Mar 2008 15:24:11 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.2.3 (2007-08-08) on dmail.dachary.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW
+	autolearn=ham version=3.2.3
+Received: from mxout-03.mxes.net (mxout-03.mxes.net [216.86.168.178])
+	by smtp.dmail.dachary.org (Postfix) with ESMTP id BDE3D4C4FDA
+	for <loic@dachary.org>; Thu, 20 Mar 2008 15:24:03 +0000 (UTC)
+Received: from [127.0.0.1] (unknown [75.69.35.229])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by smtp.mxes.net (Postfix) with ESMTP id 4BAC223E3FD
+	for <loic@dachary.org>; Thu, 20 Mar 2008 11:24:01 -0400 (EDT)
+Message-ID: <47E2818D.7030700@briangoetz.com>
+Date: Thu, 20 Mar 2008 11:23:57 -0400
+From: Brian Goetz <brian@briangoetz.com>
+User-Agent: Thunderbird 2.0.0.12 (Windows/20080213)
+MIME-Version: 1.0
+To: Loic Dachary <loic@dachary.org>
+Subject: Re: poker-eval and GPL version 3
+References: <47E26F3E.5030003@dachary.org>
+In-Reply-To: <47E26F3E.5030003@dachary.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+I have no objection.  However, I am not sure exactly who the other 
+contributors are.  I know Michael M was a contributor.
+
+Loic Dachary wrote:
+> Hi,
+> 
+> I would like to license poker-eval so that software released under the 
+> GPL v3 version can use it.
+> At the moment this is prevented because it is licensed under the GPL v2 
+> and does not contain
+> a provision that would allow the users to use GPL v3 if they want to.
+> 
+> Please let me know if you agree to license the work you've done for 
+> poker-eval under the GPLv3 (or later).
+> 
+> If you don't we can discuss the implications further and try to find 
+> another solution.
+> 
+> Cheers
+
+----------------------------------------------------------------------
+Michael Maurer <mjmaurer@yahoo.com>
+----------------------------------------------------------------------
+
+From - Wed Apr 02 01:01:59 2008
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+Return-Path: <mjmaurer@yahoo.com>
+X-Original-To: loic@dachary.org
+Delivered-To: loic@dachary.org
+Received: by smtp.dmail.dachary.org (Postfix, from userid 65534)
+	id BCEC84C4FDD; Tue,  1 Apr 2008 23:01:57 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.2.3 (2007-08-08) on dmail.dachary.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00 autolearn=ham
+	version=3.2.3
+Received: from web54403.mail.yahoo.com (web54403.mail.yahoo.com [206.190.49.133])
+	by smtp.dmail.dachary.org (Postfix) with SMTP id 2A95A4C4FD9
+	for <loic@dachary.org>; Tue,  1 Apr 2008 23:01:50 +0000 (UTC)
+Received: (qmail 36429 invoked by uid 60001); 1 Apr 2008 23:01:46 -0000
+DomainKey-Signature: a=rsa-sha1; q=dns; c=nofws;
+  s=s1024; d=yahoo.com;
+  h=X-YMail-OSG:Received:Date:From:Subject:To:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-ID;
+  b=vdk40VFKor664Yd3B9AwCISIWotPtBxOujwJvNJf50tDyaovHziEJzUr3BQZkocXy6iq1nWuamkQXmTyX/thdWOBwkHew59ACYa+kQTQq4bvY8z7aYmBf1Z4jQ/okjxTxjguH7QoLJNMum+KUYSJD0YjxLDBnq3Upz70MAV51go=;
+X-YMail-OSG: f.S89rMVM1l05AQrZHGFv.lvUgNUD6U7_m3yvilPW9Ab_WGWPyHRRF0WxX1DEfQtQ_.jo_bcP3HS7K2L7eWBpinU0H3DKi2ugJ9eeraOCq6GWEP_ElYILp8OKA6h3n6v1_bUVKsIvQmU9teADpQwiLjzeg--
+Received: from [71.202.116.207] by web54403.mail.yahoo.com via HTTP; Tue, 01 Apr 2008 16:01:46 PDT
+Date: Tue, 1 Apr 2008 16:01:46 -0700 (PDT)
+From: Michael Maurer <mjmaurer@yahoo.com>
+Subject: RE: poker-eval and GPL version 3
+To: 'Loic Dachary' <loic@dachary.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Message-ID: <220159.35534.qm@web54403.mail.yahoo.com>
+
+Loic Dachary wrote:
+> Hi,
+> 
+> I would like to license poker-eval so that software released under the
+> GPL v3 version can use it.
+> At the moment this is prevented because it is licensed under the GPL
+> v2 and does not contain
+> a provision that would allow the users to use GPL v3 if they want to.
+> 
+> Please let me know if you agree to license the work you've done for
+> poker-eval under the GPLv3 (or later).
+> 
+> If you don't we can discuss the implications further and try to find
+> another solution.
+
+Hi Loic,
+
+Sorry to take so long to reply.
+
+I agree to license all the work I've done for poker-eval under GPLv3 or later.
+
+-Michael M
+
+
+----------------------------------------------------------------------
+Cliff Matthews <ctm@sceim.net>
+----------------------------------------------------------------------
+
+From - Fri Mar 21 22:38:14 2008
+X-Mozilla-Status: 0013
+X-Mozilla-Status2: 00000000
+Return-Path: <ctm@sceim.net>
+X-Original-To: loic@dachary.org
+Delivered-To: loic@dachary.org
+Received: by smtp.dmail.dachary.org (Postfix, from userid 65534)
+	id 0373D4C5011; Fri, 21 Mar 2008 21:38:07 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.2.3 (2007-08-08) on dmail.dachary.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00 autolearn=ham
+	version=3.2.3
+Received: from pomo.griar.com (mail.ardi.com [69.49.166.34])
+	by smtp.dmail.dachary.org (Postfix) with ESMTP id 8ED8C4C4FDA
+	for <loic@dachary.org>; Fri, 21 Mar 2008 21:38:00 +0000 (UTC)
+Received: by pomo.griar.com (Postfix, from userid 5254)
+	id 69C8316B503A0; Fri, 21 Mar 2008 15:37:59 -0600 (MDT)
+To: Loic Dachary <loic@dachary.org>
+Cc: Tim Showalter <tjs@psaux.com>
+Subject: Re: poker-eval and GPLv3 software
+References: <47E3BA50.2060609@dachary.org>
+From: ctm@sceim.net (Clifford T. Matthews)
+Date: Fri, 21 Mar 2008 15:37:59 -0600
+In-Reply-To: <47E3BA50.2060609@dachary.org> (Loic Dachary's message of "Fri, 21 Mar 2008 14:38:24 +0100")
+Message-ID: <vy1d4pnsqq0.fsf@pomo.griar.com>
+User-Agent: Gnus/5.1008 (Gnus v5.10.8) XEmacs/21.5-b28 (linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+
+Hmmm...  I haven't paid close attention to GPLv3.  Can one release
+software and have it be under either?  I think if I were doing it
+again today, I'd probably just MIT-style license it.
+-- 
+Cliff Matthews <ctm@sceim.net>
+       formerly ctm@ardi.com
+
+<http://stolenbases.com/>, <http://wywh.mobi/>
+Our WYWH.mobi mobile postcard service is now available.
+
+From - Sun Mar 23 21:45:44 2008
+X-Mozilla-Status: 0013
+X-Mozilla-Status2: 00000000
+Return-Path: <ctm@sceim.net>
+X-Original-To: loic@dachary.org
+Delivered-To: loic@dachary.org
+Received: by smtp.dmail.dachary.org (Postfix, from userid 65534)
+	id 80E2B4C5012; Sun, 23 Mar 2008 17:47:03 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.2.3 (2007-08-08) on dmail.dachary.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00 autolearn=ham
+	version=3.2.3
+Received: from pomo.griar.com (mail.ardi.com [69.49.166.34])
+	by smtp.dmail.dachary.org (Postfix) with ESMTP id DF0104C4FDA
+	for <loic@dachary.org>; Sun, 23 Mar 2008 17:46:55 +0000 (UTC)
+Received: by pomo.griar.com (Postfix, from userid 5254)
+	id 8D39B16B504CF; Sun, 23 Mar 2008 11:46:52 -0600 (MDT)
+To: Loic Dachary <loic@dachary.org>
+Cc: Tim Showalter <tjs@psaux.com>
+Subject: Re: poker-eval and GPLv3 software
+References: <47E3BA50.2060609@dachary.org> <vy1d4pnsqq0.fsf@pomo.griar.com>
+	<47E68721.7070609@dachary.org>
+From: ctm@sceim.net (Clifford T. Matthews)
+Date: Sun, 23 Mar 2008 11:46:52 -0600
+In-Reply-To: <47E68721.7070609@dachary.org> (Loic Dachary's message of "Sun, 23 Mar 2008 17:36:49 +0100")
+Message-ID: <vy1k5jtjptf.fsf@pomo.griar.com>
+User-Agent: Gnus/5.1008 (Gnus v5.10.8) XEmacs/21.5-b28 (linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+
+>>>>> "Loic" == Loic Dachary <loic@dachary.org> writes:
+
+    Loic> Clifford T. Matthews wrote:
+    >> Hmmm...  I haven't paid close attention to GPLv3.  Can one
+    >> release software and have it be under either?  I think if I
+    >> were doing it
+    >> 
+    Loic> Of course. Instead of changing the license to GPLv3 we could
+    Loic> add the GPLv3+ license to the GPLv2 license, as an
+    Loic> option. So that people using GPLv2 are not forced to read
+    Loic> GPLv3. They can still use it under the GPLv2 as long as they
+    Loic> want/need.
+
+Let's do that, then.  Let me know what I have to do (if anything).
+
+Thanks for taking care of this.
+
+-- 
+Cliff Matthews <ctm@sceim.net>
+       formerly ctm@ardi.com
+
+<http://stolenbases.com/>, <http://wywh.mobi/>
+Our WYWH.mobi mobile postcard service is now available.
+
+----------------------------------------------------------------------
+Tim Showalter <tjs@psaux.com>
+----------------------------------------------------------------------
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+Return-Path: <tjs@psaux.com>
+X-Original-To: loic@dachary.org
+Delivered-To: loic@dachary.org
+Received: by smtp.dmail.dachary.org (Postfix, from userid 65534)
+	id 163A04C5015; Thu, 20 Mar 2008 23:18:55 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.2.3 (2007-08-08) on dmail.dachary.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.6 required=5.0 tests=AWL,BAYES_00 autolearn=ham
+	version=3.2.3
+Received: from smtp108.prem.mail.sp1.yahoo.com (smtp108.prem.mail.sp1.yahoo.com [98.136.44.63])
+	by smtp.dmail.dachary.org (Postfix) with SMTP id 392524C4FDA
+	for <loic@dachary.org>; Thu, 20 Mar 2008 23:18:46 +0000 (UTC)
+Received: (qmail 44887 invoked from network); 20 Mar 2008 23:18:45 -0000
+Received: from unknown (HELO ?66.228.163.20?) (ts4z@66.228.163.20 with plain)
+  by smtp108.prem.mail.sp1.yahoo.com with SMTP; 20 Mar 2008 23:18:45 -0000
+X-YMail-OSG: QYq00AsVM1n6RdFHZ.vJC3EFLMeReReSKvokiFx.y01PUarkmc23mGrQdqymyKpJwZzU98g9sg--
+X-Yahoo-Newman-Property: ymail-3
+Message-ID: <47E2F0D4.3040500@psaux.com>
+Date: Thu, 20 Mar 2008 16:18:44 -0700
+From: Tim Showalter <tjs@psaux.com>
+User-Agent: Mozilla Thunderbird 1.0 (X11/20050215)
+X-Accept-Language: en-us, en
+MIME-Version: 1.0
+To: Loic Dachary <loic@dachary.org>
+Subject: Re: poker-eval and GPL version 3
+References: <47E26F85.50105@dachary.org>
+In-Reply-To: <47E26F85.50105@dachary.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Loic Dachary wrote:
+> Hi,
+> 
+> I would like to license poker-eval so that software released under the 
+> GPL v3 version can use it.
+> At the moment this is prevented because it is licensed under the GPL v2 
+> and does not contain
+> a provision that would allow the users to use GPL v3 if they want to.
+> 
+> Please let me know if you agree to license the work you've done for 
+> poker-eval under the GPLv3 (or later).
+> 
+> If you don't we can discuss the implications further and try to find 
+> another solution.
+> 
+> Cheers
+
+This is fine with me; I'd prefer "version 2 or later" language.  My 
+work, though, was pretty superficial, and I won't claim any copyright on 
+any of it.
+
+Tim
+

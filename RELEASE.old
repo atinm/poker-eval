@@ -1,0 +1,25 @@
+poker-eval-124 (7 Nov 2004)
+============================
+The content of this file is moved to the standard NEWS file
+
+poker-eval-120 (25 Jun 2002)
+============================
+Added java layer with JNI connection to C hand evaluation library; the
+java code has both javadoc comments and junit-based unit tests.
+Implemented holdem hand groups, belief vectors, and subjective all-in
+equity (SAIE) calculations.  Added 'saie' example script.  Fixed a bug
+that unnecessarily enumerated all permutations of cards to come in
+stud and draw games; now we simply count combinations, speeding up
+pokenum.  Fixed some other minor bugs.
+
+Release 1.2.0 has not been tested in any Windows environment and probably
+fails to build.  Use release 1.1.0 if you can only run under Windows.
+
+
+poker-eval-110 (15 Apr 2002)
+============================
+Added Omaha/Omaha8, JokerHigh, and Joker 8-or-better low
+evaluation.  Added a new enumeration layer, plus a
+montecarlo sampling option.  Added new examples pokenum,
+usedecks, and utest1.  Removed cmpN.c, which wasn't
+compatible with the current library.  Updated documentation.

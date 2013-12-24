@@ -1,0 +1,5 @@
+- error handling (result value -> exception)
+- tests enum* call
+- default parameter for enumSample
+- higher level class and method
+- test on win32

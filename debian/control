@@ -1,0 +1,23 @@
+Source: poker-eval
+Priority: optional
+Section: devel
+Maintainer: Loic Dachary (OuoU) <loic@debian.org>
+Build-Depends: debhelper (>= 4.0.0), libtool, cdbs, automake, autoconf
+Standards-Version: 3.7.2
+
+Package: libpoker-eval-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends}, libpoker-eval (= ${binary:Version}), pkg-config
+Description: poker hand evaluator library development files
+ This package is a free (GNU GPL) toolkit for writing programs which
+ simulate or analyze poker games.
+
+
+Package: libpoker-eval
+Section: libs
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: poker hand evaluator library
+ This package is a free (GNU GPL) toolkit for writing programs which
+ simulate or analyze poker games.

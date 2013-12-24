@@ -1,0 +1,12 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/poker-eval
+
+Name: poker-eval
+Description: poker hand evaluator library
+Version: 138.0
+Requires:
+Conflicts:
+Libs: -L${libdir} -lpoker-eval
+Cflags: -I${includedir}

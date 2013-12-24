@@ -1,0 +1,44 @@
+             THE LICENSE OF POKER-EVAL IS GPLv3-or-later
+
+This File: Canonically, this file is "LICENSE" at top level, but a copy
+           is made to "COPYING" for historical reasons.
+
+Short version: The effective license of the whole work, when copied,
+               modified, conveyed, propogated and/or redistributed is
+               GPLv3-or-later.  More details of the licensing follows.
+
+Details follow:
+
+poker-eval was, years ago, released GPLv2-only.  In March 2008, Loic
+Dachary contacted all prior copyright holders and got assent for
+GPLv3-or-later.  The file GPLv3-assent.txt contains that email
+correspondence.
+
+poker-eval is thus GPLv3-or-later.  A full copy of GPLv3 is in the file
+"GPLv3".  Here is the copyright and license notice for the whole package.
+(If you are an author submitting a patch, be sure to add your copyright
+notice here.)
+
+Copyright (C) 1993-2006 Brian Goetz <brian@quiotix.com>
+Copyright (C) 1993-1999 Clifford T. Matthews
+Copyright (C) 1993-1999 Keith Miyake
+Copyright (C) 1999-2006 Michael Maurer <mjmaurer@yahoo.com>
+Copyright (C) 2002-2008 Loic Dachary <loic@dachary.org>
+Copyright (C) 2004-2006 Mekensleep <licensing@mekensleep.com>
+Copyright (C) 2006      Tim Showalter <tjs@psaux.com>
+
+# This program gives you software freedom; you can copy, convey,
+# propagate, redistribute and/or modify this program under the terms of
+# the GNU General Public License (GPL) as published by the Free Software
+# Foundation (FSF), either version 3 of the License, or (at your option)
+# any later version of the GPL published by the FSF.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program in a file in the toplevel directory called "GPLv3".
+# If not, see <http://www.gnu.org/licenses/>.
+

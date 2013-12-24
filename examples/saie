@@ -1,0 +1,18 @@
+#!/bin/sh
+# $Id: saie 340 2002-06-19 08:17:51Z mjmaurer $
+# usage: saie [-d <deadcards>] <hand1> <hand2> ... <board>
+# examples:
+#   saie KhQh AKs 5h4h3d
+#   saie KhQh "SM1 SM2 SM3" 5h4h3d
+#
+# ENVIRONMENT: Before calling, be sure that CLASSPATH contains
+# pokersource.jar and that LD_LIBRARY_PATH contains libpoker.so and
+# libpokerjni.so.
+
+DEADCARDS=
+if [ "x$1" = "x-d" ] ; then
+   DEADCARDS="$2"
+   shift 2
+fi
+
+java org.pokersource.enum.SAIE 0 0 "$@" "$DEADCARDS"

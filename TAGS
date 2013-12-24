@@ -1,0 +1,1215 @@
+
+examples/getopt_w32.h,30
+#define __GETOPT_W32_H__2,25
+
+include/evx_defs.h,1880
+#define __EVX_DEFS__22,937
+typedef uint32 EvxHandVal;26,990
+#define EvxHandVal_TYPE_SHIFT 28,1018
+#define EvxHandVal_SIGCARDS_SHIFT 29,1077
+#define EvxHandVal_KICKERS_SHIFT 30,1130
+#define EvxHandVal_RANK_MASK 31,1166
+#define EvxHandVal_HANDTYPE_VALUE(33,1210
+#define EvxHandVal_HANDTYPE(34,1280
+  EvxHandVal_NOPAIR 37,1354
+  EvxHandVal_NOPAIR    = EvxHandVal_HANDTYPE_VALUE(37,1354
+  EvxHandVal_NOPAIR    = EvxHandVal_HANDTYPE_VALUE(StdRules_HandType_NOPAIR)37,1354
+  EvxHandVal_ONEPAIR 38,1433
+  EvxHandVal_ONEPAIR   = EvxHandVal_HANDTYPE_VALUE(38,1433
+  EvxHandVal_ONEPAIR   = EvxHandVal_HANDTYPE_VALUE(StdRules_HandType_ONEPAIR)38,1433
+  EvxHandVal_TWOPAIR 39,1513
+  EvxHandVal_TWOPAIR   = EvxHandVal_HANDTYPE_VALUE(39,1513
+  EvxHandVal_TWOPAIR   = EvxHandVal_HANDTYPE_VALUE(StdRules_HandType_TWOPAIR)39,1513
+  EvxHandVal_TRIPS 40,1593
+  EvxHandVal_TRIPS     = EvxHandVal_HANDTYPE_VALUE(40,1593
+  EvxHandVal_TRIPS     = EvxHandVal_HANDTYPE_VALUE(StdRules_HandType_TRIPS)40,1593
+  EvxHandVal_STRAIGHT 41,1671
+  EvxHandVal_STRAIGHT  = EvxHandVal_HANDTYPE_VALUE(41,1671
+  EvxHandVal_STRAIGHT  = EvxHandVal_HANDTYPE_VALUE(StdRules_HandType_STRAIGHT)41,1671
+  EvxHandVal_FLUSH 42,1752
+  EvxHandVal_FLUSH     = EvxHandVal_HANDTYPE_VALUE(42,1752
+  EvxHandVal_FLUSH     = EvxHandVal_HANDTYPE_VALUE(StdRules_HandType_FLUSH)42,1752
+  EvxHandVal_FULLHOUSE 43,1830
+  EvxHandVal_FULLHOUSE = EvxHandVal_HANDTYPE_VALUE(43,1830
+  EvxHandVal_FULLHOUSE = EvxHandVal_HANDTYPE_VALUE(StdRules_HandType_FULLHOUSE)43,1830
+  EvxHandVal_QUADS 44,1912
+  EvxHandVal_QUADS     = EvxHandVal_HANDTYPE_VALUE(44,1912
+  EvxHandVal_QUADS     = EvxHandVal_HANDTYPE_VALUE(StdRules_HandType_QUADS)44,1912
+  EvxHandVal_STFLUSH 45,1990
+  EvxHandVal_STFLUSH   = EvxHandVal_HANDTYPE_VALUE(45,1990
+  EvxHandVal_STFLUSH   = EvxHandVal_HANDTYPE_VALUE(StdRules_HandType_STFLUSH)45,1990
+
+include/rules_astud.h,1161
+#define __RULES_ASTUD_H__28,1137
+#define AStudRules_HandType_NOPAIR 32,1195
+#define AStudRules_HandType_ONEPAIR 33,1235
+#define AStudRules_HandType_TWOPAIR 34,1275
+#define AStudRules_HandType_TRIPS 35,1315
+#define AStudRules_HandType_STRAIGHT 36,1355
+#define AStudRules_HandType_FULLHOUSE 37,1395
+#define AStudRules_HandType_FLUSH 38,1435
+#define AStudRules_HandType_QUADS 39,1475
+#define AStudRules_HandType_STFLUSH 40,1515
+#define AStudRules_HandType_FIRST 41,1555
+#define AStudRules_HandType_LAST 42,1620
+#define AStudRules_HandType_COUNT 43,1686
+#define AStudRules_TEN_STRAIGHT 45,1727
+#define HandType_NOPAIR 67,2436
+#define HandType_ONEPAIR 68,2494
+#define HandType_TWOPAIR 69,2552
+#define HandType_TRIPS 70,2610
+#define HandType_STRAIGHT 71,2668
+#define HandType_FLUSH 72,2726
+#define HandType_FULLHOUSE 73,2784
+#define HandType_QUADS 74,2842
+#define HandType_STFLUSH 75,2900
+#define HandType_FIRST 76,2959
+#define HandType_COUNT 77,3014
+#define HandType_LAST 78,3072
+#define handTypeNames 80,3125
+#define handTypeNamesPadded 81,3179
+#define nSigCards 82,3239
+#define HandVal_print 83,3289
+#define HandVal_toString 84,3343
+
+include/enumdefs.h,1422
+#define ENUMDEFS_H24,995
+#define ENUM_MAXPLAYERS 29,1067
+  game_holdem,33,1182
+  game_holdem8,34,1197
+  game_omaha,35,1213
+  game_omaha8,36,1227
+  game_7stud,37,1242
+  game_7stud8,38,1256
+  game_7studnsq,39,1271
+  game_razz,40,1288
+  game_5draw,41,1301
+  game_5draw8,42,1315
+  game_5drawnsq,43,1330
+  game_lowball,44,1347
+  game_lowball27,45,1363
+  game_NUMGAMES46,1381
+} enum_game_t;47,1397
+  enum_game_t	game;50,1430
+  int           minpocket;51,1450
+  int           maxpocket;52,1477
+  int          	maxboard;53,1504
+  int		haslopot;54,1530
+  int		hashipot;55,1547
+  char *	name;56,1564
+} enum_gameparams_t;57,1579
+typedef enum { ENUM_EXHAUSTIVE,59,1601
+typedef enum { ENUM_EXHAUSTIVE, ENUM_SAMPLE 59,1601
+typedef enum { ENUM_EXHAUSTIVE, ENUM_SAMPLE } enum_sample_t;59,1601
+  enum_game_t game;62,1680
+  enum_sample_t sampleType;63,1700
+  unsigned int nsamples;64,1728
+  unsigned int nplayers;65,1753
+  unsigned int nwinhi[nwinhi66,1778
+  unsigned int ntiehi[ntiehi67,1861
+  unsigned int nlosehi[nlosehi68,1935
+  unsigned int nwinlo[nwinlo69,2010
+  unsigned int ntielo[ntielo70,2092
+  unsigned int nloselo[nloselo71,2165
+  unsigned int nscoop[nscoop72,2239
+  unsigned int nsharehi[nsharehi77,2506
+  unsigned int nsharelo[nsharelo78,2567
+  unsigned int nshare[nshare91,3400
+  double ev[ev94,3550
+  enum_ordering_t *ordering;ordering96,3581
+} enum_result_t;97,3653
+
+include/deck.h,1269
+#define __DECK_H__23,984
+typedef int     Deck_cardToStringFn(27,1035
+typedef int     Deck_maskToCardsFn(28,1104
+typedef int     Deck_stringToCardFn(29,1175
+typedef int     Deck_numCardsFn(30,1240
+  int                  nCards;33,1307
+  char *               name;34,1338
+  Deck_cardToStringFn *cardToString;cardToString35,1367
+  Deck_stringToCardFn *stringToCard;stringToCard36,1404
+  Deck_maskToCardsFn  *maskToCards;maskToCards37,1441
+  Deck_numCardsFn     *numCards;numCards38,1477
+} Deck;39,1510
+#define Deck_cardToString 41,1519
+#define Deck_stringToCard 42,1574
+#define Deck_cardString(43,1629
+#define Deck_printCard(44,1701
+#define Deck_printMask(46,1773
+#define Deck_maskString(49,1865
+#define Deck_numCards(52,1958
+#define Deck_maskToString(55,2047
+#define DcardToString(60,2280
+#define DstringToCard(61,2340
+#define DcardString(62,2400
+#define DprintCard(63,2462
+#define DprintMask(64,2522
+#define DmaskString(65,2594
+#define DnumCards(66,2668
+#define DmaskToString(67,2738
+#define Deck_CardMask 84,3375
+#define Deck_CardMask_OR 85,3419
+#define Deck_CardMask_XOR 86,3466
+#define Deck_CardMask_AND 87,3514
+#define Deck_CardMask_RESET 88,3562
+#define Deck_CardMask_ANY_SET 89,3612
+#define Deck_CardMask_CARD_IS_SET 90,3664
+
+include/game_std.h,416
+#define GAME_STD_H22,935
+#define DECK_STANDARD24,955
+#define RULES_STANDARD25,977
+#undef Hand_EVAL_N30,1047
+#undef Hand_EVAL_LOW31,1066
+#undef Hand_EVAL_LOW832,1087
+#define Hand_EVAL_N 34,1110
+#define Hand_EVAL_TYPE 35,1158
+#define Hand_EVAL_X5 36,1209
+#define Hand_EVAL_X7 37,1258
+#define Hand_EVAL_LOW 39,1308
+#define Hand_EVAL_LOW8 40,1353
+#undef  DECK_STANDARD42,1400
+#undef  RULES_STANDARD43,1422
+
+include/deck_undef.h,1357
+#undef Deck_N_CARDS 21,915
+#undef Deck_MASK 22,941
+#undef Deck_RANK 23,967
+#undef Deck_SUIT 24,993
+#undef Rank_2 26,1020
+#undef Rank_3 27,1046
+#undef Rank_4 28,1072
+#undef Rank_5 29,1098
+#undef Rank_6 30,1124
+#undef Rank_7 31,1150
+#undef Rank_8 32,1176
+#undef Rank_9 33,1202
+#undef Rank_TEN 34,1228
+#undef Rank_JACK 35,1254
+#undef Rank_QUEEN 36,1280
+#undef Rank_KING 37,1306
+#undef Rank_ACE 38,1332
+#undef Rank_FIRST 39,1358
+#undef Rank_COUNT 40,1384
+#undef Suit_HEARTS 42,1411
+#undef Suit_DIAMONDS 43,1437
+#undef Suit_CLUBS 44,1463
+#undef Suit_SPADES 45,1489
+#undef Suit_FIRST 46,1515
+#undef Suit_COUNT 47,1541
+#undef CardMask 49,1568
+#undef CardMask_OR 50,1599
+#undef CardMask_SET 51,1630
+#undef CardMask_CARD_IS_SET 52,1661
+#undef CardMask_ANY_SET 53,1692
+#undef CardMask_RESET 54,1723
+#undef CardMask_NOT55,1754
+#undef CardMask_XOR56,1774
+#undef CardMask_AND57,1794
+#undef CardMask_UNSET58,1814
+#undef CardMask_SPADES 60,1837
+#undef CardMask_HEARTS 61,1868
+#undef CardMask_CLUBS 62,1899
+#undef CardMask_DIAMONDS 63,1930
+#undef CardMask_SET_SPADES 64,1961
+#undef CardMask_SET_HEARTS 65,1996
+#undef CardMask_SET_CLUBS 66,2031
+#undef CardMask_SET_DIAMONDS 67,2066
+#undef Deck_cardToString69,2102
+#undef Deck_maskToString70,2127
+#undef Deck_printCard71,2152
+#undef Deck_printMask72,2174
+#undef CurDeck74,2197
+
+include/rules_std.h,1134
+#define __RULES_STD_H__28,1138
+#define StdRules_HandType_NOPAIR 32,1194
+#define StdRules_HandType_ONEPAIR 33,1232
+#define StdRules_HandType_TWOPAIR 34,1270
+#define StdRules_HandType_TRIPS 35,1308
+#define StdRules_HandType_STRAIGHT 36,1346
+#define StdRules_HandType_FLUSH 37,1384
+#define StdRules_HandType_FULLHOUSE 38,1422
+#define StdRules_HandType_QUADS 39,1460
+#define StdRules_HandType_STFLUSH 40,1498
+#define StdRules_HandType_FIRST 41,1536
+#define StdRules_HandType_LAST 42,1597
+#define StdRules_HandType_COUNT 43,1659
+#define StdRules_FIVE_STRAIGHT 45,1698
+#define HandType_NOPAIR 68,2382
+#define HandType_ONEPAIR 69,2438
+#define HandType_TWOPAIR 70,2494
+#define HandType_TRIPS 71,2550
+#define HandType_STRAIGHT 72,2606
+#define HandType_FLUSH 73,2662
+#define HandType_FULLHOUSE 74,2718
+#define HandType_QUADS 75,2774
+#define HandType_STFLUSH 76,2830
+#define HandType_FIRST 77,2887
+#define HandType_COUNT 78,2940
+#define HandType_LAST 79,2996
+#define handTypeNames 81,3047
+#define handTypeNamesPadded 82,3099
+#define nSigCards 83,3157
+#define HandVal_print 84,3205
+#define HandVal_toString 85,3257
+
+include/md5c.h,138
+typedef char Md5RawDigest[Md5RawDigest7,71
+typedef char Md5CodedDigest[Md5CodedDigest8,102
+typedef void *Md5Context;Md5Context9,135
+
+include/deck_astud.h,2921
+#define __DECK_ASTUD_H__29,1182
+#define AStudDeck_N_CARDS 34,1293
+#define AStudDeck_MASK(35,1327
+#define AStudDeck_Rank_7 37,1393
+#define AStudDeck_Rank_8 38,1438
+#define AStudDeck_Rank_9 39,1483
+#define AStudDeck_Rank_TEN 40,1528
+#define AStudDeck_Rank_JACK 41,1575
+#define AStudDeck_Rank_QUEEN 42,1623
+#define AStudDeck_Rank_KING 43,1672
+#define AStudDeck_Rank_ACE 44,1720
+#define AStudDeck_Rank_FIRST 45,1767
+#define AStudDeck_Rank_LAST 46,1814
+#define AStudDeck_Rank_COUNT 47,1863
+#define AStudDeck_N_RANKMASKS 48,1895
+#define AStudDeck_RANK(50,1954
+#define AStudDeck_SUIT(52,2077
+#define AStudDeck_MAKE_CARD(53,2141
+#define AStudDeck_Suit_HEARTS 56,2291
+#define AStudDeck_Suit_DIAMONDS 57,2343
+#define AStudDeck_Suit_CLUBS 58,2397
+#define AStudDeck_Suit_SPADES 59,2448
+#define AStudDeck_Suit_FIRST 60,2500
+#define AStudDeck_Suit_LAST 61,2554
+#define AStudDeck_Suit_COUNT 62,2608
+typedef StdDeck_RankMask AStudDeck_RankMask;64,2643
+#define AStudDeck_CardMask 66,2689
+#define AStudDeck_CardMask_SPADES 67,2742
+#define AStudDeck_CardMask_CLUBS 68,2802
+#define AStudDeck_CardMask_DIAMONDS 69,2861
+#define AStudDeck_CardMask_HEARTS 70,2923
+#define AStudDeck_CardMask_NOT 72,2984
+#define AStudDeck_CardMask_OR 73,3044
+#define AStudDeck_CardMask_AND 74,3103
+#define AStudDeck_CardMask_XOR 75,3163
+#define AStudDeck_CardMask_ANY_SET 76,3223
+#define AStudDeck_CardMask_RESET 77,3287
+#define AStudDeck_CardMask_UNSET 78,3349
+#define AStudDeck_CardMask_IS_EMPTY 79,3411
+#define AStudDeck_CardMask_CARD_IS_SET(82,3552
+#define AStudDeck_CardMask_CARD_IS_SET(85,3780
+#define AStudDeck_CardMask_SET(90,4018
+#define AStudDeck_cardString(104,4666
+#define AStudDeck_printCard(105,4738
+#define AStudDeck_printMask(106,4809
+#define AStudDeck_maskString(107,4892
+#define AStudDeck_numCards(108,4976
+#define AStudDeck_maskToString(109,5056
+#define Deck_N_CARDS 123,5281
+#define Deck_MASK 124,5325
+#define Deck_RANK 125,5366
+#define Deck_SUIT 126,5407
+#define Rank_7 128,5449
+#define Rank_8 129,5493
+#define Rank_9 130,5537
+#define Rank_TEN 131,5581
+#define Rank_JACK 132,5626
+#define Rank_QUEEN 133,5672
+#define Rank_KING 134,5719
+#define Rank_ACE 135,5765
+#define Rank_FIRST 136,5810
+#define Rank_COUNT 137,5858
+#define Suit_HEARTS 139,5906
+#define Suit_DIAMONDS 140,5954
+#define Suit_CLUBS 141,6004
+#define Suit_SPADES 142,6051
+#define Suit_FIRST 143,6099
+#define Suit_COUNT 144,6146
+#define CardMask 146,6194
+#define CardMask_NOT 147,6245
+#define CardMask_OR 148,6299
+#define CardMask_XOR 149,6352
+#define CardMask_AND 150,6406
+#define CardMask_SET 151,6460
+#define CardMask_CARD_IS_SET 152,6514
+#define CardMask_ANY_SET 153,6576
+#define CardMask_RESET 154,6634
+#define CardMask_UNSET 155,6690
+#define CardMask_SPADES 157,6747
+#define CardMask_HEARTS 158,6804
+#define CardMask_CLUBS 159,6861
+#define CardMask_DIAMONDS 160,6917
+#define CurDeck 162,6977
+
+include/rules_joker.h,1239
+#define __RULES_JOKER_H__28,1140
+#define JokerRules_HandType_NOPAIR 32,1198
+#define JokerRules_HandType_ONEPAIR 33,1238
+#define JokerRules_HandType_TWOPAIR 34,1278
+#define JokerRules_HandType_TRIPS 35,1318
+#define JokerRules_HandType_STRAIGHT 36,1358
+#define JokerRules_HandType_FLUSH 37,1398
+#define JokerRules_HandType_FULLHOUSE 38,1438
+#define JokerRules_HandType_QUADS 39,1478
+#define JokerRules_HandType_STFLUSH 40,1518
+#define JokerRules_HandType_QUINTS 41,1558
+#define JokerRules_HandType_FIRST 42,1598
+#define JokerRules_HandType_LAST 43,1663
+#define JokerRules_HandType_COUNT 44,1728
+#define JokerRules_FIVE_STRAIGHT 46,1770
+#define HandType_NOPAIR 69,2469
+#define HandType_ONEPAIR 70,2527
+#define HandType_TWOPAIR 71,2585
+#define HandType_TRIPS 72,2643
+#define HandType_STRAIGHT 73,2701
+#define HandType_FLUSH 74,2759
+#define HandType_FULLHOUSE 75,2817
+#define HandType_QUADS 76,2875
+#define HandType_STFLUSH 77,2933
+#define HandType_QUINTS 78,2992
+#define HandType_FIRST 79,3050
+#define HandType_COUNT 80,3105
+#define HandType_LAST 81,3163
+#define handTypeNames 83,3216
+#define handTypeNamesPadded 84,3270
+#define nSigCards 85,3330
+#define HandVal_print 86,3380
+#define HandVal_toString 87,3434
+
+include/deck_joker.h,4607
+#define __DECK_JOKER_H__23,990
+#define JokerDeck_N_CARDS 28,1101
+#define JokerDeck_MASK(29,1135
+#define JokerDeck_Rank_2 31,1201
+#define JokerDeck_Rank_3 32,1246
+#define JokerDeck_Rank_4 33,1291
+#define JokerDeck_Rank_5 34,1336
+#define JokerDeck_Rank_6 35,1381
+#define JokerDeck_Rank_7 36,1426
+#define JokerDeck_Rank_8 37,1471
+#define JokerDeck_Rank_9 38,1516
+#define JokerDeck_Rank_TEN 39,1561
+#define JokerDeck_Rank_JACK 40,1608
+#define JokerDeck_Rank_QUEEN 41,1656
+#define JokerDeck_Rank_KING 42,1705
+#define JokerDeck_Rank_ACE 43,1753
+#define JokerDeck_Rank_COUNT 44,1800
+#define JokerDeck_Rank_FIRST 45,1849
+#define JokerDeck_Rank_LAST 46,1898
+#define JokerDeck_N_RANKMASKS 47,1946
+#define JokerDeck_RANK 49,1997
+#define JokerDeck_SUIT 50,2042
+#define JokerDeck_IS_JOKER(51,2087
+#define JokerDeck_MAKE_CARD 52,2150
+#define JokerDeck_JOKER 53,2200
+#define JokerDeck_Suit_HEARTS 55,2256
+#define JokerDeck_Suit_DIAMONDS 56,2308
+#define JokerDeck_Suit_CLUBS 57,2362
+#define JokerDeck_Suit_SPADES 58,2413
+#define JokerDeck_Suit_FIRST 59,2465
+#define JokerDeck_Suit_LAST 60,2516
+#define JokerDeck_Suit_COUNT 61,2566
+typedef StdDeck_RankMask JokerDeck_RankMask;63,2618
+  uint64  cards_n;71,2851
+    uint32 n1,74,2887
+    uint32 n1, n2;74,2887
+  } cards_nn;75,2906
+    uint32 79,2961
+    uint32 joker 80,2985
+    uint32 spades 81,3009
+    uint32 82,3034
+    uint32 clubs 83,3058
+    uint32 84,3083
+    uint32 diamonds:diamonds85,3107
+    uint32 86,3132
+    uint32 hearts 87,3156
+    uint32 spades 89,3187
+    uint32 90,3212
+    uint32 clubs 91,3236
+    uint32 92,3261
+    uint32 diamonds:diamonds93,3285
+    uint32 94,3310
+    uint32 hearts 95,3334
+    uint32 joker 96,3359
+    uint32 97,3383
+  } cards;99,3414
+} JokerDeck_CardMask;100,3425
+#define JokerDeck_CardMask_SPADES(102,3448
+#define JokerDeck_CardMask_CLUBS(103,3508
+#define JokerDeck_CardMask_DIAMONDS(104,3567
+#define JokerDeck_CardMask_HEARTS(105,3629
+#define JokerDeck_CardMask_JOKER(106,3689
+#define JokerDeck_CardMask_SET_SPADES(108,3749
+#define JokerDeck_CardMask_SET_CLUBS(109,3828
+#define JokerDeck_CardMask_SET_DIAMONDS(110,3906
+#define JokerDeck_CardMask_SET_HEARTS(112,3997
+#define JokerDeck_CardMask_SET_JOKER(113,4076
+#define JokerDeck_CardMask_NOT 115,4155
+#define JokerDeck_CardMask_OR 116,4215
+#define JokerDeck_CardMask_AND 117,4274
+#define JokerDeck_CardMask_XOR 118,4334
+#define JokerDeck_CardMask_ANY_SET 119,4394
+#define JokerDeck_CardMask_RESET 120,4458
+#define JokerDeck_CardMask_UNSET 121,4520
+#define JokerDeck_CardMask_IS_EMPTY 122,4582
+#define JokerDeck_CardMask_toStd(124,4648
+#define JokerDeck_CardMask_fromStd(133,5061
+#define JokerDeck_CardMask_fromStd_N(142,5478
+#define JokerDeck_CardMask_CARD_IS_SET(155,6066
+#define JokerDeck_CardMask_CARD_IS_SET(158,6294
+#define JokerDeck_CardMask_SET(163,6532
+#define JokerDeck_cardString(176,7095
+#define JokerDeck_printCard(177,7167
+#define JokerDeck_printMask(178,7238
+#define JokerDeck_maskString(179,7321
+#define JokerDeck_numCards(180,7405
+#define JokerDeck_maskToString(181,7485
+#define Deck_N_CARDS 194,7709
+#define Deck_MASK 195,7753
+#define Deck_RANK 196,7794
+#define Deck_SUIT 197,7835
+#define Deck_cardToString 199,7877
+#define Deck_maskToString 200,7926
+#define Deck_printCard 201,7975
+#define Deck_printMask 202,8021
+#define Deck_stringToMask 203,8067
+#define Rank_2 205,8117
+#define Rank_3 206,8161
+#define Rank_4 207,8204
+#define Rank_5 208,8248
+#define Rank_6 209,8292
+#define Rank_7 210,8336
+#define Rank_8 211,8380
+#define Rank_9 212,8424
+#define Rank_TEN 213,8468
+#define Rank_JACK 214,8513
+#define Rank_QUEEN 215,8559
+#define Rank_KING 216,8606
+#define Rank_ACE 217,8652
+#define Rank_FIRST 218,8697
+#define Rank_COUNT 219,8745
+#define Suit_HEARTS 221,8793
+#define Suit_DIAMONDS 222,8841
+#define Suit_CLUBS 223,8891
+#define Suit_SPADES 224,8938
+#define Suit_FIRST 225,8986
+#define Suit_COUNT 226,9033
+#define CardMask 228,9081
+#define CardMask_NOT 229,9132
+#define CardMask_OR 230,9186
+#define CardMask_XOR 231,9239
+#define CardMask_AND 232,9293
+#define CardMask_SET 233,9347
+#define CardMask_CARD_IS_SET 234,9401
+#define CardMask_ANY_SET 235,9463
+#define CardMask_RESET 236,9521
+#define CardMask_UNSET 237,9577
+#define CardMask_SPADES 239,9634
+#define CardMask_HEARTS 240,9691
+#define CardMask_CLUBS 241,9748
+#define CardMask_DIAMONDS 242,9804
+#define CardMask_SET_SPADES 244,9864
+#define CardMask_SET_HEARTS 245,9925
+#define CardMask_SET_CLUBS 246,9986
+#define CardMask_SET_DIAMONDS 247,10046
+#define CurDeck 249,10110
+
+include/poker_config.h,190
+#define HAVE_UINT64_T 31,1309
+#define HAVE_LONG_LONG 36,1455
+#define SIZEOF_LONG 46,1692
+#define HAVE_INTTYPES_H 51,1818
+#define HAVE_STDINT_H 56,1948
+#define HAVE_SYS_TYPES_H 61,2080
+
+include/combinations.h,80
+#define COMBINATIONS_H26,1021
+typedef void *Combinations;Combinations30,1076
+
+include/enumerate.h,1459
+#define ENUMERATE_H92,4670
+#define RANDOM 99,4776
+#define DECK_ENUMERATE_1_CARDS(102,4804
+#define DECK_ENUMERATE_2_CARDS(114,5397
+#define DECK_ENUMERATE_3_CARDS(131,6280
+#define DECK_ENUMERATE_4_CARDS(152,7388
+#define DECK_ENUMERATE_5_CARDS(177,8721
+#define DECK_ENUMERATE_7_CARDS(206,10909
+#define DECK_ENUMERATE_1_CARDS_D(244,13569
+#define DECK_ENUMERATE_2_CARDS_D(258,14470
+#define DECK_ENUMERATE_3_CARDS_D(279,15913
+#define DECK_ENUMERATE_4_CARDS_D(306,17902
+#define DECK_ENUMERATE_5_CARDS_D(339,20328
+#define DECK_ENUMERATE_N_CARDS_D(381,23068
+#define DECK_ENUMERATE_N_CARDS(506,32464
+#define DECK_ENUMERATE_COMBINATIONS_D(607,39979
+#define DECK_ENUMERATE_PERMUTATIONS_D(687,42971
+#define DECK_MONTECARLO_N_CARDS_D(751,47696
+#define DECK_MONTECARLO_PERMUTATIONS_D(771,48509
+#define ENUMERATE_1_CARDS(793,49416
+#define ENUMERATE_2_CARDS(794,49482
+#define ENUMERATE_3_CARDS(795,49548
+#define ENUMERATE_4_CARDS(796,49614
+#define ENUMERATE_5_CARDS(797,49680
+#define ENUMERATE_7_CARDS(798,49746
+#define ENUMERATE_1_CARDS_D(800,49813
+#define ENUMERATE_2_CARDS_D(801,49888
+#define ENUMERATE_3_CARDS_D(802,49963
+#define ENUMERATE_4_CARDS_D(803,50038
+#define ENUMERATE_5_CARDS_D(804,50113
+#define ENUMERATE_7_CARDS_D(805,50188
+#define ENUMERATE_N_CARDS(807,50264
+#define ENUMERATE_N_CARDS_D(809,50336
+#define ENUMERATE_PERMUTATIONS_D(812,50421
+#define MONTECARLO_N_CARDS_D(815,50527
+#define MONTECARLO_PERMUTATIONS_D(818,50628
+
+include/rules_undef.h,536
+#undef HandType_NOPAIR 21,916
+#undef HandType_ONEPAIR 22,943
+#undef HandType_TWOPAIR 23,970
+#undef HandType_TRIPS 24,997
+#undef HandType_STRAIGHT 25,1024
+#undef HandType_FLUSH 26,1051
+#undef HandType_FULLHOUSE 27,1078
+#undef HandType_QUADS 28,1105
+#undef HandType_STFLUSH 29,1132
+#undef HandType_FIRST 30,1159
+#undef HandType_COUNT 31,1186
+#undef HandType_LAST 32,1213
+#undef handTypeNames 34,1241
+#undef handTypeNamesPadded 35,1270
+#undef nSigCards 36,1299
+#undef HandVal_print 37,1328
+#undef HandVal_toString 38,1357
+
+include/game_astud.h,313
+#define GAME_ASTUD_H22,937
+#define DECK_ASTUD24,959
+#define RULES_ASTUD25,978
+#undef Hand_EVAL_N30,1049
+#undef Hand_EVAL_TYPE31,1068
+#undef Hand_EVAL_LOW32,1090
+#undef Hand_EVAL_LOW833,1111
+#define Hand_EVAL_N 35,1134
+#define Hand_EVAL_TYPE(36,1192
+#undef  DECK_ASTUD38,1263
+#undef  RULES_ASTUD39,1282
+
+include/game_joker.h,376
+#define GAME_JOKER_H22,937
+#define DECK_JOKER24,959
+#define RULES_JOKER25,978
+#undef Hand_EVAL_N30,1049
+#undef Hand_EVAL_TYPE31,1068
+#undef Hand_EVAL_LOW32,1090
+#undef Hand_EVAL_LOW833,1111
+#define Hand_EVAL_N 35,1134
+#define Hand_EVAL_TYPE(36,1186
+#define Hand_EVAL_LOW 38,1257
+#define Hand_EVAL_LOW8 39,1304
+#undef  DECK_JOKER41,1349
+#undef  RULES_JOKER42,1368
+
+include/poker_wrapper.h,35
+#define __POKER_WRAPPER_H__21,879
+
+include/handval.h,1227
+#define __HANDVAL_H__22,938
+typedef uint32 HandVal;40,1775
+#define HandVal_HANDTYPE_SHIFT 42,1800
+#define HandVal_HANDTYPE_MASK 43,1837
+#define HandVal_CARDS_SHIFT 44,1882
+#define HandVal_CARDS_MASK 45,1918
+#define HandVal_TOP_CARD_SHIFT 46,1963
+#define HandVal_TOP_CARD_MASK 47,2000
+#define HandVal_SECOND_CARD_SHIFT 48,2045
+#define HandVal_SECOND_CARD_MASK 49,2082
+#define HandVal_THIRD_CARD_SHIFT 50,2127
+#define HandVal_THIRD_CARD_MASK 51,2163
+#define HandVal_FOURTH_CARD_SHIFT 52,2208
+#define HandVal_FOURTH_CARD_MASK 53,2244
+#define HandVal_FIFTH_CARD_SHIFT 54,2289
+#define HandVal_FIFTH_CARD_MASK 55,2325
+#define HandVal_CARD_WIDTH 56,2370
+#define HandVal_CARD_MASK 57,2406
+#define HandVal_HANDTYPE(59,2446
+#define HandVal_CARDS(60,2510
+#define HandVal_TOP_CARD(61,2569
+#define HandVal_SECOND_CARD(63,2657
+#define HandVal_THIRD_CARD(65,2751
+#define HandVal_FOURTH_CARD(67,2843
+#define HandVal_FIFTH_CARD(69,2937
+#define HandVal_HANDTYPE_VALUE(72,3030
+#define HandVal_TOP_CARD_VALUE(73,3100
+#define HandVal_SECOND_CARD_VALUE(74,3169
+#define HandVal_THIRD_CARD_VALUE(75,3241
+#define HandVal_FOURTH_CARD_VALUE(76,3312
+#define HandVal_FIFTH_CARD_VALUE(77,3384
+#define HandVal_NOTHING 79,3456
+
+include/deck_std.h,4330
+#define __DECK_STD_H__29,1183
+#define StdDeck_N_CARDS 34,1292
+#define StdDeck_MASK(35,1324
+#define StdDeck_Rank_2 37,1386
+#define StdDeck_Rank_3 38,1416
+#define StdDeck_Rank_4 39,1446
+#define StdDeck_Rank_5 40,1476
+#define StdDeck_Rank_6 41,1506
+#define StdDeck_Rank_7 42,1536
+#define StdDeck_Rank_8 43,1566
+#define StdDeck_Rank_9 44,1596
+#define StdDeck_Rank_TEN 45,1626
+#define StdDeck_Rank_JACK 46,1656
+#define StdDeck_Rank_QUEEN 47,1686
+#define StdDeck_Rank_KING 48,1717
+#define StdDeck_Rank_ACE 49,1748
+#define StdDeck_Rank_COUNT 50,1779
+#define StdDeck_Rank_FIRST 51,1810
+#define StdDeck_Rank_LAST 52,1853
+#define StdDeck_N_RANKMASKS 53,1898
+#define StdDeck_RANK(55,1953
+#define StdDeck_SUIT(56,2013
+#define StdDeck_MAKE_CARD(57,2073
+#define StdDeck_Suit_HEARTS 59,2149
+#define StdDeck_Suit_DIAMONDS 60,2181
+#define StdDeck_Suit_CLUBS 61,2213
+#define StdDeck_Suit_SPADES 62,2245
+#define StdDeck_Suit_FIRST 63,2277
+#define StdDeck_Suit_LAST 64,2327
+#define StdDeck_Suit_COUNT 65,2377
+typedef uint32 StdDeck_RankMask;67,2410
+  uint64  cards_n;71,2477
+    uint32 n1,74,2513
+    uint32 n1, n2;74,2513
+  } cards_nn;75,2532
+    uint32 90,3195
+    uint32 spades 91,3219
+    uint32 92,3243
+    uint32 clubs 93,3267
+    uint32 94,3291
+    uint32 diamonds:diamonds95,3315
+    uint32 96,3339
+    uint32 hearts 97,3363
+    uint32 spades 99,3393
+    uint32 100,3417
+    uint32 clubs 101,3441
+    uint32 102,3465
+    uint32 diamonds:diamonds103,3489
+    uint32 104,3513
+    uint32 hearts 105,3537
+    uint32 106,3561
+  } cards;108,3592
+} StdDeck_CardMask;109,3603
+#define StdDeck_CardMask_SPADES(111,3624
+#define StdDeck_CardMask_CLUBS(112,3682
+#define StdDeck_CardMask_DIAMONDS(113,3739
+#define StdDeck_CardMask_HEARTS(114,3799
+#define StdDeck_CardMask_SET_SPADES(116,3858
+#define StdDeck_CardMask_SET_CLUBS(117,3935
+#define StdDeck_CardMask_SET_DIAMONDS(118,4011
+#define StdDeck_CardMask_SET_HEARTS(119,4090
+#define StdDeck_CardMask_OP(122,4185
+#define StdDeck_CardMask_OP(125,4310
+#define StdDeck_CardMask_NOT(133,4621
+#define StdDeck_CardMask_NOT(138,4863
+#define StdDeck_CardMask_OR(145,5181
+#define StdDeck_CardMask_AND(148,5273
+#define StdDeck_CardMask_XOR(151,5366
+#define StdDeck_CardMask_SET(154,5459
+#define StdDeck_CardMask_UNSET(160,5688
+#define StdDeck_CardMask_CARD_IS_SET(168,6046
+#define StdDeck_CardMask_CARD_IS_SET(172,6349
+#define StdDeck_CardMask_ANY_SET(178,6656
+#define StdDeck_CardMask_ANY_SET(181,6867
+#define StdDeck_CardMask_RESET(187,7112
+#define StdDeck_CardMask_RESET(190,7196
+#define StdDeck_CardMask_IS_EMPTY(195,7324
+#define StdDeck_CardMask_IS_EMPTY(198,7396
+#define StdDeck_CardMask_EQUAL(203,7518
+#define StdDeck_CardMask_EQUAL(206,7610
+#define StdDeck_cardString(240,9048
+#define StdDeck_printCard(241,9116
+#define StdDeck_printMask(242,9183
+#define StdDeck_maskString(243,9262
+#define StdDeck_numCards(244,9342
+#define StdDeck_maskToString(245,9418
+#define Deck_N_CARDS 261,9642
+#define Deck_MASK 262,9684
+#define Deck_RANK 263,9723
+#define Deck_SUIT 264,9762
+#define Rank_2 266,9802
+#define Rank_3 267,9844
+#define Rank_4 268,9885
+#define Rank_5 269,9927
+#define Rank_6 270,9969
+#define Rank_7 271,10011
+#define Rank_8 272,10053
+#define Rank_9 273,10095
+#define Rank_TEN 274,10137
+#define Rank_JACK 275,10180
+#define Rank_QUEEN 276,10224
+#define Rank_KING 277,10269
+#define Rank_ACE 278,10313
+#define Rank_FIRST 279,10356
+#define Rank_COUNT 280,10402
+#define Suit_HEARTS 282,10448
+#define Suit_DIAMONDS 283,10494
+#define Suit_CLUBS 284,10542
+#define Suit_SPADES 285,10587
+#define Suit_FIRST 286,10633
+#define Suit_COUNT 287,10678
+#define CardMask 289,10724
+#define CardMask_NOT 290,10773
+#define CardMask_OR 291,10825
+#define CardMask_XOR 292,10876
+#define CardMask_AND 293,10928
+#define CardMask_SET 294,10980
+#define CardMask_CARD_IS_SET 295,11032
+#define CardMask_ANY_SET 296,11092
+#define CardMask_RESET 297,11148
+#define CardMask_UNSET 298,11202
+#define CardMask_SPADES 300,11257
+#define CardMask_HEARTS 301,11312
+#define CardMask_CLUBS 302,11367
+#define CardMask_DIAMONDS 303,11421
+#define CardMask_SET_SPADES 305,11479
+#define CardMask_SET_HEARTS 306,11538
+#define CardMask_SET_CLUBS 307,11597
+#define CardMask_SET_DIAMONDS 308,11655
+#define CurDeck 310,11717
+
+include/pokereval_export.h,333
+#define LIBPOKEREVAL_EXPORT 28,1005
+			#define POKEREVAL_EXPORT 45,1499
+			#define POKEREVAL_EXPORT47,1539
+				#define POKEREVAL_EXPORT 52,1632
+				#define POKEREVAL_EXPORT 54,1696
+				#define POKEREVAL_EXPORT 58,1769
+				#define POKEREVAL_EXPORT 60,1833
+		#define POKEREVAL_EXPORT 67,1920
+		#define POKEREVAL_EXPORT69,1958
+
+include/poker_defs.h,722
+#define __POKER_DEFS_H__23,988
+#  define UINT64_TYPE 29,1067
+#  define inline 30,1106
+#  define thread 31,1132
+#  define thread 33,1176
+#undef USE_INT6450,1430
+typedef uint64_t		uint64;52,1468
+#define USE_INT64 53,1494
+typedef unsigned long long      uint64;55,1544
+#define USE_INT64 56,1584
+typedef unsigned long           uint64;58,1627
+#define USE_INT64 59,1667
+typedef UINT64_TYPE             uint64;61,1714
+#define USE_INT64 62,1754
+#define LongLong_OP(66,1799
+#define LongLong_OR(68,1901
+#define LongLong_AND(69,1973
+#define LongLong_XOR(70,2045
+typedef unsigned char  uint8;74,2126
+typedef signed char   int8;76,2174
+typedef unsigned short uint16;78,2209
+typedef unsigned int   uint32;79,2240
+
+include/config.h,905
+#define HAVE_DLFCN_H 8,295
+#define HAVE_INTTYPES_H 14,456
+#define HAVE_LONG_LONG 17,541
+#define HAVE_MEMORY_H 20,625
+#define HAVE_STDINT_H 23,708
+#define HAVE_STDLIB_H 26,791
+#define HAVE_STRINGS_H 29,875
+#define HAVE_STRING_H 32,959
+#define HAVE_SYS_STAT_H 35,1044
+#define HAVE_SYS_TYPES_H 38,1132
+#define HAVE_UINT64_T 41,1217
+#define HAVE_UNISTD_H 44,1300
+#define LT_OBJDIR 48,1409
+#define PACKAGE 54,1564
+#define PACKAGE_BUGREPORT 57,1673
+#define PACKAGE_NAME 60,1750
+#define PACKAGE_STRING 63,1844
+#define PACKAGE_TARNAME 66,1946
+#define PACKAGE_URL 69,2032
+#define PACKAGE_VERSION 72,2101
+#define SIZEOF_LONG 75,2183
+#define STDC_HEADERS 78,2261
+# define _ALL_SOURCE 82,2349
+# define _GNU_SOURCE 86,2455
+# define _POSIX_PTHREAD_SEMANTICS 90,2565
+# define _TANDEM_SOURCE 94,2671
+# define __EXTENSIONS__ 98,2772
+#define VERSION 103,2839
+#  define WORDS_BIGENDIAN 109,3075
+
+include/inlines/evx7.h,3641
+StdDeck_StdRules_EVAL_X7 31,1111
+#define STRAIGHT_FLUSH_helper_P(1542,23874
+#define FOUR_OF_A_KIND_complete_P(1543,23914
+#define FULL_HOUSE_complete_P(1544,23952
+#define THREE_OF_A_KIND_helper_P(1545,23996
+#define STRAIGHT_P(1546,24033
+#define AT_LEAST_PAIR_P(1547,24056
+#define PAIR_P(1548,24084
+#undef STRAIGHT_FLUSH_helper_P1552,24137
+#undef FOUR_OF_A_KIND_complete_P1553,24168
+#undef STRAIGHT_P1554,24201
+#undef FLUSH_helper_P1555,24219
+#undef FULL_HOUSE_complete_P1556,24241
+#undef THREE_OF_A_KIND_helper_P1557,24270
+#undef AT_LEAST_PAIR_P1558,24302
+#undef PAIR_P1559,24325
+#define FOUR_OF_A_KIND_complete_P(1778,27574
+#define FULL_HOUSE_complete_P(1779,27612
+#define THREE_OF_A_KIND_helper_P(1780,27656
+#define STRAIGHT_P(1781,27693
+#define AT_LEAST_PAIR_P(1782,27716
+#define PAIR_P(1783,27744
+#undef STRAIGHT_FLUSH_helper_P1787,27797
+#undef FOUR_OF_A_KIND_complete_P1788,27828
+#undef STRAIGHT_P1789,27861
+#undef FLUSH_helper_P1790,27879
+#undef FULL_HOUSE_complete_P1791,27901
+#undef THREE_OF_A_KIND_helper_P1792,27930
+#undef AT_LEAST_PAIR_P1793,27962
+#undef PAIR_P1794,27985
+#define STRAIGHT_FLUSH_helper_P(3073,46912
+#define FOUR_OF_A_KIND_complete_P(3074,46952
+#define FULL_HOUSE_complete_P(3075,46990
+#define STRAIGHT_P(3076,47034
+#define AT_LEAST_PAIR_P(3077,47057
+#define PAIR_P(3078,47085
+#undef STRAIGHT_FLUSH_helper_P3082,47138
+#undef FOUR_OF_A_KIND_complete_P3083,47169
+#undef STRAIGHT_P3084,47202
+#undef FLUSH_helper_P3085,47220
+#undef FULL_HOUSE_complete_P3086,47242
+#undef THREE_OF_A_KIND_helper_P3087,47271
+#undef AT_LEAST_PAIR_P3088,47303
+#undef PAIR_P3089,47326
+#define FOUR_OF_A_KIND_complete_P(3101,47495
+#define FULL_HOUSE_complete_P(3102,47533
+#define STRAIGHT_P(3103,47577
+#define AT_LEAST_PAIR_P(3104,47600
+#define PAIR_P(3105,47628
+#undef STRAIGHT_FLUSH_helper_P3109,47681
+#undef FOUR_OF_A_KIND_complete_P3110,47712
+#undef STRAIGHT_P3111,47745
+#undef FLUSH_helper_P3112,47763
+#undef FULL_HOUSE_complete_P3113,47785
+#undef THREE_OF_A_KIND_helper_P3114,47814
+#undef AT_LEAST_PAIR_P3115,47846
+#undef PAIR_P3116,47869
+#define STRAIGHT_FLUSH_helper_P(4197,63622
+#define FLUSH_helper_P(4198,63662
+#define STRAIGHT_P(4199,63689
+#define AT_LEAST_PAIR_P(4200,63712
+#define PAIR_P(4201,63740
+#undef STRAIGHT_FLUSH_helper_P4205,63793
+#undef FOUR_OF_A_KIND_complete_P4206,63824
+#undef STRAIGHT_P4207,63857
+#undef FLUSH_helper_P4208,63875
+#undef FULL_HOUSE_complete_P4209,63897
+#undef THREE_OF_A_KIND_helper_P4210,63926
+#undef AT_LEAST_PAIR_P4211,63958
+#undef PAIR_P4212,63981
+#define STRAIGHT_FLUSH_helper_P(5859,88498
+#define FOUR_OF_A_KIND_complete_P(5860,88538
+#define FULL_HOUSE_complete_P(5861,88576
+#define THREE_OF_A_KIND_helper_P(5862,88620
+#define STRAIGHT_P(5863,88657
+#define AT_LEAST_PAIR_P(5864,88680
+#define PAIR_P(5865,88708
+#undef STRAIGHT_FLUSH_helper_P5869,88761
+#undef FOUR_OF_A_KIND_complete_P5870,88792
+#undef STRAIGHT_P5871,88825
+#undef FLUSH_helper_P5872,88843
+#undef FULL_HOUSE_complete_P5873,88865
+#undef THREE_OF_A_KIND_helper_P5874,88894
+#undef AT_LEAST_PAIR_P5875,88926
+#undef PAIR_P5876,88949
+#define FOUR_OF_A_KIND_complete_P(5949,90016
+#define FULL_HOUSE_complete_P(5950,90054
+#define THREE_OF_A_KIND_helper_P(5951,90098
+#define STRAIGHT_P(5952,90135
+#define AT_LEAST_PAIR_P(5953,90158
+#define PAIR_P(5954,90186
+#undef STRAIGHT_FLUSH_helper_P5958,90239
+#undef FOUR_OF_A_KIND_complete_P5959,90270
+#undef STRAIGHT_P5960,90303
+#undef FLUSH_helper_P5961,90321
+#undef FULL_HOUSE_complete_P5962,90343
+#undef THREE_OF_A_KIND_helper_P5963,90372
+#undef AT_LEAST_PAIR_P5964,90404
+#undef PAIR_P5965,90427
+
+include/inlines/eval_joker_low8.h,70
+#define __EVAL_JOKER_LOW8_H__20,886
+JokerDeck_Lowball8_EVAL(27,1029
+
+include/inlines/eval_low.h,84
+#define __EVAL_LOW_H__25,1073
+_bottomNCards(35,1221
+StdDeck_Lowball_EVAL(51,1491
+
+include/inlines/eval_joker_low.h,68
+#define __EVAL_JOKER_LOW_H__22,948
+JokerDeck_Lowball_EVAL(38,1454
+
+include/inlines/eval_joker.h,265
+#define __EVAL_JOKER_H__20,881
+#define SC 32,1038
+#define SD 33,1052
+#define SH 34,1066
+#define SS 35,1080
+__topUnset(38,1114
+__flushVal(49,1309
+JokerDeck_JokerRules_EVAL_N(56,1482
+#undef SC264,7967
+#undef SH265,7977
+#undef SD266,7987
+#undef SS267,7997
+
+include/inlines/eval_type.h,68
+#define __EVAL_TYPE_H__27,1124
+StdDeck_StdRules_EVAL_TYPE(41,1404
+
+include/inlines/evx_action.h,477
+#define FLUSH_helper_P(92,4644
+#define STRAIGHT_FLUSH_helper_P(110,5409
+#undef FK_LOCALS115,5519
+#define FOUR_OF_A_KIND_complete_P(118,5581
+#define FK_LOCALS 126,5995
+#define FK_LOCALS128,6039
+#define THREE_OF_A_KIND_helper_P(139,6334
+#undef FH_LOCALS159,7214
+#define FULL_HOUSE_complete_P(162,7272
+#define FH_LOCALS 172,7825
+#define FH_LOCALS174,7882
+#define STRAIGHT_FLUSH_XOR_CORRECTION_VALUE 178,7909
+#define ALL_PAIRS_helper(181,8015
+    flush_suit 187,8113
+
+include/inlines/evx5.h,2722
+StdDeck_StdRules_EVAL_X5 31,1111
+#define STRAIGHT_FLUSH_helper_P(1320,20369
+#define FOUR_OF_A_KIND_complete_P(1321,20409
+#define FULL_HOUSE_complete_P(1322,20447
+#define THREE_OF_A_KIND_helper_P(1323,20491
+#define STRAIGHT_P(1324,20528
+#define AT_LEAST_PAIR_P(1325,20551
+#define PAIR_P(1326,20579
+#undef STRAIGHT_FLUSH_helper_P1330,20632
+#undef FOUR_OF_A_KIND_complete_P1331,20663
+#undef STRAIGHT_P1332,20696
+#undef FLUSH_helper_P1333,20714
+#undef FULL_HOUSE_complete_P1334,20736
+#undef THREE_OF_A_KIND_helper_P1335,20765
+#undef AT_LEAST_PAIR_P1336,20797
+#undef PAIR_P1337,20820
+#define FOUR_OF_A_KIND_complete_P(1349,20989
+#define FULL_HOUSE_complete_P(1350,21027
+#define THREE_OF_A_KIND_helper_P(1351,21071
+#define STRAIGHT_P(1352,21108
+#define AT_LEAST_PAIR_P(1353,21131
+#define PAIR_P(1354,21159
+#undef STRAIGHT_FLUSH_helper_P1358,21212
+#undef FOUR_OF_A_KIND_complete_P1359,21243
+#undef STRAIGHT_P1360,21276
+#undef FLUSH_helper_P1361,21294
+#undef FULL_HOUSE_complete_P1362,21316
+#undef THREE_OF_A_KIND_helper_P1363,21345
+#undef AT_LEAST_PAIR_P1364,21377
+#undef PAIR_P1365,21400
+#define STRAIGHT_FLUSH_helper_P(1653,25564
+#define FOUR_OF_A_KIND_complete_P(1654,25604
+#define FLUSH_helper_P(1655,25642
+#define FULL_HOUSE_complete_P(1656,25669
+#define STRAIGHT_P(1657,25713
+#define AT_LEAST_PAIR_P(1658,25736
+#define PAIR_P(1659,25764
+#undef STRAIGHT_FLUSH_helper_P1663,25817
+#undef FOUR_OF_A_KIND_complete_P1664,25848
+#undef STRAIGHT_P1665,25881
+#undef FLUSH_helper_P1666,25899
+#undef FULL_HOUSE_complete_P1667,25921
+#undef THREE_OF_A_KIND_helper_P1668,25950
+#undef AT_LEAST_PAIR_P1669,25982
+#undef PAIR_P1670,26005
+#define STRAIGHT_FLUSH_helper_P(1750,27132
+#define FLUSH_helper_P(1751,27172
+#define STRAIGHT_P(1752,27199
+#define AT_LEAST_PAIR_P(1753,27222
+#define PAIR_P(1754,27250
+#undef STRAIGHT_FLUSH_helper_P1758,27303
+#undef FOUR_OF_A_KIND_complete_P1759,27334
+#undef STRAIGHT_P1760,27367
+#undef FLUSH_helper_P1761,27385
+#undef FULL_HOUSE_complete_P1762,27407
+#undef THREE_OF_A_KIND_helper_P1763,27436
+#undef AT_LEAST_PAIR_P1764,27468
+#undef PAIR_P1765,27491
+#define STRAIGHT_FLUSH_helper_P(2482,38007
+#define FOUR_OF_A_KIND_complete_P(2483,38047
+#define FLUSH_helper_P(2484,38085
+#define FULL_HOUSE_complete_P(2485,38112
+#define THREE_OF_A_KIND_helper_P(2486,38156
+#define STRAIGHT_P(2487,38193
+#define AT_LEAST_PAIR_P(2488,38216
+#define PAIR_P(2489,38244
+#undef STRAIGHT_FLUSH_helper_P2493,38297
+#undef FOUR_OF_A_KIND_complete_P2494,38328
+#undef STRAIGHT_P2495,38361
+#undef FLUSH_helper_P2496,38379
+#undef FULL_HOUSE_complete_P2497,38401
+#undef THREE_OF_A_KIND_helper_P2498,38430
+#undef AT_LEAST_PAIR_P2499,38462
+#undef PAIR_P2500,38485
+
+include/inlines/evx_inlines.h,364
+#define	__EVX_INLINES_H__2,26
+static inline uint32 flush_value(25,968
+static inline uint32 straight_value(34,1154
+static inline uint32 nopair_value(39,1255
+static inline uint32 trips_value(49,1480
+static inline uint32 two_pair_value(55,1678
+static inline uint32 pair_value(68,2021
+#define c 77,2277
+#define d 78,2293
+#define h 79,2312
+#define s 80,2329
+
+include/inlines/eval_astud.h,282
+#define __EVAL_ASTUD_H__23,923
+#define SC 28,1000
+#define SD 29,1043
+#define SH 30,1089
+#define SS 31,1133
+static uint32 astudHandTypeMap[astudHandTypeMap33,1178
+AStudDeck_AStudRules_EVAL_N(47,1765
+#undef SC144,5586
+#undef SH145,5596
+#undef SD146,5606
+#undef SS147,5616
+
+include/inlines/eval_low27.h,222
+#define __EVAL_LOW27_H__22,953
+#define SC 27,1024
+#define SD 28,1061
+#define SH 29,1101
+#define SS 30,1139
+StdDeck_Lowball27_EVAL_N(33,1201
+#undef SC207,6960
+#undef SH208,6970
+#undef SD209,6980
+#undef SS210,6990
+
+include/inlines/eval_low8.h,61
+#define __EVAL_LOW8_H__20,880
+StdDeck_Lowball8_EVAL(25,957
+
+include/inlines/eval_omaha.h,224
+#define __EVAL_OMAHA_H__30,1235
+#define OMAHA_MINHOLE 37,1364
+#define OMAHA_MAXHOLE 38,1414
+#define OMAHA_MINBOARD 39,1461
+#define OMAHA_MAXBOARD 40,1511
+StdDeck_OmahaHiLow8_EVAL(47,1795
+StdDeck_OmahaHi_EVAL(133,4894
+
+include/inlines/eval.h,215
+#define __EVAL_H__23,935
+#define SC 42,1338
+#define SD 43,1352
+#define SH 44,1366
+#define SS 45,1380
+StdDeck_StdRules_EVAL_N(74,2397
+#undef SC267,8847
+#undef SH268,8857
+#undef SD269,8867
+#undef SS270,8877
+
+include/enumord.h,1246
+#define ENUMORD_H106,3874
+#define ENUM_ORDERING_MAXPLAYERS 112,4014
+#define ENUM_ORDERING_MAXPLAYERS_HILO 115,4120
+  enum_ordering_mode_none 118,4176
+  enum_ordering_mode_hi,119,4207
+  enum_ordering_mode_lo,120,4232
+  enum_ordering_mode_hilo121,4257
+} enum_ordering_mode_t;122,4283
+  enum_ordering_mode_t mode;125,4325
+  unsigned int nplayers;126,4354
+  unsigned int nentries;127,4379
+  unsigned int *hist;hist135,4951
+} enum_ordering_t;136,5002
+#define ENUM_ORDERING_NBITS(143,5299
+#define ENUM_ORDERING_NENTRIES(148,5497
+#define ENUM_ORDERING_NENTRIES_HILO(154,5757
+#define ENUM_ORDERING_ENCODE(163,6231
+#define ENUM_ORDERING_ENCODE_HILO(174,6587
+#define ENUM_ORDERING_SHIFT_K(186,7025
+#define ENUM_ORDERING_SHIFT_HILO_K_HI(191,7232
+#define ENUM_ORDERING_SHIFT_HILO_K_LO(196,7448
+#define ENUM_ORDERING_MASK_K(200,7615
+#define ENUM_ORDERING_MASK_HILO_K_HI(206,7840
+#define ENUM_ORDERING_MASK_HILO_K_LO(212,8080
+#define ENUM_ORDERING_DECODE_K(218,8317
+#define ENUM_ORDERING_DECODE_HILO_K_HI(224,8589
+#define ENUM_ORDERING_DECODE_HILO_K_LO(230,8884
+#define ENUM_ORDERING_RANK_HI(238,9364
+#define ENUM_ORDERING_RANK_LO(245,9783
+#define ENUM_ORDERING_INCREMENT(249,9988
+#define ENUM_ORDERING_INCREMENT_HILO(258,10277
+
+include/handval_low.h,1440
+#define __HANDVAL_LOW_H__22,941
+typedef uint32 LowHandVal;26,999
+#define LowHandVal_HANDTYPE_SHIFT 28,1027
+#define LowHandVal_HANDTYPE_MASK 29,1091
+#define LowHandVal_CARDS_SHIFT 30,1155
+#define LowHandVal_CARDS_MASK 31,1219
+#define LowHandVal_TOP_CARD_SHIFT 32,1283
+#define LowHandVal_TOP_CARD_MASK 33,1347
+#define LowHandVal_SECOND_CARD_SHIFT 34,1411
+#define LowHandVal_SECOND_CARD_MASK 35,1475
+#define LowHandVal_THIRD_CARD_SHIFT 36,1539
+#define LowHandVal_THIRD_CARD_MASK 37,1603
+#define LowHandVal_FOURTH_CARD_SHIFT 38,1667
+#define LowHandVal_FOURTH_CARD_MASK 39,1731
+#define LowHandVal_FIFTH_CARD_SHIFT 40,1795
+#define LowHandVal_FIFTH_CARD_MASK 41,1859
+#define LowHandVal_CARD_WIDTH 42,1923
+#define LowHandVal_CARD_MASK 43,1987
+#define LowHandVal_HANDTYPE 45,2052
+#define LowHandVal_CARDS 46,2106
+#define LowHandVal_TOP_CARD 47,2157
+#define LowHandVal_SECOND_CARD 48,2211
+#define LowHandVal_THIRD_CARD 49,2268
+#define LowHandVal_FOURTH_CARD 50,2324
+#define LowHandVal_FIFTH_CARD 51,2381
+#define LowHandVal_HANDTYPE_VALUE 53,2438
+#define LowHandVal_TOP_CARD_VALUE 54,2498
+#define LowHandVal_SECOND_CARD_VALUE 55,2558
+#define LowHandVal_THIRD_CARD_VALUE 56,2621
+#define LowHandVal_FOURTH_CARD_VALUE 57,2683
+#define LowHandVal_FIFTH_CARD_VALUE 58,2746
+#define LowHandVal_NOTHING 60,2809
+#define LowHandVal_WORST_EIGHT 64,2978
+#define Lowball_ROTATE_RANKS(75,3514
+#define Lowball_JOKERFY_RANKS(79,3643
+
+java/pokutil.h,23
+#define POKUTIL_H4,76
+
+lib/mktable.h,0
+
+java/jniutil.h,0

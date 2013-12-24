@@ -1,0 +1,40 @@
+/*
+ *  evx_preamble.cfrag: the unchanging beginning part of evx5/evx7.h
+ *
+ *  Copyright (C) 1994  Clifford T. Matthews
+ *
+ * This program gives you software freedom; you can copy, convey,
+ * propagate, redistribute and/or modify this program under the terms of
+ * the GNU General Public License (GPL) as published by the Free Software
+ * Foundation (FSF), either version 3 of the License, or (at your option)
+ * any later version of the GPL published by the FSF.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program in a file in the toplevel directory called "GPLv3".
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <stdlib.h>
+#include <string.h>
+#include "poker_defs.h"
+#include "evx_defs.h"
+#include "inlines/evx_inlines.h"
+
+static inline uint32
+StdDeck_StdRules_EVAL_X%d (StdDeck_RankMask clubs, 
+                          StdDeck_RankMask diamonds, 
+                          StdDeck_RankMask hearts,
+                          StdDeck_RankMask spades)
+{
+  StdDeck_RankMask ranks, flush_suit, three_info, all_pairs;
+  uint32 retval;
+
+  ranks = clubs | diamonds | hearts | spades;
+
+  switch (ranks)
+    {

@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+clean:: debian/stamp-autotools-configure
+	rm -f $(DEB_SRCDIR)/*cdbs-*
+
+include /usr/share/cdbs/1/class/autotools.mk
+
+ifneq (ccache,$(findstring ccache,$(DEB_BUILD_OPTIONS)))
+        DEB_CONFIGURE_EXTRA_FLAGS += --without-ccache
+endif
+
+DEB_MAKE_CLEAN_TARGET = maintainer-clean
+
+is_debug_package=$(if $(findstring noopt,$(DEB_BUILD_OPTIONS)),yes,)
+
+$(DEB_SRCDIR)/configure:: 
+	autoreconf --install
+	chmod a+x $@
+
+# override in order to add dependency to configure (should be a :: rule instead of a : rule)
+debian/stamp-autotools-configure: $(DEB_SRCDIR)/configure
+	chmod a+x $(DEB_CONFIGURE_SCRIPT)
+	$(DEB_CONFIGURE_INVOKE) $(cdbs_configure_flags) $(DEB_CONFIGURE_EXTRA_FLAGS) $(DEB_CONFIGURE_USER_FLAGS)
+	if [ -f /usr/bin/libtool ] ; then cp /usr/bin/libtool libtool ; fi

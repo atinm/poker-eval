@@ -1,0 +1,168 @@
+poker-eval (138.0-1) unstable; urgency=low
+
+  * remove pokenum from debian/libpoker-eval-dev.docs (closes: #517613)
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Thu, 02 Sep 2010 10:56:28 +0200
+
+poker-eval (137.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Wed, 10 Feb 2010 00:42:19 +0100
+
+poker-eval (136.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Sat, 27 Dec 2008 11:53:06 +0100
+
+poker-eval (135.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Wed, 16 May 2007 14:00:46 +0200
+
+poker-eval (134.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Sat, 14 Oct 2006 16:44:03 +0200
+
+poker-eval (133.0-1) unstable; urgency=low
+
+  * $(EXEEXT) added to executable files for cross-platform compatibility
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Mon, 21 Aug 2006 23:42:01 +0200
+
+poker-eval (132.0-1) unstable; urgency=low
+
+  * s/AC_CONFIG_HEADER/AM_CONFIG_HEADER/ (closes: #373990)
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Fri, 16 Jun 2006 21:00:17 +0200
+
+poker-eval (131.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Sun, 16 Apr 2006 03:22:10 +0200
+
+poker-eval (130.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Mon, 13 Mar 2006 10:38:01 +0100
+
+poker-eval (129.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Mon, 16 Jan 2006 16:53:05 +0100
+
+poker-eval (128.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Thu, 22 Sep 2005 19:04:28 +0200
+
+poker-eval (127.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Mon,  4 Jul 2005 18:46:55 +0200
+
+poker-eval (126.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Fri, 10 Dec 2004 14:15:42 +0100
+
+poker-eval (125.0-1) unstable; urgency=low
+
+  * upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Mon, 15 Nov 2004 20:22:42 +0100
+
+poker-eval (124.0-2) unstable; urgency=low
+
+  * invalid -march=... option removed
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Sun,  7 Nov 2004 20:47:58 +0100
+
+poker-eval (124.0-1) unstable; urgency=low
+
+  * Upstream sync
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Sun,  7 Nov 2004 16:00:54 +0100
+
+poker-eval (123.0-1) unstable; urgency=low
+
+  * Add examples in documentation.
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Sun, 31 Oct 2004 16:58:34 +0100
+
+poker-eval (122.0-4) unstable; urgency=low
+
+  * Add -fPIC and notify upstream (closes: #278130)
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Mon, 25 Oct 2004 09:54:20 +0200
+
+poker-eval (122.0-3) unstable; urgency=low
+
+  * Fullfill ITP (Closes: #277084)
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Wed, 20 Oct 2004 00:03:11 +0200
+
+poker-eval (122.0-2) unstable; urgency=low
+
+  * Source cleanup 
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Tue, 19 Oct 2004 20:40:28 +0200
+
+poker-eval (122.0-1) unstable; urgency=low
+
+  * Differentiate from sf base
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Mon, 18 Oct 2004 14:52:01 +0200
+
+poker-eval (121.0-7) unstable; urgency=low
+
+  * lib dependencies
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Sun,  4 Jul 2004 17:22:43 +0200
+
+poker-eval (121.0-6) unstable; urgency=low
+
+  * portability fixes
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Wed, 14 Apr 2004 19:23:51 +0200
+
+poker-eval (121.0-5) unstable; urgency=low
+
+  * added automake1.8 and autoconf to build depends
+
+ -- Henry Precheur <henry@precheur.org>  Tue, 23 Mar 2004 16:41:50 +0100
+
+poker-eval (121.0-4) unstable; urgency=low
+
+  * portability fix
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Mon, 22 Mar 2004 11:12:21 +0100
+
+poker-eval (121.0-3) unstable; urgency=low
+
+  * windows port
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Fri, 12 Mar 2004 09:34:12 +0100
+
+poker-eval (121.0-2) unstable; urgency=low
+
+  * config.h conflict
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Wed, 25 Feb 2004 23:06:54 +0100
+
+poker-eval (121.0-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Loic Dachary (OuoU) <loic@debian.org>  Fri, 20 Feb 2004 15:03:24 +0100
+

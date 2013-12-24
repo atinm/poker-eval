@@ -1,0 +1,3 @@
+# keep deprecated versions so that backporting is easier
+poker-eval source: package-uses-deprecated-debhelper-compat-version 4
+poker-eval source: out-of-date-standards-version 3.7.2 (current is 3.8.2)

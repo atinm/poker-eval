@@ -1,0 +1,12 @@
+# $Id: sample1.hho 379 2002-09-22 22:06:45Z mjmaurer $
+# Sample holdem hand ordering; this one is the all-in preflop
+# best response ordering to one opponent holding a random hand
+
+32 42 62 52 72 43 32s 63 53 73 82 42s 83 62s 52s 64 54 72s 74 43s 92 84 63s
+53s 65 93 73s 82s 75 94 83s 64s 85 54s T2 74s 76 92s T3 95 84s 65s 86 93s T4
+75s 94s T5 J2 96 85s T2s 87 J3 76s T3s 95s T6 J4 86s 97 T4s J5 T5s Q2 J2s 96s
+J6 T7 87s 98 Q3 J3s T6s J4s 97s Q4 J7 T8 J5s Q5 Q2s 22 K2 J6s T7s 98s Q3s Q6
+K3 J8 T9 Q7 Q4s J7s K4 T8s Q5s K2s J9 K5 Q8 Q6s 33 J8s T9s K3s K6 Q7s K4s A2
+K7 JT Q9 J9s K5s A3 Q8s K8 K6s A4 44 QT A2s JTs K7s Q9s A6 A5 K9 QJ A3s K8s A7
+A4s QTs KT A8 A6s A5s K9s QJs 55 KJ A9 A7s KQ KTs A8s KJs AT A9s 66 KQs AJ AQ
+ATs AK AJs AQs 77 AKs 88 99 TT JJ QQ KK AA
