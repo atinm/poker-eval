@@ -63,7 +63,7 @@ CardMask gDeadCards, gCommonCards, gPlayerCards[MAX_PLAYERS];
 
 int getCard(CardMask c) {
     /* 
-       Kev:
+       Kev/2+2:
        2c =  1    2d =  2    2h =  3    2s =  4
        3c =  5    3d =  6    3h =  7    3s =  8
        4c =  9    4d = 10    4h = 11    4s = 12
@@ -78,7 +78,11 @@ int getCard(CardMask c) {
        Kc = 45    Kd = 46    Kh = 47    Ks = 48
        Ac = 49    Ad = 50    Ah = 51    As = 52
 
-       2+2+pokersource:
+       Poker source and Kev order the suits in differently, so after
+       my conversion of pokersource card index to Kev index:
+       card = (4 * StdDeck_RANK(playerCards[index])) + StdDeck_SUIT(playerCards[index]) + 1
+       gives me (this works for poker as suits aren't ordered)
+       
        2h =  1    2d =  2    2c =  3    2s =  4
        3h =  5    3d =  6    3c =  7    3s =  8
        4h =  9    4d = 10    4c = 11    4s = 12
