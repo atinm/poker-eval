@@ -1,1 +1,4 @@
 examples/HandRanks.dat
+TAGS
+*.so.*
+*.so
