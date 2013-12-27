@@ -17,11 +17,16 @@
 # relying on it. The user must assume the entire risk of using the source code.
 #
 #################################################################################
+UNAME := $(shell uname)
+
 all: HoldemEquityTest OmahaEquityTest
 
 HoldemEquityTest: HoldemEquityTest.cpp
+#ifeq ($(UNAME),Darwin)
+#	g++ -o HoldemEquityTest HoldemEquityTest.cpp -g -O0 -std=c++11 -Wall -fPIC -fpermissive -I.. -I../../include ../../lib/.libs/libpoker-dist.dylib ../../lib/.libs/libpoker-eval.dylib -lm -lc
+#else
 	g++ -o HoldemEquityTest HoldemEquityTest.cpp -g -O0 -std=c++11 -Wall -fPIC -fpermissive -I.. -I../../include -L../../lib/.libs -lpoker-dist -lpoker-eval -lm -lc
-
+#endif
 OmahaEquityTest: OmahaEquityTest.cpp
 	g++ -o OmahaEquityTest OmahaEquityTest.cpp -g -O0 -std=c++11 -Wall -fPIC -fpermissive -I.. -I../../include -L../../lib/.libs -lpoker-dist -lpoker-eval -lm -lc
 

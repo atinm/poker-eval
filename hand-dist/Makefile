@@ -17,11 +17,16 @@
 # relying on it. The user must assume the entire risk of using the source code.
 #
 #################################################################################
-
+UNAME := $(shell uname)
 ../lib/.libs/libpoker-dist.so: HoldemAgnosticHand.o Card.o CardConverter.o HoldemCalculator.o HoldemHandDistribution.o OmahaAgnosticHand.o OmahaCalculator.o OmahaHandDistribution.o mtrand.o
+ifeq ($(UNAME),Darwin)
+	g++ -dynamiclib -compatibility_version 2 -current_version 2.0 -Wl,-single_module -install_name libpoker-dist.1.dylib -o ../lib/.libs/libpoker-dist.1.dylib HoldemAgnosticHand.o Card.o CardConverter.o HoldemCalculator.o HoldemHandDistribution.o OmahaAgnosticHand.o OmahaCalculator.o OmahaHandDistribution.o mtrand.o ../lib/.libs/libpoker-eval.dylib
+	 (cd "../lib/.libs" && rm -f "libpoker-dist.dylib" && ln -s "libpoker-dist.1.dylib" "libpoker-dist.dylib")
+else
 	g++ -shared -Wl,-soname,libpoker-dist.so.1 -o ../lib/.libs/libpoker-dist.so.1.0.0 HoldemAgnosticHand.o Card.o CardConverter.o HoldemCalculator.o HoldemHandDistribution.o OmahaAgnosticHand.o OmahaCalculator.o OmahaHandDistribution.o mtrand.o
 	 (cd "../lib/.libs" && rm -f "libpoker-dist.so.1" && ln -s "libpoker-dist.so.1.0.0" "libpoker-dist.so.1")
 	 (cd "../lib/.libs" && rm -f "libpoker-dist.so" && ln -s "libpoker-dist.so.1.0.0" "libpoker-dist.so")
+endif
 
 Card.o: Card.cpp Card.h HandDistributions.h
 	g++ -g -O0 -std=c++11 -Wall -fPIC -fpermissive -I ../include -c Card.cpp
