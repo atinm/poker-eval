@@ -31,15 +31,15 @@ Card::~Card(void)
 {
 }
 
-int Card::CharToRank(char c)
+int Card::CharToRank(const char c)
 {
 	switch (c)
 	{
 		case 'A':	return 12;
 		case 'K':	return 11;
 		case 'Q':	return 10;
-		case 'J':	return 9;
-		case 'T':	return 8;
+		case 'J':   return 9;
+		case 'T':   return 8;
 		case '9':	return 7;
 		case '8':	return 6;
 		case '7':	return 5;
@@ -48,13 +48,14 @@ int Card::CharToRank(char c)
 		case '4':	return 2;
 		case '3':	return 1;
 		case '2':	return 0;
+        case 'x':   return 0;
 	};
 
 	return -1;
 }
 
 
-int Card::CharToSuit(char s)
+int Card::CharToSuit(const char s)
 {
 	switch (s)
 	{

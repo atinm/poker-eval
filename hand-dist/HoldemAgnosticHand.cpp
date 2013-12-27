@@ -20,7 +20,7 @@
 
 #include <inlines/eval.h>
 #include "HandDistributions.h"
-#include "AgnosticHand.h"
+#include "HoldemAgnosticHand.h"
 #include "Card.h"
 
 
@@ -35,7 +35,7 @@
 //
 // This version calls the other version of Instantiate internally.
 ///////////////////////////////////////////////////////////////////////////////
-int AgnosticHand::Instantiate(const char* handText, const char* deadText, vector<StdDeck_CardMask>& specificHands)
+int HoldemAgnosticHand::Instantiate(const char* handText, const char* deadText, vector<StdDeck_CardMask>& specificHands)
 {
 	StdDeck_CardMask deadCards;
 	StdDeck_CardMask_RESET(deadCards);
@@ -66,7 +66,7 @@ int AgnosticHand::Instantiate(const char* handText, const char* deadText, vector
 //
 // Returns the number of specific hands the agnostic hand contains.
 ///////////////////////////////////////////////////////////////////////////////
-int AgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& specificHands)
+int HoldemAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& specificHands)
 {
 	if (strcmp(handText, "XxXx") == 0)
 	{
@@ -228,7 +228,7 @@ int AgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCards, 
 //
 // Returns the number of specific hands contained in the agnostic hand.
 ///////////////////////////////////////////////////////////////////////////////
-int AgnosticHand::InstantiateRandom(StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& specificHands)
+int HoldemAgnosticHand::InstantiateRandom(StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& specificHands)
 {
 	StdDeck_CardMask curHand;
 	DECK_ENUMERATE_2_CARDS_D(StdDeck, curHand, deadCards, specificHands.push_back(curHand); );
@@ -239,10 +239,10 @@ int AgnosticHand::InstantiateRandom(StdDeck_CardMask deadCards, vector<StdDeck_C
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Helper method used by AgnosticHand::Instantiate. Determine if this is a
+// Helper method used by HoldemAgnosticHand::Instantiate. Determine if this is a
 // "pair" sort of hand such as "AA" or "QQ+" or "JJ-88".
 ///////////////////////////////////////////////////////////////////////////////
-bool AgnosticHand::IsPair(const char* handText)
+bool HoldemAgnosticHand::IsPair(const char* handText)
 { 
 	return (handText[0] == handText[1]);
 }
@@ -250,10 +250,10 @@ bool AgnosticHand::IsPair(const char* handText)
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Helper method used by AgnosticHand::Instantiate. Determine if this is an
+// Helper method used by HoldemAgnosticHand::Instantiate. Determine if this is an
 // "suited" sort of hand such as "A2s" or "T9s+" or "QJs-65s".
 ///////////////////////////////////////////////////////////////////////////////
-bool AgnosticHand::IsSuited(const char* handText)
+bool HoldemAgnosticHand::IsSuited(const char* handText)
 { 
 	return (strlen(handText) >= 3 && handText[2] == 's');
 }
@@ -261,10 +261,10 @@ bool AgnosticHand::IsSuited(const char* handText)
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Helper method used by AgnosticHand::Instantiate. Determine if this is an
+// Helper method used by HoldemAgnosticHand::Instantiate. Determine if this is an
 // "offsuit" sort of hand such as "A2o" or "T9o+" or "QJo-65o".
 ///////////////////////////////////////////////////////////////////////////////
-bool AgnosticHand::IsOffSuit(const char* handText)
+bool HoldemAgnosticHand::IsOffSuit(const char* handText)
 { 
 	return (strlen(handText) >= 3 && handText[2] == 'o');
 }
@@ -272,11 +272,11 @@ bool AgnosticHand::IsOffSuit(const char* handText)
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Helper method used by AgnosticHand::Instantiate. Determine if this is an
+// Helper method used by HoldemAgnosticHand::Instantiate. Determine if this is an
 // "inclusive" sort of hand, meaning either suited or unsuited but not a pair.
 // For example, "AJ", "K2+", and "T9-87" are all "inclusive".
 ///////////////////////////////////////////////////////////////////////////////
-bool AgnosticHand::IsInclusive(const char* handText)
+bool HoldemAgnosticHand::IsInclusive(const char* handText)
 { 
 	int textlen = strlen(handText);
 	return !IsPair(handText) && ((textlen == 2) || (textlen == 3 && handText[2] == '+'));

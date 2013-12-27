@@ -53,8 +53,8 @@ public:
 		Spades
 	};
 
-	static int CharToRank(char c);
-	static int CharToSuit(char s);
+	static int CharToRank(const char c);
+	static int CharToSuit(const char s);
 	static char RankToChar(int rank);
 	static char SuitToChar(int suit);
 

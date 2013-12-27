@@ -1,6 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Copyright (c) 2009 James Devlin
+// Copyright (c) 2013 Atin Malaviya
 //
 // DISCLAIMER OF WARRANTY
 //
@@ -20,13 +21,13 @@
 
 #pragma once
 
-#include <inlines/eval.h>
+#include <inlines/eval_omaha.h>
 
-class HoldemHandDistribution;
+class OmahaHandDistribution;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// HoldemCalculator
+// OmahaCalculator
 // (c) 2009 by James Devlin
 //
 // Performs multiway isometric equity computation for Texas Hold'em games. 
@@ -43,10 +44,10 @@ class HoldemHandDistribution;
 //
 //		In order to calculate equity in (for example) the following scenario...
 //
-//			Player 1:	[AhKh]
-//			Player 2:	[Td9s]
-//			Player 3:	[QQ+,AQs+,AQo+]
-//			Player 4:	[JJ-88]
+//			Player 1:	AhKhXX
+//			Player 2:	Td9sXX
+//			Player 3:	TTxx,[AQ]xx,AQJT
+//			Player 4:	[J-8J-8]xx
 //			Player 5:	random
 //			Player 6:	random
 //			Player 7:	random
@@ -55,36 +56,65 @@ class HoldemHandDistribution;
 //		Write code similar to the following...
 //
 //			double results[10];
-//			HoldemEquityCalculator calc;
-//			calc.Calculate("AhKh|Td9s|QQ+,AQs+,AQo+|JJ-88|XxXx|XxXx|XxXx", "Ks7d4d", "", 100000, results);
+//			OmahaEquityCalculator calc;
+//			calc.Calculate("AAxx|KKxx|TTxx|[J-8J-8]xx|XxXxXxXx|XxXxXxXx|XxXxXxXx", "Ks7d4d", "", 100000, results);
 //
 //		Use the | symbol to separate players. Use the comman (,) to separate parts of a single player's
 //		range.
 //
 //		You can express each player's hand using either specific or ranged hand hand notation. All of 
-//		the following are valid player hand values.
+//		the following are ways to specify valid player hand values.
 //
-//			- "2d2c"				A specific hand: the 2d and the 2c.
-//			- "QQ+"					Any pair of Queens, Kings, or Aces
-//			- "A3s"					Any A3 of the same suit.
-//			- "ATo+"				Any ATo, AJo, AQo or AKo
-//			- "TT-88"				Any pair of 88s, 99s, or TTs.
-//			- "54"					Any 54 suited OR offsuit
-//			- "ATs+,AQo+,KQs,22+"	Any suited AT through AK OR any offsuit AQ through AK OR
-//									any KQ suited OR any pair (22s or better).
+//      Single hands
+//      To specify a single hand for example type AsQc7h3d
 //
-//		To indicate a random player hand, use "XxXx".
+//      All combos of a hand
+//      To get all 16 combos of a hand, for example an A, K, Q and a J, enter 
+//      AKQJ without suits.
+//
+//      Suits
+//      To specify suited cards, enclosing them in square brackets, e.g. [AK]xx will
+//      give all hands containing suited AK and two other cards.
+//      [AK][AK] will give A's and K's double suited. [JT][98] will give double
+//      suited JT98 hands.
+//      [XXX]X will give all hands with three of a suit.
+//      [X][X][X][X] will give all hands with four different suits (rainbox).
+//      To specify off-suit cards, enclose one of the cards in square brackets, e.g.
+//      [A]KQJ will give all hands with an A of a different suit from all other cards.
+//      [Ah]KQJ will give all hands with an Ah and all other cards of a different suit.
+//
+//      Pairs
+//      QQxx will give all hands containing two queens
+//      [QT+][QT+] double suited queens with two other T+ cards.
+//
+//      Card types
+//      x = random, all ranks, 2..A
+//      2 .. T J Q K A
+//      [] = group suited cards
+//
+//      Ranges from high to low ranks, e.g. for each of the four cards, you can
+//      enter a range, e.g. K-Txxx would give Txxx, Jxxx Qxxx, Kxxx, Axxx.
+//
+//      Ranges can be combined for all four cards, e.g. 3+9-7Q+K-T where first card is 3 or
+//      better, second card is between 7-9, third card is greater than or equal to Q, and
+//      the fourth cards is between T and K.
+//
+//      Percentile (todo)
+//      15% would give the top 15% of hands (ProPokerTools ranking).
+//      10-25% would give the top 10% to 25% of hands (ProPokerTools ranking).
+//
+//		To indicate a random player hand, use "XxXxXxXx".
 //
 //		'results' will now contain the equity, expressed as a value between 0.0 and 1.0, for each player in the hand.
 //		The player equities appear in the same order as player hands were passed into the function.
 //
-//			dResults[0] = 37.1	  (player 1 - AhAs)
-//			dResults[1] =  5.5	  (player 2 - Td9s)
-//			dResults[2] = 19.2	  (player 3 - QQ+,AQs+,AQo+)
-//			dResults[3] =  5.9	  (player 4 - JJ-88)
-//			dResults[4] = 10.7 	  (player 5 - random)
-//			dResults[5] = 10.7 	  (player 6 - random)
-//			dResults[6] = 10.7	  (player 7 - random)
+//			dResults[0] = 37.1	  (player 1)
+//			dResults[1] =  5.5	  (player 2)
+//			dResults[2] = 19.2	  (player 3)
+//			dResults[3] =  5.9	  (player 4)
+//			dResults[4] = 10.7 	  (player 5)
+//			dResults[5] = 10.7 	  (player 6)
+//			dResults[6] = 10.7	  (player 7)
 //			dResults[7] =  0.0	  (unused)
 //			dResults[8] =  0.0	  (unused)
 //			dResults[9] =  0.0	  (unused)
@@ -93,11 +123,11 @@ class HoldemHandDistribution;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class HoldemCalculator
+class OmahaCalculator
 {
 public:
-	HoldemCalculator();
-	virtual ~HoldemCalculator();
+	OmahaCalculator();
+	virtual ~OmahaCalculator();
 
 	// Calculate using either Monte Carlo or exhaustive enumeration.
 	int Calculate(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, double* results);
@@ -144,7 +174,7 @@ private:
 	uint64_t m_actualTrials;
 	uint64_t m_possibleOutcomes;
 	uint64_t m_MonteCarloThreshhold;
-	vector<HoldemHandDistribution*> m_dists;
+	vector<OmahaHandDistribution*> m_dists;
 	double m_wins[23];
 	int m_handVals[23];
 	int m_tiedPlayerIndexes[23];

@@ -39,7 +39,7 @@
 //			- T8o-64o
 // 
 ///////////////////////////////////////////////////////////////////////////////
-class AgnosticHand
+class HoldemAgnosticHand
 {
 public:
 	static int Instantiate(const char* handText, const char* deadCards, vector<StdDeck_CardMask>& hands);
