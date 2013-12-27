@@ -42,34 +42,40 @@ int main(int argc, char* argv[])
 
 	int numberOfTrials = 1000000;
 
-	// {
-	// 	// AAxx vs. KKxx of any suits: Monte Carlo
-	// 	double expected[] = { 69.87, 30.13 };
-	// 	performMatchup("AAXX|KKXX", NULL, NULL, numberOfTrials, false, expected);
-	// }
+	{
+		// AAxx vs. KKxx of any suits: Monte Carlo
+		double expected[] = { 69.87, 30.13 };
+		performMatchup("AAXX|KKXX", NULL, NULL, numberOfTrials, false, expected);
+	}
 
-	// {
-	// 	// [AX]xx vs. [KX]xx top suited, any others: Monte Carlo
-	// 	double expected[] = { 52.92, 47.08 };
-	// 	performMatchup("[AX]XX|[KX]XX", NULL, NULL, numberOfTrials, false, expected);
-	// }
+	{
+		// [AX]xx vs. [KX]xx top suited, any others: Monte Carlo
+		double expected[] = { 52.92, 47.08 };
+		performMatchup("[AX]XX|[KX]XX", NULL, NULL, numberOfTrials, false, expected);
+	}
 
-	// {
-	// 	// [QB][QB] vs. [JB][JB]: pair of Qs and suited big cards vs pair of Js and suited bi. Monte Carlo
-	// 	double expected[] = { 57.17, 42.83 };
-	// 	performMatchup("[QB][QB]|[JB][JB]", NULL, NULL, numberOfTrials, false, expected);
-	// }
+	{
+		// [QB][QB] vs. [JB][JB]: pair of Qs and suited big cards vs pair of Js and suited bi. Monte Carlo
+		double expected[] = { 57.17, 42.83 };
+		performMatchup("[QB][QB]|[JB][JB]", NULL, NULL, numberOfTrials, false, expected);
+	}
 
-	// {
-	// 	// Q+T+XX vs. 6+2+XX: Monte Carlo
-	// 	double expected[] = { 54.05, 45.96 };
-	// 	performMatchup("Q+T+XX|6+2+XX", NULL, NULL, numberOfTrials, false, expected);
-	// }
+	{
+		// Q+T+XX vs. 6+2+XX: Monte Carlo
+		double expected[] = { 54.05, 45.96 };
+		performMatchup("Q+T+XX|6+2+XX", NULL, NULL, numberOfTrials, false, expected);
+	}
 
 	{
 		// Q:0:0:2 vs. Q:2:0:0: Monte Carlo
 		double expected[] = { 59.19, 40.81 };
 		performMatchup("Q:0:0:2|Q:2:0:0", NULL, NULL, numberOfTrials, false, expected);
+	}
+
+	{
+		// BBXX vs. XXXX: Monte Carlo
+		double expected[] = { 55.08, 44.92 };
+		performMatchup("BBXX|XXXX", NULL, NULL, numberOfTrials, false, expected);
 	}
 
 	printf("\n\nAll tests concluded with %d errors.", errorCount);

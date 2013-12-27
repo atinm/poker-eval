@@ -67,7 +67,7 @@ typedef enum { New, Current, Specific, Any } CardSuit;
 ///////////////////////////////////////////////////////////////////////////////
 int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& specificHands)
 {
-	if (strcmp(handText, "XxXxXxXx") == 0)
+	if (strcmp(handText, "XxXxXxXx") == 0 || strcmp(handText, "XXXX") == 0)
 	{
 		return InstantiateRandom(deadCards, specificHands);
 	}
@@ -392,9 +392,9 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
                                     {
                                         // if (!filtered(hand)...
                                         specificHands.push_back(hand);
-                                        printf("HandText: %s ", handText);
-                                        StdDeck_printMask(hand);
-                                        printf("\n");
+                                        // printf("HandText: %s ", handText);
+                                        // StdDeck_printMask(hand);
+                                        // printf("\n");
                                         combos++;
                                         StdDeck_CardMask_RESET(hand);
                                     }
