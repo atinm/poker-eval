@@ -80,7 +80,7 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 			//		a) The calculation wasn't set up properly
 			//		b) The calculation was Monte Carlo'd with a low number of trials
 			//		c) There's a bug in the equity calculation logic.
-			//		d) An obscure bug in PokerStove (probably not)
+			//		d) An obscure bug in Omaha Equilab (probably not)
 			//
 			
 			if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
@@ -110,11 +110,12 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 			//		a) The calculation wasn't set up properly
 			//		b) The calculation was run with a low number of trials
 			//		c) There's a bug in the equity calculation logic.
-			//		d) An obscure bug in PokerStove (probably not)
+			//		d) An obscure bug in Omaha Equilab (probably not)
 			//
 			
 			if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
 			{
+                printf("Expected[%d]: %2.2f, Result[%d]: %2.2f\n", h, expected[h], h, results[h]);
 				errorCount++;
 				ASSERT(0);
 			}
