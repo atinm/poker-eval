@@ -371,7 +371,7 @@ int64_t OmahaCalculator::PostCalculate()
 	{
 		m_pResults[r] = (m_wins[r] / m_actualTrials) * 100.0;
 		
-		TRACE("Player %2d:   %5.2f%%%%   [%s] \n", r+1, m_pResults[r], m_dists[r]->GetText());
+		TRACE("Player %2d:   %5.2f%%%%   \"%s\" \n", r+1, m_pResults[r], m_dists[r]->GetText());
 	}
 
 	TRACE("\nRan %lu trials via %s.\n", m_actualTrials, m_wasMonteCarlo ? "Monte Carlo" : "exhaustive enumeration");

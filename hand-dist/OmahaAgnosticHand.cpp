@@ -80,7 +80,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
     int rankFloor[4], rankCeil[4];
     int suitFloor[4], suitCeil[4];
     CardSuit curSuit[4] = {Any, Any, Any, Any};
-    int gap[4];
+    int gap[4] = {0, 0, 0, 0};
     bool isSuited = false;
     int seenCards = 0;
 
@@ -96,6 +96,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
             curSuit[cur] = New;
             isSuited = true;
             p++; while (*p == ' ') p++;
+            cur--;
         }
         else if (*p == ']')
         {
@@ -107,8 +108,9 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
             else
                 goto error;
             p++; while (*p == ' ') p++;
+            cur--;
         }
-        else if (p[1] == ':' && cur > 0)
+        else if (*p == ':' && cur > 0)
         {
             p++; while (*p == ' ') p++;
             if (isdigit(*p))
@@ -125,7 +127,15 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
                 {
                     p++; p++; while (*p == ' ') p++; // two chars
                 }
+                gap[cur]++; // need to be 1  more than specified as Q-J is 0 gap, but 1 rank difference
                 
+                // can be any rank and suit as long as rank gap is ok
+                rankFloor[cur] = Card::Two;
+                rankCeil[cur] = Card::Ace;
+                suitFloor[cur] = 0;
+                suitCeil[cur] = 3;
+
+                seenCards++;
             }
             else
                 goto error;
@@ -232,15 +242,17 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
                 suitFloor[cur] = 0; // min suit
 
                 if (isSuited)
-                    curSuit[cur] = Current;
+                {
+                    if (curSuit[cur] != New)
+                        curSuit[cur] = Current;
+                }
                 else
                     curSuit[cur] = Any;
             }
+            seenCards++;
         }
         else
             goto error;
-
-        seenCards++;
     }
 
     if (seenCards < 4)
@@ -284,7 +296,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
                 StdDeck_CardMask used2;
                 StdDeck_CardMask_RESET(used2);
 
-                if (gap[1] > 0 && gap[1] < (rank1-rank0)) continue;
+                if (gap[1] > 0 && gap[1] != (rank0-rank1)) continue;
 
                 for(int suit1 = suitFloor[1]; suit1 <= suitCeil[1]; suit1++)
                 {
@@ -318,11 +330,11 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
                         StdDeck_CardMask used3;
                         StdDeck_CardMask_RESET(used3);
 
-                        if (gap[2] > 0 && gap[2] < (rank2-rank1)) continue;
+                        if (gap[2] > 0 && gap[2] != (rank1-rank2)) continue;
 
                         for(int suit2 = suitFloor[2]; suit2 <= suitCeil[2]; suit2++)
                         {
-                            switch (curSuit[1])
+                            switch (curSuit[2])
                             {
                                 case New:
                                     if (suit2 == suit0 || suit2 == suit1)
@@ -349,11 +361,11 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
                             // fourth card
                             for (int rank3 = rankFloor[3]; rank3 <= rankCeil[3]; rank3++)
                             {
-                                if (gap[3] > 0 && gap[3] < (rank3-rank2)) continue;
+                                if (gap[3] > 0 && gap[3] != (rank2-rank3)) continue;
 
                                 for(int suit3 = suitFloor[3]; suit3 <= suitCeil[3]; suit3++)
                                 {
-                                    switch (curSuit[1])
+                                    switch (curSuit[3])
                                     {
                                         case New:
                                             if (suit3 == suit0 || suit3 == suit1 || suit3 == suit2)
@@ -380,9 +392,9 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
                                     {
                                         // if (!filtered(hand)...
                                         specificHands.push_back(hand);
-                                        //printf("HandText: %s ", handText);
-                                        //StdDeck_printMask(hand);
-                                        //printf("\n");
+                                        printf("HandText: %s ", handText);
+                                        StdDeck_printMask(hand);
+                                        printf("\n");
                                         combos++;
                                         StdDeck_CardMask_RESET(hand);
                                     }
