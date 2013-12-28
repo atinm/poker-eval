@@ -236,31 +236,10 @@ int main( int argc, char *argv[] )
                                         }
                                     }
                                     else {
-                                        nPlayerCards = StdDeck.maskToCards(&gPlayerCards[players], playerCards);
-                                        for (i=0;i<nPlayerCards;i++) {
-                                            playerCards[i] = (4 * StdDeck_RANK(playerCards[i])) + StdDeck_SUIT(playerCards[i]) + 1;
-                                        }
-                                        nBoardCards = StdDeck.maskToCards(&board, boardCards);
-                                        for (i=0;i<nBoardCards;i++) {
-                                            boardCards[i] = (4 * StdDeck_RANK(boardCards[i])) + StdDeck_SUIT(boardCards[i]) + 1;
-                                        }
-                                        for (b1=0; b1<nBoardCards; b1++) {
-                                            b11 =  HR[53 + boardCards[b1]];
-                                            for (b2=b1+1; b2<nBoardCards; b2++) {
-                                                b12 = HR[b11 + boardCards[b2]];
-                                                for (b3=b2+1; b3<nBoardCards; b3++) {
-                                                    b13 = HR[b12 + boardCards[b3]];
-                                                    for (h1=0; h1<nPlayerCards; h1++) {
-                                                        h11 = HR[b13 + playerCards[h1]];
-                                                        for (h2=h1+1; h2<nPlayerCards; h2++) {
-                                                            h12 = HR[h11 + playerCards[h2]];
-                                                            h13 = HR[h12 + 0];
-                                                            if (h13 > handval[players])
-                                                                handval[players] = h13;
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                        int ret = StdDeck_OmahaHi_EVAL_LUT(gPlayerCards[players], board, &handval[players]);
+                                        if (ret) {
+                                            printf("Error calculating OmahaHi: %d\n", ret);
+                                            exit(-1);
                                         }
                                     }
 

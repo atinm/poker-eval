@@ -25,6 +25,10 @@
 #include "poker_defs.h"
 #include <assert.h>
 
+// The handranks lookup table- loaded from HANDRANKS.DAT. (2+2 Evaluator)
+int HR[32487834];
+int lut_initialized = 0;
+
 /*
  * When run over seven cards, here are the distribution of hands:
  *        high hand: 23294460
