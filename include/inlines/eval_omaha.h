@@ -29,6 +29,8 @@
 #ifndef __EVAL_OMAHA_H__
 #define __EVAL_OMAHA_H__
 
+#include <errno.h>
+
 #include "inlines/eval.h"
 #include "inlines/eval_low8.h"
 #include "deck_std.h"
