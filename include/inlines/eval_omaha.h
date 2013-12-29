@@ -30,6 +30,7 @@
 #define __EVAL_OMAHA_H__
 
 #include <errno.h>
+#include <string.h>
 
 #include "inlines/eval.h"
 #include "inlines/eval_low8.h"
@@ -108,8 +109,8 @@ StdDeck_OmahaHiLow8_EVAL(StdDeck_CardMask hole, StdDeck_CardMask board,
         for (b2=b1+1; b2<nboard-1; b2++) {
           StdDeck_CardMask_OR(n4, n3, board1[b2]);
           for (b3=b2+1; b3<nboard; b3++) {
-            if (hival != NULL) {
-              StdDeck_CardMask_OR(n5, n4, board1[b3]);
+	    StdDeck_CardMask_OR(n5, n4, board1[b3]);
+	    if (hival != NULL) {
               curhi = StdDeck_StdRules_EVAL_N(n5, 5);
               if (curhi > besthi || besthi == HandVal_NOTHING)
                 besthi = curhi;
@@ -175,12 +176,17 @@ StdDeck_OmahaHi_EVAL(StdDeck_CardMask hole, StdDeck_CardMask board,
 */
 
 static inline int
-StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
-                         HandVal *hival) {
+StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
+                         HandVal *hival, LowHandVal *loval) {
     int playerCards[4], nPlayerCards, boardCards[5], nBoardCards;
     int h1, h2, b1, b2, b3, i;
     int b11, b12, b13, h11, h12, h13;
     HandVal besthi = HandVal_NOTHING;
+
+    /* if calculating low too, can only use pokersource eval */
+    if (loval != NULL) {
+      return StdDeck_OmahaHiLow8_EVAL(hole, board, hival, loval);
+    }
 
     if (!lut_initialized) {
         memset(HR, 0, sizeof(HR));
@@ -235,4 +241,9 @@ StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
     return 0;
 }
 
+static inline int
+StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
+                         HandVal *hival) {
+  return StdDeck_OmahaHiLow8_EVAL_LUT(hole, board, hival, NULL);
+}
 #endif

@@ -32,7 +32,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 HoldemCalculator::HoldemCalculator(void)
 {
-	m_MonteCarloThreshhold = 20000000;
+  m_MonteCarloThreshhold = 20000000;
 }
 
 
@@ -52,14 +52,14 @@ HoldemCalculator::~HoldemCalculator(void)
 ///////////////////////////////////////////////////////////////////////////////
 int HoldemCalculator::Calculate(const char* hands, const char* board, const char* dead, int64_t trialCount, double* outResults)
 {
-	PreCalculate(hands, board, dead, trialCount, outResults);
+  PreCalculate(hands, board, dead, trialCount, outResults);
 
-	if (EstimatePossibleOutcomes() > m_MonteCarloThreshhold)
-		CalculateMonteCarlo();
-	else
-		CalculateExhaustive();
+  if (EstimatePossibleOutcomes() > m_MonteCarloThreshhold)
+    CalculateMonteCarlo();
+  else
+    CalculateExhaustive();
 
-	return PostCalculate();
+  return PostCalculate();
 }
 
 
@@ -70,9 +70,9 @@ int HoldemCalculator::Calculate(const char* hands, const char* board, const char
 ///////////////////////////////////////////////////////////////////////////////
 int HoldemCalculator::CalculateMC(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, double* results)
 {
-	PreCalculate(hands, board, dead, numberOfTrials, results);
-	CalculateMonteCarlo();
-	return PostCalculate();
+  PreCalculate(hands, board, dead, numberOfTrials, results);
+  CalculateMonteCarlo();
+  return PostCalculate();
 }
 
 
@@ -84,9 +84,9 @@ int HoldemCalculator::CalculateMC(const char* hands, const char* board, const ch
 ///////////////////////////////////////////////////////////////////////////////
 int HoldemCalculator::CalculateEE(const char* hands, const char* board, const char* dead, double* results)
 {
-	PreCalculate(hands, board, dead, 0, results);
-	CalculateExhaustive();
-	return PostCalculate();
+  PreCalculate(hands, board, dead, 0, results);
+  CalculateExhaustive();
+  return PostCalculate();
 }
 
 
@@ -96,16 +96,16 @@ int HoldemCalculator::CalculateEE(const char* hands, const char* board, const ch
 ///////////////////////////////////////////////////////////////////////////////
 void HoldemCalculator::PreCalculate(const char* hands, const char* board, const char* dead, int numberOfTrials, double* results)
 {
-	TRACE("\n\n************************************************************\n"
-		  "* CALCULATING MATCHUP: Board = [%s]\n"
-		  "************************************************************\n",
-		 (board && strlen(board) > 0) ? board : "PREFLOP" );
+  TRACE("\n\n************************************************************\n"
+	"* CALCULATING MATCHUP: Board = [%s]\n"
+	"************************************************************\n",
+	(board && strlen(board) > 0) ? board : "PREFLOP" );
 
-	Reset();
-	Store(hands, board, dead, numberOfTrials, results);
-	CreateHandDistributions(hands);
-	if (numberOfTrials == 0)
-		EstimatePossibleOutcomes();
+  Reset();
+  Store(hands, board, dead, numberOfTrials, results);
+  CreateHandDistributions(hands);
+  if (numberOfTrials == 0)
+    EstimatePossibleOutcomes();
 }
 
 
@@ -115,20 +115,20 @@ void HoldemCalculator::PreCalculate(const char* hands, const char* board, const 
 ///////////////////////////////////////////////////////////////////////////////
 void HoldemCalculator::Reset()
 {
-	StdDeck_CardMask_RESET(m_boardMask);
-	StdDeck_CardMask_RESET(m_deadMask);
-	StdDeck_CardMask_RESET(m_deadMaskDyn);
-	m_numberOfBoardCards = 0;
-	m_numberOfRangedHands = 0;
-	m_numberOfSpecificHands = 0;
-	m_collisions = 0;
-	m_totalHands = 0;
-	m_possibleOutcomes = 1L;
-	m_pResults = NULL;
-	m_indicatedTrials = 0L;
-	m_actualTrials = 0L;
-	memset(m_tiedPlayerIndexes, 0, sizeof(m_tiedPlayerIndexes));
-	memset(m_wins, 0, sizeof(m_wins));
+  StdDeck_CardMask_RESET(m_boardMask);
+  StdDeck_CardMask_RESET(m_deadMask);
+  StdDeck_CardMask_RESET(m_deadMaskDyn);
+  m_numberOfBoardCards = 0;
+  m_numberOfRangedHands = 0;
+  m_numberOfSpecificHands = 0;
+  m_collisions = 0;
+  m_totalHands = 0;
+  m_possibleOutcomes = 1L;
+  m_pResults = NULL;
+  m_indicatedTrials = 0L;
+  m_actualTrials = 0L;
+  memset(m_tiedPlayerIndexes, 0, sizeof(m_tiedPlayerIndexes));
+  memset(m_wins, 0, sizeof(m_wins));
 }
 
 
@@ -140,17 +140,17 @@ void HoldemCalculator::Reset()
 ///////////////////////////////////////////////////////////////////////////////
 void HoldemCalculator::Store(const char* hands, const char* board, const char* dead, int trialCount, double* outResults)
 {
-	// Convert board cards and dead cards to Pokersource mask format
-	m_boardMask = CardConverter::TextToPokerEval(board);
-	m_deadMask = CardConverter::TextToPokerEval(dead);
-	StdDeck_CardMask_OR(m_deadMask, m_deadMask, m_boardMask);
+  // Convert board cards and dead cards to Pokersource mask format
+  m_boardMask = CardConverter::TextToPokerEval(board);
+  m_deadMask = CardConverter::TextToPokerEval(dead);
+  StdDeck_CardMask_OR(m_deadMask, m_deadMask, m_boardMask);
 
-	// Tuck this away for later
-	m_pResults = outResults;
-	m_indicatedTrials = trialCount;
+  // Tuck this away for later
+  m_pResults = outResults;
+  m_indicatedTrials = trialCount;
 
-	// Get the number of board cards that were supplied. For Hold'em, should be 0, 3, 4 or 5.
-	m_numberOfBoardCards = StdDeck_numCards(m_boardMask);
+  // Get the number of board cards that were supplied. For Hold'em, should be 0, 3, 4 or 5.
+  m_numberOfBoardCards = StdDeck_numCards(m_boardMask);
 }
 
 
@@ -163,75 +163,75 @@ void HoldemCalculator::Store(const char* hands, const char* board, const char* d
 ///////////////////////////////////////////////////////////////////////////////
 int HoldemCalculator::CreateHandDistributions(const char* hands)
 {
-	// Make a copy of the input string of hands. We need to do this in order to tokenize.
-	char* handsCopy = strdup(hands);
+  // Make a copy of the input string of hands. We need to do this in order to tokenize.
+  char* handsCopy = strdup(hands);
 
-	// Split the input string containing player hands into individual strings
-	// and store them temporarily in a list, prior to creating HoldemHandDistribution
-	// objects below. We have to do it this way because HoldemHandDistribution
-	// calls strtok internally, and nested strtok calls are problematic.
-	list<char*> playerHandsColl;
-	char* pElem = strtok(handsCopy, "|");
-	while (pElem)
+  // Split the input string containing player hands into individual strings
+  // and store them temporarily in a list, prior to creating HoldemHandDistribution
+  // objects below. We have to do it this way because HoldemHandDistribution
+  // calls strtok internally, and nested strtok calls are problematic.
+  list<char*> playerHandsColl;
+  char* pElem = strtok(handsCopy, "|");
+  while (pElem)
+    {
+      playerHandsColl.push_back( strdup(pElem) );
+      pElem = strtok(NULL, "|");
+      m_totalHands++;
+    }
+
+  // Now we can free the copied string...
+  free(handsCopy);
+
+  // Create a mask which we'll use to store all KNOWN/SPECIFIC player hands.
+  StdDeck_CardMask staticPlayerCards;
+  StdDeck_CardMask_RESET(staticPlayerCards);
+
+
+  // Iterate over the supplied player hands, ignoring any ranged/random hands
+  // for now, focusing only on the SPECIFIC/KNOWN hands that were specified.
+  m_dists.resize(m_totalHands);
+  list<char*>::const_iterator end = playerHandsColl.end();
+  list<char*>::const_iterator iter = playerHandsColl.begin();
+  for (int index = 0; iter != end; iter++, index++)
+    {
+      if (HoldemHandDistribution::IsSpecificHand(*iter))
 	{
-		playerHandsColl.push_back( strdup(pElem) );
-		pElem = strtok(NULL, "|");
-		m_totalHands++;
+	  HoldemHandDistribution* pCur = new HoldemHandDistribution(*iter, m_deadMask);
+	  m_dists[index] = pCur;
+	  bool bUnused;
+	  StdDeck_CardMask theHand = pCur->Choose(m_deadMask, bUnused);
+	  StdDeck_CardMask_OR(staticPlayerCards, staticPlayerCards, theHand);
+	  //m_hands[index] = theHand;
+	  m_numberOfSpecificHands++;
 	}
+    }
 
-	// Now we can free the copied string...
-	free(handsCopy);
+  // Add the static/known player cards to the dead mask
+  StdDeck_CardMask_OR(m_deadMask, m_deadMask, staticPlayerCards);
 
-	// Create a mask which we'll use to store all KNOWN/SPECIFIC player hands.
-	StdDeck_CardMask staticPlayerCards;
-	StdDeck_CardMask_RESET(staticPlayerCards);
-
-
-	// Iterate over the supplied player hands, ignoring any ranged/random hands
-	// for now, focusing only on the SPECIFIC/KNOWN hands that were specified.
-	m_dists.resize(m_totalHands);
-	list<char*>::const_iterator end = playerHandsColl.end();
-	list<char*>::const_iterator iter = playerHandsColl.begin();
-	for (int index = 0; iter != end; iter++, index++)
+  // Iterate over the supplied player hands, focusing on ranged/random hands.
+  // We already handled specific/known hands above.
+  iter = playerHandsColl.begin();
+  for (int index = 0; iter != end; iter++, index++)
+    {
+      if (!HoldemHandDistribution::IsSpecificHand(*iter))
 	{
-		if (HoldemHandDistribution::IsSpecificHand(*iter))
-		{
-			HoldemHandDistribution* pCur = new HoldemHandDistribution(*iter, m_deadMask);
-			m_dists[index] = pCur;
-			bool bUnused;
-			StdDeck_CardMask theHand = pCur->Choose(m_deadMask, bUnused);
-			StdDeck_CardMask_OR(staticPlayerCards, staticPlayerCards, theHand);
-			//m_hands[index] = theHand;
-			m_numberOfSpecificHands++;
-		}
+	  HoldemHandDistribution* pCur = new HoldemHandDistribution(*iter, m_deadMask);
+	  m_dists[index] = pCur;
+	  m_numberOfRangedHands++;
 	}
+    }
 
-	// Add the static/known player cards to the dead mask
-	StdDeck_CardMask_OR(m_deadMask, m_deadMask, staticPlayerCards);
-
-	// Iterate over the supplied player hands, focusing on ranged/random hands.
-	// We already handled specific/known hands above.
-	iter = playerHandsColl.begin();
-	for (int index = 0; iter != end; iter++, index++)
-	{
-		if (!HoldemHandDistribution::IsSpecificHand(*iter))
-		{
-			HoldemHandDistribution* pCur = new HoldemHandDistribution(*iter, m_deadMask);
-			m_dists[index] = pCur;
-			m_numberOfRangedHands++;
-		}
-	}
-
-	// Lastly, we strdup'd a bunch of string above. Free them.
+  // Lastly, we strdup'd a bunch of string above. Free them.
 	
-	for (iter = playerHandsColl.begin(); iter != end; iter++)
-		free(*iter);
+  for (iter = playerHandsColl.begin(); iter != end; iter++)
+    free(*iter);
 
-	m_deadMaskDyn = m_deadMask;
+  m_deadMaskDyn = m_deadMask;
 
-	ASSERT(m_numberOfRangedHands + m_numberOfSpecificHands == m_totalHands);
+  ASSERT(m_numberOfRangedHands + m_numberOfSpecificHands == m_totalHands);
 
-    return m_totalHands;
+  return m_totalHands;
 }
 
 
@@ -249,17 +249,18 @@ int HoldemCalculator::CreateHandDistributions(const char* hands)
 ///////////////////////////////////////////////////////////////////////////////
 int HoldemCalculator::CalculateExhaustiveBoards()
 {
-	StdDeck_CardMask missingBoardCards;
-	StdDeck_CardMask_RESET(missingBoardCards);
+  StdDeck_CardMask missingBoardCards;
+  StdDeck_CardMask_RESET(missingBoardCards);
 
-	if (m_numberOfBoardCards == 0)
-		ENUMERATE_5_CARDS_D(missingBoardCards, m_deadMaskDyn, EvalOneTrial(missingBoardCards, m_totalHands); );
-	if (m_numberOfBoardCards == 3)
-		ENUMERATE_2_CARDS_D(missingBoardCards, m_deadMaskDyn, EvalOneTrial(missingBoardCards, m_totalHands); );
-	else if (m_numberOfBoardCards == 4)
-		ENUMERATE_1_CARDS_D(missingBoardCards, m_deadMaskDyn, EvalOneTrial(missingBoardCards, m_totalHands); );
-
-	return m_totalHands;
+  if (m_numberOfBoardCards == 0)
+    ENUMERATE_5_CARDS_D(missingBoardCards, m_deadMaskDyn, EvalOneTrial(missingBoardCards, m_totalHands); );
+  else if (m_numberOfBoardCards == 3)
+    ENUMERATE_2_CARDS_D(missingBoardCards, m_deadMaskDyn, EvalOneTrial(missingBoardCards, m_totalHands); );
+  else if (m_numberOfBoardCards == 4)
+    ENUMERATE_1_CARDS_D(missingBoardCards, m_deadMaskDyn, EvalOneTrial(missingBoardCards, m_totalHands); );
+  else if (m_numberOfBoardCards == 5)
+    EvalOneTrial(missingBoardCards, m_totalHands);
+  return m_totalHands;
 }
 
 
@@ -270,89 +271,89 @@ int HoldemCalculator::CalculateExhaustiveBoards()
 ///////////////////////////////////////////////////////////////////////////////
 void HoldemCalculator::EvalOneTrial
 (
-	// This parameter contains the randomly-sampled or -enumerated remainder of the
-	// board. For example, if the flop is AsKsQs as above, this parameter will contain
-	// the current randomly-sampled-or-enumerated turn and river cards.
-	StdDeck_CardMask boardFragment,
+ // This parameter contains the randomly-sampled or -enumerated remainder of the
+ // board. For example, if the flop is AsKsQs as above, this parameter will contain
+ // the current randomly-sampled-or-enumerated turn and river cards.
+ StdDeck_CardMask boardFragment,
 
-	// Number of players (total)
-	int playerCount
-)
+ // Number of players (total)
+ int playerCount
+ )
 {
-	m_actualTrials++;
+  m_actualTrials++;
 
-	StdDeck_CardMask temp;
+  StdDeck_CardMask temp;
 
-	HandVal best = 0;
-	int bestIndex = -1;
-	HandVal cur = 0;
-	bool isTie = false;
-	int numTies = 0;
+  HandVal best = 0;
+  int bestIndex = -1;
+  HandVal cur = 0;
+  bool isTie = false;
+  int numTies = 0;
 
-	// Combine the base board (eg, flop of "AsKsQs") with the sampled fragment
-	// (eg, turn and river of "2s5d"). After this call, 'boardFragment' will
-	// contain the entire board (all 5 cards).
+  // Combine the base board (eg, flop of "AsKsQs") with the sampled fragment
+  // (eg, turn and river of "2s5d"). After this call, 'boardFragment' will
+  // contain the entire board (all 5 cards).
 	
-	StdDeck_CardMask_OR(boardFragment, boardFragment, m_boardMask);
+  StdDeck_CardMask_OR(boardFragment, boardFragment, m_boardMask);
 
-	// Evaluate each players full 7-card hand in turn...
+  // Evaluate each players full 7-card hand in turn...
 
-	for (int i = 0; i < playerCount; i++)
+  for (int i = 0; i < playerCount; i++)
+    {
+      // Combine the 5-card board fragment with the player's 2 hole cards...
+      StdDeck_CardMask_OR(temp, boardFragment, m_dists[i]->Current());
+
+      // Evaluate the resulting hand...cur is a HandVal we can compare to
+      // the value of other hands in order to determine a winner.
+      cur = StdDeck_StdRules_EVAL_N(temp, 7);
+
+      // If this hand is the best we've seen so far, adjust state...
+      if (cur > best)
 	{
-		// Combine the 5-card board fragment with the player's 2 hole cards...
-		StdDeck_CardMask_OR(temp, boardFragment, m_dists[i]->Current());
-
-		// Evaluate the resulting hand...cur is a HandVal we can compare to
-		// the value of other hands in order to determine a winner.
-		cur = StdDeck_StdRules_EVAL_N(temp, 7);
-
-		// If this hand is the best we've seen so far, adjust state...
-		if (cur > best)
-		{
-			best = cur;
-			isTie = false;
-			bestIndex = i;
-			numTies = 0;
-		}
-
-		// Otherwise, if this hand ties another, adjust some state...
-		else if (cur == best)
-		{
-			if (numTies == 0)
-			{
-				m_tiedPlayerIndexes[0] = bestIndex;
-				m_tiedPlayerIndexes[1] = i;
-			}
-			else
-			{
-				m_tiedPlayerIndexes[numTies + 1] = i;
-			}
-
-			isTie = true;
-			numTies++;
-		}
-
-		// Store the player's hand value...
-		m_handVals[i] = cur;
-
-		// Reset our temp var
-		StdDeck_CardMask_RESET(temp);
+	  best = cur;
+	  isTie = false;
+	  bestIndex = i;
+	  numTies = 0;
 	}
 
-	// If there's no tie, then the player with the best hand gets a +1 for the win.
-	if (!isTie)
+      // Otherwise, if this hand ties another, adjust some state...
+      else if (cur == best)
 	{
-		m_wins[bestIndex]++;
+	  if (numTies == 0)
+	    {
+	      m_tiedPlayerIndexes[0] = bestIndex;
+	      m_tiedPlayerIndexes[1] = i;
+	    }
+	  else
+	    {
+	      m_tiedPlayerIndexes[numTies + 1] = i;
+	    }
+
+	  isTie = true;
+	  numTies++;
 	}
 
-	// If there IS a tie, then the players with the tied winning hand get a +X for
-	// the win, based on by how many players it was split.
-	else
-	{
-		double partialWin = 1.0 / ((double)numTies + 1.0f);
-		for (int i = 0; i <= numTies; i++)
-			m_wins[ m_tiedPlayerIndexes[i] ] += partialWin;
-	}
+      // Store the player's hand value...
+      m_handVals[i] = cur;
+
+      // Reset our temp var
+      StdDeck_CardMask_RESET(temp);
+    }
+
+  // If there's no tie, then the player with the best hand gets a +1 for the win.
+  if (!isTie)
+    {
+      m_wins[bestIndex]++;
+    }
+
+  // If there IS a tie, then the players with the tied winning hand get a +X for
+  // the win, based on by how many players it was split.
+  else
+    {
+      double partialWin = 1.0 / ((double)numTies + 1.0f);
+      for (int i = 0; i <= numTies; i++)
+	m_wins[ m_tiedPlayerIndexes[i] ] += partialWin;
+    }
 }
 
 
@@ -363,18 +364,18 @@ void HoldemCalculator::EvalOneTrial
 ///////////////////////////////////////////////////////////////////////////////
 int64_t HoldemCalculator::PostCalculate()
 {
-	int totalPlayers = m_dists.size();
-	memset(m_pResults, 0, sizeof(double) * totalPlayers);
-	for (int r = 0; r < totalPlayers; r++)
-	{
-		m_pResults[r] = (m_wins[r] / m_actualTrials) * 100.0;
+  int totalPlayers = m_dists.size();
+  memset(m_pResults, 0, sizeof(double) * totalPlayers);
+  for (int r = 0; r < totalPlayers; r++)
+    {
+      m_pResults[r] = (m_wins[r] / m_actualTrials) * 100.0;
 		
-		TRACE("Player %2d:   %5.2f%%%%   [%s] \n", r+1, m_pResults[r], m_dists[r]->GetText());
-	}
+      TRACE("Player %2d:   %5.2f%%%%   [%s] \n", r+1, m_pResults[r], m_dists[r]->GetText());
+    }
 
-	TRACE("\nRan %lu trials via %s.\n", m_actualTrials, m_wasMonteCarlo ? "Monte Carlo" : "exhaustive enumeration");
+  TRACE("\nRan %lu trials via %s.\n", m_actualTrials, m_wasMonteCarlo ? "Monte Carlo" : "exhaustive enumeration");
 
-	return m_actualTrials;
+  return m_actualTrials;
 }
 
 
@@ -385,7 +386,7 @@ int64_t HoldemCalculator::PostCalculate()
 ///////////////////////////////////////////////////////////////////////////////
 bool HoldemCalculator::IsDeterministic(void)
 {
-	return (m_numberOfRangedHands == 0);
+  return (m_numberOfRangedHands == 0);
 }
 
 
@@ -397,14 +398,14 @@ bool HoldemCalculator::IsDeterministic(void)
 ///////////////////////////////////////////////////////////////////////////////
 void HoldemCalculator::LinkHandDistributions(void)
 {
-	// Set up the circular linked list
-	int handCount = m_dists.size();
-	for (int i = 0; i < handCount; i++)
-	{
-		if (i > 0)
-			m_dists[i-1]->m_pNext = m_dists[i];
-	}
-	m_dists[handCount-1]->m_pNext = m_dists[0];
+  // Set up the circular linked list
+  int handCount = m_dists.size();
+  for (int i = 0; i < handCount; i++)
+    {
+      if (i > 0)
+	m_dists[i-1]->m_pNext = m_dists[i];
+    }
+  m_dists[handCount-1]->m_pNext = m_dists[0];
 }
 
 
@@ -414,36 +415,36 @@ void HoldemCalculator::LinkHandDistributions(void)
 ///////////////////////////////////////////////////////////////////////////////
 int HoldemCalculator::CalculateExhaustiveRecurse(int playerIndex, StdDeck_CardMask deadCur)
 {
-	StdDeck_CardMask curHand;
-	StdDeck_CardMask deadCurThisLevel;
+  StdDeck_CardMask curHand;
+  StdDeck_CardMask deadCurThisLevel;
 
-	HoldemHandDistribution* pDist = m_dists[playerIndex];
-	int handCount = pDist->GetCount();
-	for (int h = 0; h < handCount; h++)
+  HoldemHandDistribution* pDist = m_dists[playerIndex];
+  int handCount = pDist->GetCount();
+  for (int h = 0; h < handCount; h++)
+    {
+      deadCurThisLevel = deadCur;
+
+      curHand = pDist->Get(h);
+      if (!StdDeck_CardMask_ANY_SET(deadCurThisLevel, curHand) || pDist->IsUnary())
 	{
-		deadCurThisLevel = deadCur;
-
-		curHand = pDist->Get(h);
-		if (!StdDeck_CardMask_ANY_SET(deadCurThisLevel, curHand) || pDist->IsUnary())
-		{
-			pDist->SetCurrent(curHand);
-			StdDeck_CardMask_OR(deadCurThisLevel, deadCurThisLevel, curHand);
-		}
-		else
-			continue;
-
-		if (playerIndex < (m_totalHands - 1))
-		{
-			CalculateExhaustiveRecurse(playerIndex + 1, deadCurThisLevel);
-		}
-		else
-		{
-			m_deadMaskDyn = deadCurThisLevel;
-			CalculateExhaustiveBoards();
-		}
+	  pDist->SetCurrent(curHand);
+	  StdDeck_CardMask_OR(deadCurThisLevel, deadCurThisLevel, curHand);
 	}
+      else
+	continue;
 
-	return m_actualTrials;
+      if (playerIndex < (m_totalHands - 1))
+	{
+	  CalculateExhaustiveRecurse(playerIndex + 1, deadCurThisLevel);
+	}
+      else
+	{
+	  m_deadMaskDyn = deadCurThisLevel;
+	  CalculateExhaustiveBoards();
+	}
+    }
+
+  return m_actualTrials;
 }
 
 
@@ -453,8 +454,8 @@ int HoldemCalculator::CalculateExhaustiveRecurse(int playerIndex, StdDeck_CardMa
 ///////////////////////////////////////////////////////////////////////////////
 int HoldemCalculator::CalculateExhaustive(void)
 {
-	m_wasMonteCarlo = false;
-	return CalculateExhaustiveRecurse(0, m_deadMask);
+  m_wasMonteCarlo = false;
+  return CalculateExhaustiveRecurse(0, m_deadMask);
 }
 
 
@@ -465,58 +466,58 @@ int HoldemCalculator::CalculateExhaustive(void)
 ///////////////////////////////////////////////////////////////////////////////
 int HoldemCalculator::CalculateMonteCarlo(void)
 {
-	m_wasMonteCarlo = true;
+  m_wasMonteCarlo = true;
 
-	LinkHandDistributions();
+  LinkHandDistributions();
 
-	StdDeck_CardMask cardCombo;
-	StdDeck_CardMask usedCardsThisTrial;
-	HoldemHandDistribution* pFirstToDraw = m_dists[0];
-	HoldemHandDistribution* pDist;
+  StdDeck_CardMask cardCombo;
+  StdDeck_CardMask usedCardsThisTrial;
+  HoldemHandDistribution* pFirstToDraw = m_dists[0];
+  HoldemHandDistribution* pDist;
 
-	// Now run however many trials
-	while ( m_actualTrials < m_indicatedTrials )
+  // Now run however many trials
+  while ( m_actualTrials < m_indicatedTrials )
+    {
+      // Reset "used cards"
+      usedCardsThisTrial = m_deadMask;
+
+      bool bCollisionError = false;
+
+      // Figure out which player we'll deal to first
+      pDist = pFirstToDraw;
+
+      // For each player in the hand, choose his hand. If the player has a specific hand,
+      // great, use that one. Otherwise pick one hand from his distribution randomly.
+      do
 	{
-		// Reset "used cards"
-		usedCardsThisTrial = m_deadMask;
+	  pDist->Choose(usedCardsThisTrial, bCollisionError);
+	  if (bCollisionError)
+	    {
+	      m_collisions++;
+	      break;
+	    }
 
-		bool bCollisionError = false;
+	  if (!pDist->IsUnary())
+	    {
+	      // Add the chosen player hand to the dead/used cards...
+	      StdDeck_CardMask_OR(usedCardsThisTrial, usedCardsThisTrial, pDist->Current());
+	    }
 
-		// Figure out which player we'll deal to first
-		pDist = pFirstToDraw;
+	  pDist = pDist->Next();
 
-		// For each player in the hand, choose his hand. If the player has a specific hand,
-		// great, use that one. Otherwise pick one hand from his distribution randomly.
-		do
-		{
-			pDist->Choose(usedCardsThisTrial, bCollisionError);
-			if (bCollisionError)
-			{
-				m_collisions++;
-				break;
-			}
+	} while (pDist != pFirstToDraw);
 
-			if (!pDist->IsUnary())
-			{
-				// Add the chosen player hand to the dead/used cards...
-				StdDeck_CardMask_OR(usedCardsThisTrial, usedCardsThisTrial, pDist->Current());
-			}
+      if (bCollisionError)
+	continue;
 
-			pDist = pDist->Next();
+      // Now generate a single random board
+      DECK_MONTECARLO_N_CARDS_D(StdDeck, cardCombo, usedCardsThisTrial, 
+				5 - m_numberOfBoardCards, 1, this->EvalOneTrial(cardCombo, m_totalHands); );
 
-		} while (pDist != pFirstToDraw);
+      pFirstToDraw = pDist->Next();
+    }
 
-		if (bCollisionError)
-			continue;
-
-		// Now generate a single random board
-		DECK_MONTECARLO_N_CARDS_D(StdDeck, cardCombo, usedCardsThisTrial, 
-			5 - m_numberOfBoardCards, 1, this->EvalOneTrial(cardCombo, m_totalHands); );
-
-		pFirstToDraw = pDist->Next();
-	}
-
-	return m_actualTrials;
+  return m_actualTrials;
 }
 
 
@@ -533,22 +534,22 @@ int HoldemCalculator::CalculateMonteCarlo(void)
 ///////////////////////////////////////////////////////////////////////////////
 uint64_t HoldemCalculator::EstimatePossibleOutcomes()
 {
-	uint64_t last = 1;
-	uint64_t total = 1;
+  uint64_t last = 1;
+  uint64_t total = 1;
 
-	for (size_t hand = 0; hand < m_dists.size(); hand++)
-	{
-		total *= m_dists[hand]->GetCount();
-		if (last > total) // overflow
-			return UINT64_MAX;
-		last = total;
-	}
+  for (size_t hand = 0; hand < m_dists.size(); hand++)
+    {
+      total *= m_dists[hand]->GetCount();
+      if (last > total) // overflow
+	return UINT64_MAX;
+      last = total;
+    }
 
-	total *= CalculateCombinations( (52 - (m_totalHands * 2)) - m_numberOfBoardCards, 5 - m_numberOfBoardCards);
+  total *= CalculateCombinations( (52 - (m_totalHands * 2)) - m_numberOfBoardCards, 5 - m_numberOfBoardCards);
 
-	//TRACE("Estimated combinations: %I64d\n", total);
+  //TRACE("Estimated combinations: %I64d\n", total);
 
-	return (total < last) ? UINT64_MAX :	total;
+  return (total < last) ? UINT64_MAX :	total;
 }
 
 
@@ -560,19 +561,22 @@ uint64_t HoldemCalculator::EstimatePossibleOutcomes()
 ///////////////////////////////////////////////////////////////////////////////
 uint64_t HoldemCalculator::CalculateCombinations(int N, int R)
 {
-    uint64_t answer = 1;
-	int multiplier = N;
-	int divisor = 1;
-	int k = min(N, N - R);
+  uint64_t answer = 1;
+  int multiplier = N;
+  int divisor = 1;
+  int k = min(N, N - R);
 
-	while (divisor <= k)
-	{
-		answer = (answer * multiplier) / divisor;
-	    multiplier--;
-	    divisor++;
-	}
+  if (R == 0)
+    return answer; // only one combination
 
-	return answer;
+  while (divisor <= k)
+    {
+      answer = (answer * multiplier) / divisor;
+      multiplier--;
+      divisor++;
+    }
+
+  return answer;
 }
 
 
@@ -586,7 +590,7 @@ uint64_t HoldemCalculator::CalculateCombinations(int N, int R)
 ///////////////////////////////////////////////////////////////////////////////
 void HoldemCalculator::SetMCThreshhold(uint64_t t)
 {
-	m_MonteCarloThreshhold = t;
+  m_MonteCarloThreshhold = t;
 }
 
 
@@ -599,5 +603,5 @@ void HoldemCalculator::SetMCThreshhold(uint64_t t)
 ///////////////////////////////////////////////////////////////////////////////
 uint64_t HoldemCalculator::GetMCThreshhold() const
 { 
-	return m_MonteCarloThreshhold;
+  return m_MonteCarloThreshhold;
 }

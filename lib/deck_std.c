@@ -30,6 +30,9 @@ char StdDeck_suitChars[] = "hdcs";
 
 int tototo[8];
 
+// The handranks lookup table- loaded from HANDRANKS.DAT. (2+2 Evaluator)
+int HR[32487834];
+int lut_initialized = 0;
 
 int 
 StdDeck_cardToString(int cardIndex, char *outString) {

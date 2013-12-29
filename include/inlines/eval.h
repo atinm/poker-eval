@@ -26,8 +26,8 @@
 #include <assert.h>
 
 // The handranks lookup table- loaded from HANDRANKS.DAT. (2+2 Evaluator)
-int HR[32487834];
-int lut_initialized = 0;
+extern int HR[32487834];
+extern int lut_initialized;
 
 /*
  * When run over seven cards, here are the distribution of hands:

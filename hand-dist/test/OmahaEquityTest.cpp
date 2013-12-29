@@ -24,132 +24,139 @@
 
 int errorCount = 0;
 
-void performMatchup(const char* hands, const char* board, const char* dead, int numberOfTrials, bool withExhaustive, double *expected);
+void performMatchup(const char* hands, const char* board, const char* dead, bool hilo, int numberOfTrials, bool withExhaustive, double *expected);
 
 int main(int argc, char* argv[])
 {
-	// First, let's demonstrate how you'd perform a simple calculation
+  // First, let's demonstrate how you'd perform a simple calculation
 
-	//double results[7];
-	//OmahaCalculator calc;
-	//calc.Calculate("AhKhQhJh|XxXxXxXx|XxXxXxXx|XxXxXxXx", "Ks7d4d", "", 100000, results);
+  //double results[7];
+  //OmahaCalculator calc;
+  //calc.Calculate("AhKhQhJh|XxXxXxXx|XxXxXxXx|XxXxXxXx", "Ks7d4d", "", 100000, results);
 
-	// Now let's run some sample matchups. The 'expected' array contains the correct equities
-	// for this matchup as returned by PokerStove/PokerCalculator. The performMatchup() function
-	// (see below) will run the matchup and check the equities returned against the expected values,
-	// throwing an assertion and incrementing the global 'errorCount' variable if the results
-	// deviate by more than 1%.
+  // Now let's run some sample matchups. The 'expected' array contains the correct equities
+  // for this matchup as returned by PokerStove/PokerCalculator. The performMatchup() function
+  // (see below) will run the matchup and check the equities returned against the expected values,
+  // throwing an assertion and incrementing the global 'errorCount' variable if the results
+  // deviate by more than 1%.
 
-	int numberOfTrials = 1000000;
+  int numberOfTrials = 1000000;
 
-	{
-		// AAxx vs. KKxx of any suits: Monte Carlo
-		double expected[] = { 69.87, 30.13 };
-		performMatchup("AAXX|KKXX", NULL, NULL, numberOfTrials, false, expected);
-	}
+  {
+    // 9dTsJsQs vs 4dAh2s3c on 8d7h6s9h6c board, Omaha Hi/Lo split: Monte-Carlo, Enumerated should be split 50%
+    double expected[] = { 50.0, 50.0 };
+    performMatchup("9dTsJsQs|4dAh2s3c", "8d7h6s9h6c", NULL, true, numberOfTrials, true, expected);
+  }
 
-	{
-		// [AX]xx vs. [KX]xx top suited, any others: Monte Carlo
-		double expected[] = { 52.92, 47.08 };
-		performMatchup("[AX]XX|[KX]XX", NULL, NULL, numberOfTrials, false, expected);
-	}
+  {
+    // AAxx vs. KKxx of any suits: Monte Carlo
+    double expected[] = { 69.87, 30.13 };
+    performMatchup("AAXX|KKXX", NULL, NULL, false, numberOfTrials, false, expected);
+  }
 
-	{
-		// [QB][QB] vs. [JB][JB]: pair of Qs and suited big cards vs pair of Js and suited bi. Monte Carlo
-		double expected[] = { 57.17, 42.83 };
-		performMatchup("[QB][QB]|[JB][JB]", NULL, NULL, numberOfTrials, false, expected);
-	}
+  {
+    // [AX]xx vs. [KX]xx top suited, any others: Monte Carlo
+    double expected[] = { 52.92, 47.08 };
+    performMatchup("[AX]XX|[KX]XX", NULL, NULL, false, numberOfTrials, false, expected);
+  }
 
-	{
-		// Q+T+XX vs. 6+2+XX: Monte Carlo
-		double expected[] = { 54.05, 45.96 };
-		performMatchup("Q+T+XX|6+2+XX", NULL, NULL, numberOfTrials, false, expected);
-	}
+  {
+    // [QB][QB] vs. [JB][JB]: pair of Qs and suited big cards vs pair of Js and suited bi. Monte Carlo
+    double expected[] = { 57.17, 42.83 };
+    performMatchup("[QB][QB]|[JB][JB]", NULL, NULL, false, numberOfTrials, false, expected);
+  }
 
-	{
-		// Q:0:0:2 vs. Q:2:0:0: Monte Carlo
-		double expected[] = { 59.19, 40.81 };
-		performMatchup("Q:0:0:2|Q:2:0:0", NULL, NULL, numberOfTrials, false, expected);
-	}
+  {
+    // Q+T+XX vs. 6+2+XX: Monte Carlo
+    double expected[] = { 54.05, 45.96 };
+    performMatchup("Q+T+XX|6+2+XX", NULL, NULL, false, numberOfTrials, false, expected);
+  }
 
-	{
-		// BBXX vs. XXXX: Monte Carlo
-		double expected[] = { 55.08, 44.92 };
-		performMatchup("BBXX|XXXX", NULL, NULL, numberOfTrials, false, expected);
-	}
+  {
+    // Q:0:0:2 vs. Q:2:0:0: Monte Carlo
+    double expected[] = { 59.19, 40.81 };
+    performMatchup("Q:0:0:2|Q:2:0:0", NULL, NULL, false, numberOfTrials, false, expected);
+  }
 
-	printf("\n\nAll tests concluded with %d errors.", errorCount);
-    printf("\nPress any character to exit.\n");
-	getchar();
+  {
+    // BBXX vs. XXXX: Monte Carlo
+    double expected[] = { 55.08, 44.92 };
+    performMatchup("BBXX|XXXX", NULL, NULL, false, numberOfTrials, false, expected);
+  }
 
-	return 0;
+  printf("\n\nAll tests concluded with %d errors.", errorCount);
+  printf("\nPress any character to exit.\n");
+  getchar();
+
+  return 0;
 }
 
 
 
-void performMatchup(const char* hands, const char* board, const char* dead, int numberOfTrials, bool withExhaustive, double *expected)
+void performMatchup(const char* hands, const char* board, const char* dead, bool hilo, int numberOfTrials, bool withExhaustive, double *expected)
 {
-	double results[23];
-	memset(results, 0, sizeof(results));
+  double results[23];
+  memset(results, 0, sizeof(results));
 
-	int numberOfHands = std::count(hands, hands + strlen(hands), '|') + 1;
+  int numberOfHands = std::count(hands, hands + strlen(hands), '|') + 1;
 
-	// First, let's run the matchup using Monte Carlo...
+  // First, let's run the matchup using Monte Carlo...
 
-	OmahaCalculator calc;
-	calc.CalculateMC(hands, board, dead, numberOfTrials, results);
+  OmahaCalculator calc(hilo);
 
-	if (expected)
+  calc.CalculateMC(hands, board, dead, numberOfTrials, results);
+  
+  if (expected)
+    {
+      for (int h = 0; h < numberOfHands; h++)
 	{
-		for (int h = 0; h < numberOfHands; h++)
-		{
-			// If this assert is triggered, then the results returned by the above
-			// equity calculation didn't match the results returned by PokerStove.
-			// This might happen for four reasons:
-			//
-			//		a) The calculation wasn't set up properly
-			//		b) The calculation was Monte Carlo'd with a low number of trials
-			//		c) There's a bug in the equity calculation logic.
-			//		d) An obscure bug in Omaha Equilab (probably not)
-			//
-			
-			if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
-			{
-                printf("Expected[%d]: %2.2f, Result[%d]: %2.2f\n", h, expected[h], h, results[h]);
-				errorCount++;
-				ASSERT(0);
-			}
-		}
+	  // If this assert is triggered, then the results returned by the above
+	  // equity calculation didn't match the results returned by PokerStove.
+	  // This might happen for four reasons:
+	  //
+	  //		a) The calculation wasn't set up properly
+	  //		b) The calculation was Monte Carlo'd with a low number of trials
+	  //		c) There's a bug in the equity calculation logic.
+	  //		d) An obscure bug in Omaha Equilab (probably not)
+	  //
+	  
+	  if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
+	    {
+	      printf("Expected[%d]: %2.2f, Result[%d]: %2.2f\n", h, expected[h], h, results[h]);
+	      errorCount++;
+	      ASSERT(0);
+	    }
 	}
+      }
 
-	if (!withExhaustive)
-		return;
+  if (!withExhaustive)
+    return;
 
-	// Then let's run it with Exhaustive Enumeration...
+  // Then let's run it with Exhaustive Enumeration...
 
-	calc.CalculateEE(hands, board, dead, results);
+  calc.CalculateEE(hands, board, dead, results);
 
-	if (expected)
+  if (expected)
+    {
+      for (int h = 0; h < numberOfHands; h++)
 	{
-		for (int h = 0; h < numberOfHands; h++)
-		{
-			// If this assert is triggered, then the results returned by the above
-			// equity calculation didn't match the results returned by PokerStove.
-			// This might happen for four reasons:
-			//
-			//		a) The calculation wasn't set up properly
-			//		b) The calculation was run with a low number of trials
-			//		c) There's a bug in the equity calculation logic.
-			//		d) An obscure bug in Omaha Equilab (probably not)
-			//
+	  // If this assert is triggered, then the results returned by the above
+	  // equity calculation didn't match the results returned by PokerStove.
+	  // This might happen for four reasons:
+	  //
+	  //		a) The calculation wasn't set up properly
+	  //		b) The calculation was run with a low number of trials
+	  //		c) There's a bug in the equity calculation logic.
+	  //		d) An obscure bug in Omaha Equilab (probably not)
+	  //
 			
-			if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
-			{
-                printf("Expected[%d]: %2.2f, Result[%d]: %2.2f\n", h, expected[h], h, results[h]);
-				errorCount++;
-				ASSERT(0);
-			}
-		}
+	  if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
+	    {
+	      printf("Expected[%d]: %2.2f, Result[%d]: %2.2f\n", h, expected[h], h, results[h]);
+	      errorCount++;
+	      ASSERT(0);
+	    }
 	}
+    }
 }
 

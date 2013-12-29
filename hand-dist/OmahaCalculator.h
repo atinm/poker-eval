@@ -126,7 +126,7 @@ class OmahaHandDistribution;
 class OmahaCalculator
 {
 public:
-	OmahaCalculator();
+	OmahaCalculator(bool omahaHilo = false);
 	virtual ~OmahaCalculator();
 
 	// Calculate using either Monte Carlo or exhaustive enumeration.
@@ -177,6 +177,9 @@ private:
 	vector<OmahaHandDistribution*> m_dists;
 	double m_wins[23];
 	int m_handVals[23];
+	int m_lowHandVals[23];
 	int m_tiedPlayerIndexes[23];
+	int m_tiedLowPlayerIndexes[23];
 	bool m_wasMonteCarlo;
+	bool m_omahaHiLo;
 };
