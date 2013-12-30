@@ -311,7 +311,8 @@ void OmahaCalculator::EvalOneTrial
       if (StdDeck_OmahaHiLow8_EVAL_LUT(m_dists[i]->Current(), boardFragment, &curhi, m_omahaHiLo ? &curlo : NULL)) {
 	printf("Error evaluating OmahaHi\n");
 	printf("Hand: ");
-	StdDeck_printMask(m_dists[i]->Current());
+	CardMask c = m_dists[i]->Current();
+	StdDeck_printMask(c);
 	printf(", Board: ");
 	StdDeck_printMask(boardFragment);
 	printf("\n");

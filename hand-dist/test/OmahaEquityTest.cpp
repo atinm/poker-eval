@@ -49,6 +49,12 @@ int main(int argc, char* argv[])
   }
 
   {
+    // 4s5d2h3c vs 4dAh2c3s on 3d2dh6s5h6c board, Omaha Hi/Lo split: Monte-Carlo, Enumerated should be split 50%
+    double expected[] = { 50.0, 50.0 };
+    performMatchup("4s5d2h3c|4dAh2c3s", "3d2d5h6h5c", NULL, true, numberOfTrials, true, expected);
+  }
+
+  {
     // AAxx vs. KKxx of any suits: Monte Carlo
     double expected[] = { 69.87, 30.13 };
     performMatchup("AAXX|KKXX", NULL, NULL, false, numberOfTrials, false, expected);

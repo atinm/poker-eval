@@ -180,7 +180,7 @@ StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
                          HandVal *hival, LowHandVal *loval) {
     int playerCards[4], nPlayerCards, boardCards[5], nBoardCards;
     int h1, h2, b1, b2, b3, i;
-    int b11, b12, b13, h11, h12, h13;
+    HandVal b11, b12, b13, h11, h12, h13;
     HandVal besthi = HandVal_NOTHING;
 
     /* if calculating low too, can only use pokersource eval */
