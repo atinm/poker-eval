@@ -117,7 +117,9 @@ int main(int argc, char* argv[])
 
 void performMatchup(const char* hands, const char* board, const char* dead, int numberOfTrials, bool withExhaustive, double *expected)
 {
+  int combos[23];
 	double results[23];
+  memset(combos, 0, sizeof(combos));
 	memset(results, 0, sizeof(results));
 
 	int numberOfHands = std::count(hands, hands + strlen(hands), '|') + 1;
@@ -125,7 +127,7 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 	// First, let's run the matchup using Monte Carlo...
 
 	HoldemCalculator calc;
-	calc.CalculateMC(hands, board, dead, numberOfTrials, results);
+	calc.CalculateMC(hands, board, dead, numberOfTrials, combos, results);
 
 	if (expected)
 	{
@@ -154,7 +156,7 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 
 	// Then let's run it with Exhaustive Enumeration...
 
-	calc.CalculateEE(hands, board, dead, results);
+	calc.CalculateEE(hands, board, dead, combos, results);
 
 	if (expected)
 	{

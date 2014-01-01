@@ -50,9 +50,9 @@ HoldemCalculator::~HoldemCalculator(void)
 // Calculate equities for the specified matchup using either Monte Carlo
 // or Exhaustive Enumeration.
 ///////////////////////////////////////////////////////////////////////////////
-int HoldemCalculator::Calculate(const char* hands, const char* board, const char* dead, int64_t trialCount, double* outResults)
+int HoldemCalculator::Calculate(const char* hands, const char* board, const char* dead, int64_t trialCount, int* outCombos, double* outResults)
 {
-  PreCalculate(hands, board, dead, trialCount, outResults);
+  PreCalculate(hands, board, dead, trialCount, outCombos, outResults);
 
   if (EstimatePossibleOutcomes() > m_MonteCarloThreshhold)
     CalculateMonteCarlo();
@@ -68,9 +68,9 @@ int HoldemCalculator::Calculate(const char* hands, const char* board, const char
 // Calculate equities for the specified matchup using Monte Carlo. ALWAYS
 // uses Monte Carlo, even if the number of possible combinations is low.
 ///////////////////////////////////////////////////////////////////////////////
-int HoldemCalculator::CalculateMC(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, double* results)
+int HoldemCalculator::CalculateMC(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, int* combos, double* results)
 {
-  PreCalculate(hands, board, dead, numberOfTrials, results);
+  PreCalculate(hands, board, dead, numberOfTrials, combos, results);
   CalculateMonteCarlo();
   return PostCalculate();
 }
@@ -82,9 +82,9 @@ int HoldemCalculator::CalculateMC(const char* hands, const char* board, const ch
 // ALWAYS uses exhaustive enumeration, even if the number of possible combos
 // is very large.
 ///////////////////////////////////////////////////////////////////////////////
-int HoldemCalculator::CalculateEE(const char* hands, const char* board, const char* dead, double* results)
+int HoldemCalculator::CalculateEE(const char* hands, const char* board, const char* dead, int* combos, double* results)
 {
-  PreCalculate(hands, board, dead, 0, results);
+  PreCalculate(hands, board, dead, 0, combos, results);
   CalculateExhaustive();
   return PostCalculate();
 }
@@ -94,7 +94,7 @@ int HoldemCalculator::CalculateEE(const char* hands, const char* board, const ch
 ///////////////////////////////////////////////////////////////////////////////
 // Internal helper method. Perform setup prior to running the calculation.
 ///////////////////////////////////////////////////////////////////////////////
-void HoldemCalculator::PreCalculate(const char* hands, const char* board, const char* dead, int numberOfTrials, double* results)
+void HoldemCalculator::PreCalculate(const char* hands, const char* board, const char* dead, int numberOfTrials, int* combos, double* results)
 {
   TRACE("\n\n************************************************************\n"
 	"* CALCULATING MATCHUP: Board = [%s]\n"
@@ -102,7 +102,7 @@ void HoldemCalculator::PreCalculate(const char* hands, const char* board, const 
 	(board && strlen(board) > 0) ? board : "PREFLOP" );
 
   Reset();
-  Store(hands, board, dead, numberOfTrials, results);
+  Store(hands, board, dead, numberOfTrials, combos, results);
   CreateHandDistributions(hands);
   if (numberOfTrials == 0)
     EstimatePossibleOutcomes();
@@ -138,7 +138,7 @@ void HoldemCalculator::Reset()
 // as member variables so we don't have to pass a lot of junk between internal
 // functions.
 ///////////////////////////////////////////////////////////////////////////////
-void HoldemCalculator::Store(const char* hands, const char* board, const char* dead, int trialCount, double* outResults)
+void HoldemCalculator::Store(const char* hands, const char* board, const char* dead, int trialCount, int* outCombos, double* outResults)
 {
   // Convert board cards and dead cards to Pokersource mask format
   m_boardMask = CardConverter::TextToPokerEval(board);
@@ -147,6 +147,7 @@ void HoldemCalculator::Store(const char* hands, const char* board, const char* d
 
   // Tuck this away for later
   m_pResults = outResults;
+  m_pCombos = outCombos;
   m_indicatedTrials = trialCount;
 
   // Get the number of board cards that were supplied. For Hold'em, should be 0, 3, 4 or 5.
@@ -366,11 +367,13 @@ int64_t HoldemCalculator::PostCalculate()
 {
   int totalPlayers = m_dists.size();
   memset(m_pResults, 0, sizeof(double) * totalPlayers);
+  memset(m_pCombos, 0, sizeof(int) * totalPlayers);
   for (int r = 0; r < totalPlayers; r++)
     {
       m_pResults[r] = (m_wins[r] / m_actualTrials) * 100.0;
+      m_pCombos[r] = m_dists[r]->GetCount();
 		
-      TRACE("Player %2d:   %5.2f%%%%   [%s] \n", r+1, m_pResults[r], m_dists[r]->GetText());
+      TRACE("Player %2d:   %7d   %5.2f%%    \"%s\"\n", r+1, m_pCombos[r], m_pResults[r], m_dists[r]->GetText());
     }
 
   TRACE("\nRan %llu trials via %s.\n", m_actualTrials, m_wasMonteCarlo ? "Monte Carlo" : "exhaustive enumeration");

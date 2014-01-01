@@ -189,21 +189,7 @@ StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
     }
 
     if (!lut_initialized) {
-        memset(HR, 0, sizeof(HR));
-        FILE * fin = fopen("./HandRanks.dat", "rb");
-        if (!fin) {
-            printf("Failed to read HandRanks.dat\n");
-            fclose(fin);
-            return 1;
-        }
-        size_t bytesread = fread(HR, sizeof(HR), 1, fin);	// get the HandRank Array
-        if (bytesread <= 0) {
-            printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
-            fclose(fin);
-            return 2;
-        }
-        fclose(fin);
-        lut_initialized = 1;
+      return StdDeck_OmahaHiLow8_EVAL(hole, board, hival, loval);
     }
 
     nPlayerCards = StdDeck.maskToCards(&hole, playerCards);

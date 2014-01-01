@@ -24,10 +24,34 @@
 
 #include "poker_defs.h"
 #include <assert.h>
+#include <strings.h>
 
 // The handranks lookup table- loaded from HANDRANKS.DAT. (2+2 Evaluator)
 extern int HR[32487834];
 extern int lut_initialized;
+
+static inline int
+StdDeck_Initialize_LUT(int fd, long offset)
+{
+ if (!lut_initialized) {
+   memset(HR, 0, sizeof(HR));
+   FILE * fin = fdopen(fd, "rb");
+   if (!fin) {
+     //printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
+   }
+   fseek(fin, offset, SEEK_SET);
+
+   size_t bytesread = fread(HR, sizeof(HR), 1, fin);	// get the HandRank Array
+   if (bytesread <= 0) {
+     //printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
+     fclose(fin);
+   }
+   fclose(fin);
+   printf("Successfully initialized LUT\n");
+   lut_initialized = 1;
+ }
+ return lut_initialized;
+}
 
 /*
  * When run over seven cards, here are the distribution of hands:
@@ -72,7 +96,6 @@ extern int lut_initialized;
         retval.eval_t.top_card = StdDeck_Ranks_5;
     }
 #endif
-
 
 static inline HandVal 
 StdDeck_StdRules_EVAL_N( StdDeck_CardMask cards, int n_cards )

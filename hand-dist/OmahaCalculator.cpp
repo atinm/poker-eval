@@ -52,9 +52,9 @@ OmahaCalculator::~OmahaCalculator(void)
 // Calculate equities for the specified matchup using either Monte Carlo
 // or Exhaustive Enumeration.
 ///////////////////////////////////////////////////////////////////////////////
-int OmahaCalculator::Calculate(const char* hands, const char* board, const char* dead, int64_t trialCount, double* outResults)
+int OmahaCalculator::Calculate(const char* hands, const char* board, const char* dead, int64_t trialCount, int *outCombos, double* outResults)
 {
-  PreCalculate(hands, board, dead, trialCount, outResults);
+  PreCalculate(hands, board, dead, trialCount, outCombos, outResults);
 
   if (EstimatePossibleOutcomes() > m_MonteCarloThreshhold)
     CalculateMonteCarlo();
@@ -70,9 +70,9 @@ int OmahaCalculator::Calculate(const char* hands, const char* board, const char*
 // Calculate equities for the specified matchup using Monte Carlo. ALWAYS
 // uses Monte Carlo, even if the number of possible combinations is low.
 ///////////////////////////////////////////////////////////////////////////////
-int OmahaCalculator::CalculateMC(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, double* results)
+int OmahaCalculator::CalculateMC(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, int* combos, double* results)
 {
-  PreCalculate(hands, board, dead, numberOfTrials, results);
+  PreCalculate(hands, board, dead, numberOfTrials, combos, results);
   CalculateMonteCarlo();
   return PostCalculate();
 }
@@ -84,9 +84,9 @@ int OmahaCalculator::CalculateMC(const char* hands, const char* board, const cha
 // ALWAYS uses exhaustive enumeration, even if the number of possible combos
 // is very large.
 ///////////////////////////////////////////////////////////////////////////////
-int OmahaCalculator::CalculateEE(const char* hands, const char* board, const char* dead, double* results)
+int OmahaCalculator::CalculateEE(const char* hands, const char* board, const char* dead, int* combos, double* results)
 {
-  PreCalculate(hands, board, dead, 0, results);
+  PreCalculate(hands, board, dead, 0, combos, results);
   CalculateExhaustive();
   return PostCalculate();
 }
@@ -96,7 +96,7 @@ int OmahaCalculator::CalculateEE(const char* hands, const char* board, const cha
 ///////////////////////////////////////////////////////////////////////////////
 // Internal helper method. Perform setup prior to running the calculation.
 ///////////////////////////////////////////////////////////////////////////////
-void OmahaCalculator::PreCalculate(const char* hands, const char* board, const char* dead, int numberOfTrials, double* results)
+void OmahaCalculator::PreCalculate(const char* hands, const char* board, const char* dead, int numberOfTrials, int* combos, double* results)
 {
   TRACE("\n\n************************************************************\n"
 	"* CALCULATING MATCHUP: Board = [%s]\n"
@@ -104,7 +104,7 @@ void OmahaCalculator::PreCalculate(const char* hands, const char* board, const c
 	(board && strlen(board) > 0) ? board : "PREFLOP" );
 
   Reset();
-  Store(hands, board, dead, numberOfTrials, results);
+  Store(hands, board, dead, numberOfTrials, combos, results);
   CreateHandDistributions(hands);
   if (numberOfTrials == 0)
     EstimatePossibleOutcomes();
@@ -127,6 +127,7 @@ void OmahaCalculator::Reset()
   m_totalHands = 0;
   m_possibleOutcomes = 1L;
   m_pResults = NULL;
+  m_pCombos = NULL;
   m_indicatedTrials = 0L;
   m_actualTrials = 0L;
   memset(m_tiedPlayerIndexes, 0, sizeof(m_tiedPlayerIndexes));
@@ -141,7 +142,7 @@ void OmahaCalculator::Reset()
 // as member variables so we don't have to pass a lot of junk between internal
 // functions.
 ///////////////////////////////////////////////////////////////////////////////
-void OmahaCalculator::Store(const char* hands, const char* board, const char* dead, int trialCount, double* outResults)
+void OmahaCalculator::Store(const char* hands, const char* board, const char* dead, int trialCount, int* outCombos, double* outResults)
 {
   // Convert board cards and dead cards to Pokersource mask format
   m_boardMask = CardConverter::TextToPokerEval(board);
@@ -150,6 +151,7 @@ void OmahaCalculator::Store(const char* hands, const char* board, const char* de
 
   // Tuck this away for later
   m_pResults = outResults;
+  m_pCombos = outCombos;
   m_indicatedTrials = trialCount;
 
   // Get the number of board cards that were supplied. For Hold'em, should be 0, 3, 4 or 5.
@@ -412,11 +414,13 @@ int64_t OmahaCalculator::PostCalculate()
 {
   int totalPlayers = m_dists.size();
   memset(m_pResults, 0, sizeof(double) * totalPlayers);
+  memset(m_pCombos, 0, sizeof(int) * totalPlayers);
   for (int r = 0; r < totalPlayers; r++)
     {
       m_pResults[r] = (m_wins[r] / m_actualTrials) * 100.0;
-		
-      TRACE("Player %2d:   %5.2f%%   \"%s\" \n", r+1, m_pResults[r], m_dists[r]->GetText());
+      m_pCombos[r] = m_dists[r]->GetCount();
+
+      TRACE("Player %2d:   %7d   %5.2f%%    \"%s\"\n", r+1, m_pCombos[r], m_pResults[r], m_dists[r]->GetText());
     }
 
   TRACE("\nRan %llu trials via %s.\n", m_actualTrials, m_wasMonteCarlo ? "Monte Carlo" : "exhaustive enumeration");

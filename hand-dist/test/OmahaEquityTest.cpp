@@ -19,6 +19,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <unistd.h>
+#include <inlines/eval.h>
 #include "HandDistributions.h"
 #include "OmahaCalculator.h"
 
@@ -41,6 +43,14 @@ int main(int argc, char* argv[])
   // deviate by more than 1%.
 
   int numberOfTrials = 1000000;
+
+  FILE* f = fopen("HandRanks.dat", "rb");
+  if (f) {
+    int fd = fileno(f);
+    int myfd = dup(fd);
+    StdDeck_Initialize_LUT(myfd, 0);
+    fclose(f);
+  }
 
   {
     // 9dTsJsQs vs 4dAh2s3c on 8d7h6s9h6c board, Omaha Hi/Lo split: Monte-Carlo, Enumerated should be split 50%
@@ -101,7 +111,9 @@ int main(int argc, char* argv[])
 
 void performMatchup(const char* hands, const char* board, const char* dead, bool hilo, int numberOfTrials, bool withExhaustive, double *expected)
 {
+  int combos[23];
   double results[23];
+  memset(combos, 0, sizeof(combos));
   memset(results, 0, sizeof(results));
 
   int numberOfHands = std::count(hands, hands + strlen(hands), '|') + 1;
@@ -110,7 +122,7 @@ void performMatchup(const char* hands, const char* board, const char* dead, bool
 
   OmahaCalculator calc(hilo);
 
-  calc.CalculateMC(hands, board, dead, numberOfTrials, results);
+  calc.CalculateMC(hands, board, dead, numberOfTrials, combos, results);
   
   if (expected)
     {
@@ -140,7 +152,7 @@ void performMatchup(const char* hands, const char* board, const char* dead, bool
 
   // Then let's run it with Exhaustive Enumeration...
 
-  calc.CalculateEE(hands, board, dead, results);
+  calc.CalculateEE(hands, board, dead, combos, results);
 
   if (expected)
     {
