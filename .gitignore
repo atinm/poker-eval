@@ -1,0 +1,9 @@
+*.a
+*.so
+*~
+*.jar
+*.o
+*.o.d
+./obj
+./bin
+./libs
