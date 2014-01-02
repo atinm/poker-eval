@@ -296,5 +296,36 @@ StdDeck_StdRules_EVAL_N( StdDeck_CardMask cards, int n_cards )
 #undef SD
 #undef SS
 
+static inline int
+StdDeck_StdRules_EVAL_LUT_N( StdDeck_CardMask cards, int n_cards )
+{
+    if (!lut_initialized) {
+      return StdDeck_StdRules_EVAL_N(cards, n_cards);
+    }
+    int i;
+    int playerCards[n_cards];
+    int nPlayerCards = StdDeck.maskToCards(&cards, playerCards);
+    for (i=0;i<nPlayerCards;i++) {
+        playerCards[i] = (4 * StdDeck_RANK(playerCards[i])) + StdDeck_SUIT(playerCards[i]) + 1;
+    }
+    int h = HR[
+	       HR[
+		  HR[
+		     HR[
+			HR[53 + playerCards[0]] + 
+			playerCards[1]] + 
+		     playerCards[2]] + 
+		  playerCards[3]] + 
+	       playerCards[4]];
+    if (n_cards == 5)
+      return HR[h + 0];
+    else if (n_cards == 6)
+      return HR[HR[h + playerCards[5]] + 0];
+    else if (n_cards == 7)
+      return HR[HR[HR[h + playerCards[5]] + playerCards[6]] + 0];
+    else
+      return HandVal_NOTHING;
+}
+
 #endif
 
