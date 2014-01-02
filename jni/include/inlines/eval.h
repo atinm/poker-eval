@@ -25,13 +25,12 @@
 #include "poker_defs.h"
 #include <assert.h>
 #include <strings.h>
+#include <errno.h>
 
 // The handranks lookup table- loaded from HANDRANKS.DAT. (2+2 Evaluator)
 extern int HR[32487834];
 extern int lut_initialized;
 
-#ifndef def_StdDeck_Initialize_LUT
-#define def_StdDeck_Initialize_LUT
 static inline int
 StdDeck_Initialize_LUT(int fd, long offset)
 {
@@ -40,7 +39,6 @@ StdDeck_Initialize_LUT(int fd, long offset)
    FILE * fin = fdopen(fd, "rb");
    if (!fin) {
      //printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
-	 return 0;
    }
    fseek(fin, offset, SEEK_SET);
 
@@ -48,15 +46,13 @@ StdDeck_Initialize_LUT(int fd, long offset)
    if (bytesread <= 0) {
      //printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
      fclose(fin);
-     return 0;
    }
    fclose(fin);
-   printf("Successfully initialized LUT\n");
+   //printf("Successfully initialized LUT\n");
    lut_initialized = 1;
  }
  return lut_initialized;
 }
-#endif
 
 /*
  * When run over seven cards, here are the distribution of hands:
@@ -294,13 +290,44 @@ StdDeck_StdRules_EVAL_N( StdDeck_CardMask cards, int n_cards )
 
   /* Should never happen */
   assert(!"Logic error in StdDeck_StdRules_EVAL_N");
-  return 0;
+  return HandVal_NOTHING;
 }
 
 #undef SC
 #undef SH
 #undef SD
 #undef SS
+
+static inline int
+StdDeck_StdRules_EVAL_LUT_N( StdDeck_CardMask cards, int n_cards )
+{
+    if (!lut_initialized) {
+      return StdDeck_StdRules_EVAL_N(cards, n_cards);
+    }
+    int i;
+    int playerCards[n_cards];
+    int nPlayerCards = StdDeck.maskToCards(&cards, playerCards);
+    for (i=0;i<nPlayerCards;i++) {
+        playerCards[i] = (4 * StdDeck_RANK(playerCards[i])) + StdDeck_SUIT(playerCards[i]) + 1;
+    }
+    int h = HR[
+	       HR[
+		  HR[
+		     HR[
+			HR[53 + playerCards[0]] + 
+			playerCards[1]] + 
+		     playerCards[2]] + 
+		  playerCards[3]] + 
+	       playerCards[4]];
+    if (n_cards == 5)
+      return HR[h + 0];
+    else if (n_cards == 6)
+      return HR[HR[h + playerCards[5]] + 0];
+    else if (n_cards == 7)
+      return HR[HR[h + playerCards[5]] + playerCards[6]];
+    else
+      return HandVal_NOTHING;
+}
 
 #endif
 
