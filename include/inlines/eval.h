@@ -25,6 +25,7 @@
 #include "poker_defs.h"
 #include <assert.h>
 #include <strings.h>
+#include <errno.h>
 
 // The handranks lookup table- loaded from HANDRANKS.DAT. (2+2 Evaluator)
 extern int HR[32487834];
@@ -47,7 +48,7 @@ StdDeck_Initialize_LUT(int fd, long offset)
      fclose(fin);
    }
    fclose(fin);
-   printf("Successfully initialized LUT\n");
+   //printf("Successfully initialized LUT\n");
    lut_initialized = 1;
  }
  return lut_initialized;
@@ -322,7 +323,7 @@ StdDeck_StdRules_EVAL_LUT_N( StdDeck_CardMask cards, int n_cards )
     else if (n_cards == 6)
       return HR[HR[h + playerCards[5]] + 0];
     else if (n_cards == 7)
-      return HR[HR[HR[h + playerCards[5]] + playerCards[6]] + 0];
+      return HR[HR[h + playerCards[5]] + playerCards[6]];
     else
       return HandVal_NOTHING;
 }

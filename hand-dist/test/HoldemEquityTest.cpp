@@ -17,7 +17,7 @@
 // relying on it. The user must assume the entire risk of using the source code.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+#include <unistd.h>
 #include "HandDistributions.h"
 #include "HoldemCalculator.h"
 
@@ -40,6 +40,14 @@ int main(int argc, char* argv[])
 	// deviate by more than 1%.
 
 	int numberOfTrials = 1000000;
+
+	FILE* f = fopen("HandRanks.dat", "rb");
+	if (f) {
+	  int fd = fileno(f);
+	  int myfd = dup(fd);
+	  StdDeck_Initialize_LUT(myfd, 0);
+	  fclose(f);
+	}
 
 	{
 		// 7-way matchup involving 2 specific hands, 2 ranged hands, and 3 random hands, on the flop
@@ -145,8 +153,9 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 			
 			if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
 			{
+			  printf("Expected[%d]: %2.2f, Result[%d]: %2.2f\n", h, expected[h], h, results[h]);
 				errorCount++;
-				ASSERT(0);
+				//ASSERT(0);
 			}
 		}
 	}
@@ -174,8 +183,9 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 			
 			if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
 			{
+			  printf("Expected[%d]: %2.2f, Result[%d]: %2.2f\n", h, expected[h], h, results[h]);
 				errorCount++;
-				ASSERT(0);
+				//ASSERT(0);
 			}
 		}
 	}

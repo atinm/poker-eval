@@ -17,7 +17,6 @@
 // relying on it. The user must assume the entire risk of using the source code.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #include "HandDistributions.h"
 #include <inlines/eval.h>
 
@@ -306,7 +305,8 @@ void HoldemCalculator::EvalOneTrial
 
       // Evaluate the resulting hand...cur is a HandVal we can compare to
       // the value of other hands in order to determine a winner.
-      cur = StdDeck_StdRules_EVAL_N(temp, 7);
+      cur = StdDeck_StdRules_EVAL_LUT_N(temp, 7);
+      //cur = StdDeck_StdRules_EVAL_N(temp, 7);
 
       // If this hand is the best we've seen so far, adjust state...
       if (cur > best)
