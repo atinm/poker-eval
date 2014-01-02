@@ -100,6 +100,18 @@ int main(int argc, char* argv[])
     performMatchup("BBXX|XXXX", NULL, NULL, false, numberOfTrials, false, expected);
   }
 
+  {
+    // XXXX/sna vs. [K-2K-2]XX: Monte Carlo
+    double expected[] = { 50.0, 50.0 };
+    performMatchup("XXXX/sna|[K-2K-2]XX", NULL, NULL, false, numberOfTrials, false, expected);
+  }
+
+  {
+    // XXXX/sna vs. [K-2K-2]XX: Monte Carlo
+    double expected[] = { 50.0, 50.0 };
+    performMatchup("XXXX/sna|AX[XX", NULL, NULL, false, numberOfTrials, false, expected);
+  }
+
   printf("\n\nAll tests concluded with %d errors.", errorCount);
   printf("\nPress any character to exit.\n");
   getchar();

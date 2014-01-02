@@ -307,11 +307,12 @@ void OmahaCalculator::EvalOneTrial
   // Evaluate each players full 7-card hand in turn...
 
   for (int i = 0; i < playerCount; i++) {
-      // Evaluate the resulting hand...curhi and curlo are HandVals we can compare to
-      // the value of other hands in order to determine a winner. Use HiLow8_EVAL
-      // as it can do both depending on whether the loval parameter is passed.
-      if (StdDeck_OmahaHiLow8_EVAL_LUT(m_dists[i]->Current(), boardFragment, &curhi, m_omahaHiLo ? &curlo : NULL)) {
-	printf("Error evaluating OmahaHi\n");
+    // Evaluate the resulting hand...curhi and curlo are HandVals we can compare to
+    // the value of other hands in order to determine a winner. Use HiLow8_EVAL
+    // as it can do both depending on whether the loval parameter is passed.
+    int ret = StdDeck_OmahaHiLow8_EVAL_LUT(m_dists[i]->Current(), boardFragment, &curhi, m_omahaHiLo ? &curlo : NULL);
+    if (ret) {
+        printf("Error evaluating OmahaHi, %d\n", ret);
 	printf("Hand: ");
 	CardMask c = m_dists[i]->Current();
 	StdDeck_printMask(c);
