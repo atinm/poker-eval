@@ -103,13 +103,7 @@ int main(int argc, char* argv[])
   {
     // XXXX/sna vs. [K-2K-2]XX: Monte Carlo
     double expected[] = { 50.0, 50.0 };
-    performMatchup("XXXX/sna|[K-2K-2]XX", NULL, NULL, false, numberOfTrials, false, expected);
-  }
-
-  {
-    // XXXX/sna vs. [K-2K-2]XX: Monte Carlo
-    double expected[] = { 50.0, 50.0 };
-    performMatchup("XXXX/sna|AX[XX", NULL, NULL, false, numberOfTrials, false, expected);
+    performMatchup("[K-2k-2]XX|XXXX/sna", NULL, NULL, false, numberOfTrials, false, expected);
   }
 
   printf("\n\nAll tests concluded with %d errors.", errorCount);

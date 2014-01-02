@@ -23,6 +23,13 @@
 #include "OmahaAgnosticHand.h"
 #include "Card.h"
 
+#ifdef MY_DEBUG
+#define dbg_printf(...) printf(__VA_ARGS__);
+#define dbg_printMask(...) StdDeck_printMask(__VA_ARGS__)
+#else
+#define dbg_printf(...)
+#define dbg_printMask(...)
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 // Take a given agnostic hand, such as "AKQJ" or "T+T+T+T+" or "A-TA-TTT-77", along with
 // an optional collection of "dead" cards, and boil it down into its constituent
@@ -138,21 +145,17 @@ static bool funcIsSuitedAce(int rank0, int rank1, int rank2, int rank3,
 static bool funcIsSuitedNonAce(int rank0, int rank1, int rank2, int rank3,
 			    int suit0, int suit1, int suit2, int suit3)
 {
-  if (funcIsOnePair(suit0, suit1, suit2, suit3)) {
-    if (rank0 != Card::Ace && rank1 != Card::Ace && rank2 != Card::Ace && rank3 != Card::Ace)
+  if (funcIsAtLeastOnePair(suit0, suit1, suit2, suit3)) {
+    if ((suit0 == suit1 && rank0 != Card::Ace && rank1 != Card::Ace) ||
+	(suit0 == suit2 && rank0 != Card::Ace && rank2 != Card::Ace) ||
+	(suit0 == suit3 && rank0 != Card::Ace && rank3 != Card::Ace) ||
+	(suit1 == suit2 && rank1 != Card::Ace && rank2 != Card::Ace) ||
+	(suit1 == suit3 && rank1 != Card::Ace && rank3 != Card::Ace) ||
+	(suit2 == suit3 && rank2 != Card::Ace && rank3 != Card::Ace))
       return true;
-    if (rank0 == Card::Ace && rank1 != Card::Ace && rank2 != Card::Ace && rank3 != Card::Ace)
-      return (suit0 != suit1 && suit0 != suit2 && suit0 != suit3);
-    if (rank1 == Card::Ace && rank2 != Card::Ace && rank3 != Card::Ace && rank0 != Card::Ace)
-      return (suit1 != suit2 && suit1 != suit3 && suit1 != suit0);
-    if (rank2 == Card::Ace && rank3 != Card::Ace && rank0 != Card::Ace && rank1 != Card::Ace)
-      return (suit2 != suit3 && suit2 != suit0 && suit2 != suit1);
-    if (rank3 == Card::Ace && rank0 != Card::Ace && rank1 != Card::Ace && rank2 != Card::Ace)
-      return (suit3 != suit0 && suit3 != suit1 && suit3 != suit2);
-    return false;
   }
-  else
-    return false;
+
+  return false;
 }
 
 int OmahaAgnosticHand::Instantiate(const char* handText, const char* deadText, vector<StdDeck_CardMask>& specificHands)
@@ -198,6 +201,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
   // Each card is handled separately
   int rankFloor[4], rankCeil[4];
   int suitFloor[4], suitCeil[4];
+  bool firstSuit = true;
   CardSuit curSuit[4] = {Any, Any, Any, Any};
   int gap[4] = {0, 0, 0, 0};
   bool isSuited = false;
@@ -242,7 +246,14 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
     }
 
     if (*p == '[') {
-      curSuit[cur] = New;
+      if (firstSuit) {
+	curSuit[cur] = Any;
+	dbg_printf("curSuit[%d]=Any, %s\n", cur, p);
+      }
+      else {
+	curSuit[cur] = New;
+	dbg_printf("curSuit[%d]=New, %s\n", cur, p);
+      }
       isSuited = true;
       p++; while (*p == ' ') p++;
     }
@@ -250,6 +261,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       if (isSuited) {
 	isSuited = false;
 	curSuit[cur] = Any;
+	dbg_printf("curSuit[%d]=Any, %s\n", cur, p);
       }
       else {
 	printf("Closing ']' in non-bracketed section\n");
@@ -291,6 +303,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       if (NULL != strchr("AaKkQqJjTt98765432", *p)) {
 	if (p[1] == '-') {
 	  rankFloor[cur] = Card::CharToRank(*p);
+	  dbg_printf("%d: rankFloor[%d]: %d, %s\n", __LINE__, cur, rankFloor[cur], p);
 	  p++; while (*p == ' ') p++;
 	  p++; while (*p == ' ') p++;
 	  if (NULL != strchr("AaKkQqJjTt98765432", *p)) {
@@ -305,16 +318,19 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 	    int tmp = rankCeil[cur];
 	    rankCeil[cur] = rankFloor[cur];
 	    rankFloor[cur] = tmp;
+	    dbg_printf("%d: rankFloor[%d]: %d\n", __LINE__, cur, rankFloor[cur]);
 	  }
 	}
 	else if (p[1] == '+') {
 	  rankFloor[cur] = Card::CharToRank(*p);
+	  dbg_printf("%d: rankFloor[%d]: %d\n", __LINE__, cur, rankFloor[cur]);
 	  p++; while (*p == ' ') p++;
 	  p++; while (*p == ' ') p++;
 	  rankCeil[cur] = Card::Ace;
 	}
 	else {
 	  rankFloor[cur] = Card::CharToRank(*p);
+	  dbg_printf("%d: rankFloor[%d]: %d\n", __LINE__, cur, rankFloor[cur]);
 	  rankCeil[cur] = rankFloor[cur];
 	  gap[cur] = -1; // any
 	  p++; while (*p == ' ') p++;
@@ -382,6 +398,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 	}
 	
 	curSuit[cur] = Specific;
+	dbg_printf("curSuit[%d] = Specific, %s\n", cur, p);
 	suitCeil[cur] = Card::CharToSuit(*p);
 	suitFloor[cur] = Card::CharToSuit(*p);
 	
@@ -392,12 +409,19 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 	suitFloor[cur] = 0; // min suit
 	
 	if (isSuited) {
-	  if (curSuit[cur] != New)
+	  if (!firstSuit && curSuit[cur] != New) {
 	    curSuit[cur] = Current;
+	    dbg_printf("curSuit[%d] = Current, %s\n", cur, p);
+	  }
+	  firstSuit = false;
 	}
-	else
+	else {
 	  curSuit[cur] = Any;
+	  dbg_printf("curSuit[%d] = Any, %s\n", cur, p);
+	}
       }
+      dbg_printf("rankFloor[%d]: %d, rankCeil[%d]: %d, suitFloor[%d]: %d, suitCeil[%d]: %d\n",
+	     cur, rankFloor[cur], cur, rankCeil[cur], cur, suitFloor[cur], cur, suitCeil[cur]);
       seenCards++;
       cur++;
     }
@@ -602,6 +626,11 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
     printf("Extra characters at end of input: %s\n", p);
     goto error;
   }
+  dbg_printf("1:%d-%d/%d-%d, 2:%d-%d/%d-%d, 3:%d-%d/%d-%d, 4:%d-%d/%d-%d\n",
+	 rankFloor[0], rankCeil[0], suitFloor[0], suitCeil[0],
+	 rankFloor[1], rankCeil[1], suitFloor[1], suitCeil[1],
+	 rankFloor[2], rankCeil[2], suitFloor[2], suitCeil[2],
+	 rankFloor[3], rankCeil[3], suitFloor[3], suitCeil[3]);
 
   StdDeck_CardMask card1, card2, card3, card4;
 
@@ -610,20 +639,17 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
   // first card
   for (int rank0 = rankFloor[0]; rank0 <= rankCeil[0]; rank0++)
     {
-      StdDeck_CardMask used1;
-      StdDeck_CardMask_RESET(used1);
-
       for(int suit0 = suitFloor[0]; suit0 <= suitCeil[0]; suit0++)
         {
+	  StdDeck_CardMask used1;
+	  StdDeck_CardMask_RESET(used1);
+
 	  card1 = StdDeck_MASK( StdDeck_MAKE_CARD(rank0, suit0) );
 	  StdDeck_CardMask_OR(used1, used1, card1);
 
 	  // second card
 	  for (int rank1 = rankFloor[1]; rank1 <= rankCeil[1]; rank1++)
             {
-	      StdDeck_CardMask used2;
-	      StdDeck_CardMask_RESET(used2);
-
 	      if (gap[1] > 0 && gap[1] != (rank0-rank1)) continue;
 
 	      for(int suit1 = suitFloor[1]; suit1 <= suitCeil[1]; suit1++)
@@ -631,12 +657,16 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 		  switch (curSuit[1])
                     {
 		    case New:
-		      if (suit1 == suit0)
+		      if (suit1 == suit0) {
+			dbg_printf("skipping suit1: %d, suit0: %d\n", suit1, suit0);
 			continue; // we want only mismatched suits
+		      }
 		      break;
 		    case Current:
-		      if (suit1 != suit0)
+		      if (suit1 != suit0) {
+			dbg_printf("skipping suit1: %d, suit0: %d\n", suit1, suit0);
 			continue; // we want only matching suits
+		      }
 		      break;
 		    case Specific:
 		      break;
@@ -644,7 +674,11 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 		      break;
                     }
                     
+		  StdDeck_CardMask used2;
+		  StdDeck_CardMask_RESET(used2);
 		  card2 = StdDeck_MASK( StdDeck_MAKE_CARD(rank1, suit1) );
+		  dbg_printf("rank1: %d, suit1: %d\n", rank1, suit1);
+		  dbg_printf("set card2: "); dbg_printMask(card2); dbg_printf("\n");
 		  if (!StdDeck_CardMask_ANY_SET(used1, card2))
                     {
 		      StdDeck_CardMask_OR(used2, used1, card2);
@@ -655,9 +689,6 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 		  // third card
 		  for (int rank2 = rankFloor[2]; rank2 <= rankCeil[2]; rank2++)
                     {
-		      StdDeck_CardMask used3;
-		      StdDeck_CardMask_RESET(used3);
-
 		      if (gap[2] > 0 && gap[2] != (rank1-rank2)) continue;
 
 		      for(int suit2 = suitFloor[2]; suit2 <= suitCeil[2]; suit2++)
@@ -665,18 +696,25 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 			  switch (curSuit[2])
                             {
 			    case New:
-			      if (suit2 == suit0 || suit2 == suit1)
+			      if (suit2 == suit0 || suit2 == suit1) {
+				dbg_printf("skipping suit2: %d, suit0: %d, suit1: %d\n", suit2, suit0, suit1);
 				continue; // we want only mismatched suits
+			      }
 			      break;
 			    case Current:
-			      if (suit2 != suit1)
+			      if (suit2 != suit1) {
+				dbg_printf("skipping suit2: %d, suit1: %d\n", suit2, suit1);
 				continue; // we want only matching suits
+			      }
 			      break;
 			    case Specific:
 			      break;
 			    case Any:
 			      break;
                             }
+
+			  StdDeck_CardMask used3;
+			  StdDeck_CardMask_RESET(used3);
 
 			  card3 = StdDeck_MASK( StdDeck_MAKE_CARD(rank2, suit2) );
 			  if (!StdDeck_CardMask_ANY_SET(used2, card3))
@@ -696,12 +734,16 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 				  switch (curSuit[3])
                                     {
 				    case New:
-				      if (suit3 == suit0 || suit3 == suit1 || suit3 == suit2)
+				      if (suit3 == suit0 || suit3 == suit1 || suit3 == suit2) {
+					dbg_printf("skipping suit3: %d, suit0: %d, suit1: %d, suit2: %d\n", suit3, suit0, suit1, suit2);
 					continue; // we want only mismatched suits
+				      }
 				      break;
 				    case Current:
-				      if (suit3 != suit2)
+				      if (suit3 != suit2) {
+					dbg_printf("skipping suit3: %d, suit2: %d\n", suit3, suit2);
 					continue; // we want only matching suits
+				      }
 				      break;
 				    case Specific:
 				      break;
@@ -754,18 +796,22 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 									    suit0, suit1, suit2, suit3))
 				    continue;
 
+				  StdDeck_CardMask_RESET(hand);
 				  StdDeck_CardMask_OR(hand, hand, card1);
+				  dbg_printf("card1: "); dbg_printMask(card1); dbg_printf("\n");
 				  StdDeck_CardMask_OR(hand, hand, card2);
+				  dbg_printf("card2: "); dbg_printMask(card2); dbg_printf("\n");
 				  StdDeck_CardMask_OR(hand, hand, card3);
+				  dbg_printf("card3: "); dbg_printMask(card3); dbg_printf("\n");
 				  StdDeck_CardMask_OR(hand, hand, card4);
+				  dbg_printf("card4: "); dbg_printMask(card4); dbg_printf("\n");
 				  if (!StdDeck_CardMask_ANY_SET(deadCards, hand))
                                     {
 				      specificHands.push_back(hand);
-				      // printf("HandText: %s ", handText);
-				      // StdDeck_printMask(hand);
-				      // printf("\n");
+				      dbg_printf("HandText: %s ", handText);
+				      dbg_printMask(hand);
+				      dbg_printf("\n");
 				      combos++;
-				      StdDeck_CardMask_RESET(hand);
                                     }
                                 }
                             }
