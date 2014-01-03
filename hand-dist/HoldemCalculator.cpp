@@ -20,6 +20,7 @@
 #include "HandDistributions.h"
 #include <inlines/eval.h>
 
+#include "HoldemAgnosticHand.h"
 #include "HoldemCalculator.h"
 #include "HoldemHandDistribution.h"
 #include "CardConverter.h"
@@ -194,7 +195,7 @@ int HoldemCalculator::CreateHandDistributions(const char* hands)
   list<char*>::const_iterator iter = playerHandsColl.begin();
   for (int index = 0; iter != end; iter++, index++)
     {
-      if (HoldemHandDistribution::IsSpecificHand(*iter))
+      if (HoldemAgnosticHand::IsSpecificHand(*iter))
 	{
 	  HoldemHandDistribution* pCur = new HoldemHandDistribution(*iter, m_deadMask);
 	  m_dists[index] = pCur;
@@ -214,7 +215,7 @@ int HoldemCalculator::CreateHandDistributions(const char* hands)
   iter = playerHandsColl.begin();
   for (int index = 0; iter != end; iter++, index++)
     {
-      if (!HoldemHandDistribution::IsSpecificHand(*iter))
+      if (!HoldemAgnosticHand::IsSpecificHand(*iter))
 	{
 	  HoldemHandDistribution* pCur = new HoldemHandDistribution(*iter, m_deadMask);
 	  m_dists[index] = pCur;

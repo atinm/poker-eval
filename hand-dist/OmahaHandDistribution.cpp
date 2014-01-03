@@ -96,18 +96,24 @@ int OmahaHandDistribution::Init(const char* hand, StdDeck_CardMask deadCards)
 	char* pElem = strtok(handCopy, ",");
 	while (pElem != NULL)
 	{
-		if (OmahaHandDistribution::IsSpecificHand(pElem))
-		{
-			m_current = CardConverter::TextToPokerEval(pElem);
-			m_hands.push_back(m_current);
-			
-		}
-		else
-		{
-			OmahaAgnosticHand::Instantiate(pElem, deadCards, m_hands);
-		}
+	  OmahaAgnosticHand omahaAgnosticHand;
+	  if (omahaAgnosticHand.Parse(pElem, deadCards)) {
+	    if (omahaAgnosticHand.IsSpecificHand(pElem))
+	      {
+		m_current = CardConverter::TextToPokerEval(pElem);
+		m_hands.push_back(m_current);
+	      }
+	    else
+	      {
+		omahaAgnosticHand.Instantiate(pElem, deadCards, m_hands);
+	      }
+	  }
+	  else {
+	    return 0;
+	  }
 
-		pElem = strtok(NULL, ",");
+
+	  pElem = strtok(NULL, ",");
 	}
 
 	free(handCopy);
@@ -138,8 +144,13 @@ StdDeck_CardMask OmahaHandDistribution::Choose(StdDeck_CardMask deadCards, bool&
 		return m_current;
 
 	MTRand53 rand;
+	StdDeck_CardMask nullHand;
+	StdDeck_CardMask_RESET(nullHand);
 	int handCount = m_hands.size();
 	bCollisionError = false;
+
+	if (handCount <= 0)
+	  return nullHand;
 
 	// This is a little bit of a hack. So this OmahaHandDistribution has N potential
 	// hands and we'll choose one of these randomly for each trial. Fine. But it's
@@ -171,35 +182,8 @@ StdDeck_CardMask OmahaHandDistribution::Choose(StdDeck_CardMask deadCards, bool&
 	// throw the entire trial out.
 
 	bCollisionError = true;
-	StdDeck_CardMask nullHand;
-	StdDeck_CardMask_RESET(nullHand);
 	return nullHand;
 }
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// This static function is just a quick way to look at a given textual hand
-// and determine if it's a specific/known hand such as "AhKhTh2d" or "2d2c2s2d".
-// This implementation is ugly - sorry.
-///////////////////////////////////////////////////////////////////////////////
-bool OmahaHandDistribution::IsSpecificHand(const char* handText)
-{
-	if (strlen(handText) == 8)
-	{
-		return (NULL != strchr("shdc", handText[1]) && 
-				NULL != strchr("shdc", handText[3]) &&
-				NULL != strchr("shdc", handText[5]) &&
-				NULL != strchr("shdc", handText[7]) &&
-				NULL != strchr("23456789TJQKA", handText[0]) &&
-				NULL != strchr("23456789TJQKA", handText[2]) &&
-				NULL != strchr("23456789TJQKA", handText[4]) &&
-				NULL != strchr("23456789TJQKA", handText[6]));
-	}
-
-	return false;
-}
-
 
 
 ///////////////////////////////////////////////////////////////////////////////

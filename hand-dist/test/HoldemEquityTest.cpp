@@ -50,6 +50,12 @@ int main(int argc, char* argv[])
 	}
 
 	{
+		// Typical 3-way matchup - pocket pair vs. loose-ish vs. tight-ish
+	  double expected[] = { 39.07, 19.5, 41.42 };
+	  performMatchup("TsTc|AXs|QQ+,AQ+", NULL, NULL, numberOfTrials, false, expected);
+	}
+
+	{
 		// 7-way matchup involving 2 specific hands, 2 ranged hands, and 3 random hands, on the flop
 		double expected[] = { 37.1, 5.5, 19.2, 5.9, 10.75, 10.75, 10.75  };
 		performMatchup("AhKh|Td9s|QQ+,AQs+,AQo+|JJ-88|XxXx|XxXx|XxXx", "Ks7d4d", "", 1000000, false, expected);
@@ -115,7 +121,7 @@ int main(int argc, char* argv[])
 	}
 
 	printf("\n\nAll tests concluded with %d errors.", errorCount);
-    printf("\nPress any character to exit.\n");
+	printf("\nPress any character to exit.\n");
 	getchar();
 
 	return 0;

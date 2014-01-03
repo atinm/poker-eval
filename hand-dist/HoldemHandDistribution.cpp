@@ -95,18 +95,22 @@ int HoldemHandDistribution::Init(const char* hand, StdDeck_CardMask deadCards)
 	char* pElem = strtok(handCopy, ",");
 	while (pElem != NULL)
 	{
-		if (HoldemHandDistribution::IsSpecificHand(pElem))
-		{
-			m_current = CardConverter::TextToPokerEval(pElem);
-			m_hands.push_back(m_current);
-			
-		}
-		else
-		{
-			HoldemAgnosticHand::Instantiate(pElem, deadCards, m_hands);
-		}
-
-		pElem = strtok(NULL, ",");
+	  if (HoldemAgnosticHand::Parse(pElem, deadCards)) {
+	    if (HoldemAgnosticHand::IsSpecificHand(pElem))
+	      {
+		m_current = CardConverter::TextToPokerEval(pElem);
+		m_hands.push_back(m_current);
+		
+	      }
+	    else
+	      {
+		HoldemAgnosticHand::Instantiate(pElem, deadCards, m_hands);
+	      }
+	  }
+	  else {
+	    printf("Could not parse: %s\n", pElem);
+	  }
+	  pElem = strtok(NULL, ",");
 	}
 
 	free(handCopy);
@@ -173,26 +177,6 @@ StdDeck_CardMask HoldemHandDistribution::Choose(StdDeck_CardMask deadCards, bool
 	StdDeck_CardMask nullHand;
 	StdDeck_CardMask_RESET(nullHand);
 	return nullHand;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// This static function is just a quick way to look at a given textual hand
-// and determine if it's a specific/known hand such as "AhKh" or "2d2c".
-// This implementation is ugly - sorry.
-///////////////////////////////////////////////////////////////////////////////
-bool HoldemHandDistribution::IsSpecificHand(const char* handText)
-{
-	if (strlen(handText) == 4)
-	{
-		return (NULL != strchr("shdc", handText[1]) && 
-				NULL != strchr("shdc", handText[3]) &&
-				NULL != strchr("23456789TJQKA", handText[0]) &&
-				NULL != strchr("23456789TJQKA", handText[2]));
-	}
-
-	return false;
 }
 
 

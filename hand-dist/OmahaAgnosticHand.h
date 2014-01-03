@@ -64,9 +64,39 @@
 class OmahaAgnosticHand
 {
 public:
-	static int Instantiate(const char* handText, const char* deadCards, vector<StdDeck_CardMask>& hands);
-	static int Instantiate(const char* handText, StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& hands);
+  OmahaAgnosticHand();
+  ~OmahaAgnosticHand();
+
+  int Parse(const char* handText, const char* deadCards);
+  int Parse(const char* handText, StdDeck_CardMask deadCards);
+
+  int Instantiate(const char* handText, const char* deadCards, vector<StdDeck_CardMask>& hands);
+  int Instantiate(const char* handText, StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& hands);
+  static bool IsSpecificHand(const char* handText);
 
 private:
-	static int InstantiateRandom(StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& specificHands);
+  int InstantiateRandom(StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& specificHands);
+  void Reset();
+
+  int m_rankFloor[4];
+  int m_rankCeil[4];
+  int m_suitFloor[4];
+  int m_suitCeil[4];
+  int m_gap[4];
+  // rank filters
+  bool m_isNoPair, m_isNoTrips, m_isNoQuads,
+    m_isOnePair, m_isTwoPair, m_isTrips, m_isQuads,
+    m_isAtLeastOnePair, m_isAtLeastTrips;
+  // suit filters
+  bool m_isThreeOfSuit, m_isRainbow, m_isOneSuited,
+    m_isSingleSuited, m_isDoubleSuited, m_isMonotone,
+    m_isAtLeastSingleSuit, m_isAtLeastThreeSuit;
+  // Ace related filters
+  bool m_isSuitedAce, m_isSuitedNonAce;
+
+  int m_seenCards;
+
+  // SuitType, when relating suits to previous cards in hand
+  typedef enum { New, Current, Specific, Any } SuitType;
+  SuitType m_suitType[4];
 };

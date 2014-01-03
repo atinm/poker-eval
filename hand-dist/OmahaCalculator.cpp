@@ -24,6 +24,7 @@
 
 #include "OmahaCalculator.h"
 #include "OmahaHandDistribution.h"
+#include "OmahaAgnosticHand.h"
 #include "CardConverter.h"
 
 
@@ -199,7 +200,7 @@ int OmahaCalculator::CreateHandDistributions(const char* hands)
   list<char*>::const_iterator iter = playerHandsColl.begin();
   for (int index = 0; iter != end; iter++, index++)
     {
-      if (OmahaHandDistribution::IsSpecificHand(*iter))
+      if (OmahaAgnosticHand::IsSpecificHand(*iter))
 	{
 	  OmahaHandDistribution* pCur = new OmahaHandDistribution(*iter, m_deadMask);
 	  m_dists[index] = pCur;
@@ -219,7 +220,7 @@ int OmahaCalculator::CreateHandDistributions(const char* hands)
   iter = playerHandsColl.begin();
   for (int index = 0; iter != end; iter++, index++)
     {
-      if (!OmahaHandDistribution::IsSpecificHand(*iter))
+      if (!OmahaAgnosticHand::IsSpecificHand(*iter))
 	{
 	  OmahaHandDistribution* pCur = new OmahaHandDistribution(*iter, m_deadMask);
 	  m_dists[index] = pCur;

@@ -21,6 +21,7 @@
 #include <inlines/eval_omaha.h>
 #include "HandDistributions.h"
 #include "OmahaAgnosticHand.h"
+#include "CardConverter.h"
 #include "Card.h"
 
 #ifdef MY_DEBUG
@@ -158,7 +159,44 @@ static bool funcIsSuitedNonAce(int rank0, int rank1, int rank2, int rank3,
   return false;
 }
 
-int OmahaAgnosticHand::Instantiate(const char* handText, const char* deadText, vector<StdDeck_CardMask>& specificHands)
+OmahaAgnosticHand::OmahaAgnosticHand(void)
+{
+  Reset();
+}
+
+OmahaAgnosticHand::~OmahaAgnosticHand(void)
+{
+}
+
+void OmahaAgnosticHand::Reset(void)
+{
+  m_isNoPair = false;
+  m_isNoTrips = false;
+  m_isNoQuads = false;
+  m_isOnePair = false;
+  m_isTwoPair = false;
+  m_isTrips = false;
+  m_isQuads = false;
+  m_isAtLeastOnePair = false;
+  m_isAtLeastTrips = false;
+  m_isThreeOfSuit = false;
+  m_isRainbow = false;
+  m_isOneSuited = false;
+  m_isSingleSuited = false;
+  m_isDoubleSuited = false;
+  m_isMonotone = false;
+  m_isAtLeastSingleSuit = false;
+  m_isAtLeastThreeSuit = false;
+  m_isSuitedAce = false;
+  m_isSuitedNonAce = false;
+  m_seenCards = 0;
+  for (int i=0; i < OMAHA_MAXHOLE; i++) {
+    m_gap[i] = 0;
+    m_suitType[i] = Any;
+  }
+}
+
+int OmahaAgnosticHand::Parse(const char* handText, const char* deadText)
 {
   StdDeck_CardMask deadCards;
   StdDeck_CardMask_RESET(deadCards);
@@ -174,53 +212,47 @@ int OmahaAgnosticHand::Instantiate(const char* handText, const char* deadText, v
       }
   }
 
-  return Instantiate(handText, deadCards, specificHands);
+  return Parse(handText, deadCards);
 }
 
-// CardSuit type, when relating suits to previous cards in hand
-typedef enum { New, Current, Specific, Any } CardSuit;
-
-///////////////////////////////////////////////////////////////////////////////
-// Take a given agnostic hand, such as "AKQJ" or "T+T+T+T+" or "A-TA-TTT-77", along with
-// an optional collection of "dead" cards, and boil it down into its constituent
-// specific Omaha hands, storing these in the 'specificHands' vector passed
-// in by the client.
-//
-// Returns the number of specific hands the agnostic hand contains.
-///////////////////////////////////////////////////////////////////////////////
-int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& specificHands)
+int OmahaAgnosticHand::Parse(const char* handText, StdDeck_CardMask deadCards)
 {
-  if (strcmp(handText, "XxXxXxXx") == 0 || strcmp(handText, "XXXX") == 0) {
-    return InstantiateRandom(deadCards, specificHands);
+  Reset(); // start fresh every time
+
+  if (strcmp(handText, "XXXX") == 0) {
+    return 1; // valid
+  }
+
+  if (IsSpecificHand(handText)) {
+    return 1; // valid
   }
 
   const char *p = handText;
-  StdDeck_CardMask hand;
-  int combos = 0;
 
-  // Each card is handled separately
-  int rankFloor[4], rankCeil[4];
-  int suitFloor[4], suitCeil[4];
+  // Shared between parsing and generation
+  //int rankFloor[4], rankCeil[4];
+  //int m_suitFloor[4], suitCeil[4];
+  //int gap[4] = {0, 0, 0, 0};
+  //SuitType m_suitType[4] = {Any, Any, Any, Any};
+
   bool firstSuit = true;
-  CardSuit curSuit[4] = {Any, Any, Any, Any};
-  int gap[4] = {0, 0, 0, 0};
   bool isSuited = false;
-  int seenCards = 0;
-  // rank filters
-  bool isNoPair = false, isNoTrips = false, isNoQuads = false,
-    isOnePair = false, isTwoPair = false, isTrips = false, isQuads = false,
-    isAtLeastOnePair = false, isAtLeastTrips = false;
-  // suit filters
-  bool isThreeOfSuit = false, isRainbow = false, isOneSuited = false,
-    isSingleSuited = false, isDoubleSuited = false, isMonotone = false,
-    isAtLeastSingleSuit = false, isAtLeastThreeSuit = false;
-  bool isSuitedAce = false, isSuitedNonAce = false;
+
+//   // rank filters
+//   bool isNoPair = false, isNoTrips = false, isNoQuads = false,
+//     isOnePair = false, isTwoPair = false, isTrips = false, isQuads = false,
+//     isAtLeastOnePair = false, isAtLeastTrips = false;
+//   // suit filters
+//   bool isThreeOfSuit = false, isRainbow = false, isOneSuited = false,
+//     isSingleSuited = false, isDoubleSuited = false, isMonotone = false,
+//     isAtLeastSingleSuit = false, isAtLeastThreeSuit = false;
+//   bool isSuitedAce = false, isSuitedNonAce = false;
 
   int cur = 0;
   while (*p != '\0' && *p != '/') {
     while (*p == ' ') p++;
     
-    if (seenCards == OMAHA_MAXHOLE) {
+    if (m_seenCards == OMAHA_MAXHOLE) {
       // we can only close any suited sections after
       if (*p == ']') {
 	if (isSuited) {
@@ -247,12 +279,12 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 
     if (*p == '[') {
       if (firstSuit) {
-	curSuit[cur] = Any;
-	dbg_printf("curSuit[%d]=Any, %s\n", cur, p);
+	m_suitType[cur] = Any;
+	dbg_printf("m_suitType[%d]=Any, %s\n", cur, p);
       }
       else {
-	curSuit[cur] = New;
-	dbg_printf("curSuit[%d]=New, %s\n", cur, p);
+	m_suitType[cur] = New;
+	dbg_printf("m_suitType[%d]=New, %s\n", cur, p);
       }
       isSuited = true;
       p++; while (*p == ' ') p++;
@@ -260,8 +292,8 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
     else if (*p == ']') {
       if (isSuited) {
 	isSuited = false;
-	curSuit[cur] = Any;
-	dbg_printf("curSuit[%d]=Any, %s\n", cur, p);
+	m_suitType[cur] = Any;
+	dbg_printf("m_suitType[%d]=Any, %s\n", cur, p);
       }
       else {
 	printf("Closing ']' in non-bracketed section\n");
@@ -272,27 +304,27 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
     else if (*p == ':' && cur > 0) {
       p++; while (*p == ' ') p++;
       if (isdigit(*p)) {
-	gap[cur] = atoi(p);
-	if (gap[cur] > 12 || gap[cur] < 0) {
-	  printf("gap error: 0 < \"%d\" < 12\n", gap[cur]);
+	m_gap[cur] = atoi(p);
+	if (m_gap[cur] > 12 || m_gap[cur] < 0) {
+	  printf("gap error: 0 < \"%d\" < 12\n", m_gap[cur]);
 	  goto error;
 	}
                 
-	if (gap[cur] < 10) {
+	if (m_gap[cur] < 10) {
 	  p++; while (*p == ' ') p++;
 	}
 	else {
 	  p++; p++; while (*p == ' ') p++; // two chars
 	}
-	gap[cur]++; // need to be 1  more than specified as Q-J is 0 gap, but 1 rank difference
+	m_gap[cur]++; // need to be 1  more than specified as Q-J is 0 gap, but 1 rank difference
                 
 	// can be any rank and suit as long as rank gap is ok
-	rankFloor[cur] = Card::Two;
-	rankCeil[cur] = Card::Ace;
-	suitFloor[cur] = 0;
-	suitCeil[cur] = 3;
+	m_rankFloor[cur] = Card::Two;
+	m_rankCeil[cur] = Card::Ace;
+	m_suitFloor[cur] = 0;
+	m_suitCeil[cur] = 3;
 	cur++;
-	seenCards++;
+	m_seenCards++;
       }
       else {
 	printf("non-digit gap: %c\n", *p);
@@ -302,37 +334,37 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
     else if (NULL != strchr("AaKkQqJjTt98765432BbRrFfMmZzLlNnYyXx", *p)) {
       if (NULL != strchr("AaKkQqJjTt98765432", *p)) {
 	if (p[1] == '-') {
-	  rankFloor[cur] = Card::CharToRank(*p);
-	  dbg_printf("%d: rankFloor[%d]: %d, %s\n", __LINE__, cur, rankFloor[cur], p);
+	  m_rankFloor[cur] = Card::CharToRank(*p);
+	  dbg_printf("%d: m_rankFloor[%d]: %d, %s\n", __LINE__, cur, m_rankFloor[cur], p);
 	  p++; while (*p == ' ') p++;
 	  p++; while (*p == ' ') p++;
 	  if (NULL != strchr("AaKkQqJjTt98765432", *p)) {
-	    rankCeil[cur] = Card::CharToRank(*p);
+	    m_rankCeil[cur] = Card::CharToRank(*p);
 	    p++; while (*p == ' ') p++;
 	  }
 	  else {
 	    printf("%c not in \"AaKkQqJjTt98765432\"\n", *p);
 	    goto error;
 	  }
-	  if (rankCeil[cur] < rankFloor[cur]) {
-	    int tmp = rankCeil[cur];
-	    rankCeil[cur] = rankFloor[cur];
-	    rankFloor[cur] = tmp;
-	    dbg_printf("%d: rankFloor[%d]: %d\n", __LINE__, cur, rankFloor[cur]);
+	  if (m_rankCeil[cur] < m_rankFloor[cur]) {
+	    int tmp = m_rankCeil[cur];
+	    m_rankCeil[cur] = m_rankFloor[cur];
+	    m_rankFloor[cur] = tmp;
+	    dbg_printf("%d: m_rankFloor[%d]: %d\n", __LINE__, cur, m_rankFloor[cur]);
 	  }
 	}
 	else if (p[1] == '+') {
-	  rankFloor[cur] = Card::CharToRank(*p);
-	  dbg_printf("%d: rankFloor[%d]: %d\n", __LINE__, cur, rankFloor[cur]);
+	  m_rankFloor[cur] = Card::CharToRank(*p);
+	  dbg_printf("%d: m_rankFloor[%d]: %d\n", __LINE__, cur, m_rankFloor[cur]);
 	  p++; while (*p == ' ') p++;
 	  p++; while (*p == ' ') p++;
-	  rankCeil[cur] = Card::Ace;
+	  m_rankCeil[cur] = Card::Ace;
 	}
 	else {
-	  rankFloor[cur] = Card::CharToRank(*p);
-	  dbg_printf("%d: rankFloor[%d]: %d\n", __LINE__, cur, rankFloor[cur]);
-	  rankCeil[cur] = rankFloor[cur];
-	  gap[cur] = -1; // any
+	  m_rankFloor[cur] = Card::CharToRank(*p);
+	  dbg_printf("%d: m_rankFloor[%d]: %d\n", __LINE__, cur, m_rankFloor[cur]);
+	  m_rankCeil[cur] = m_rankFloor[cur];
+	  m_gap[cur] = -1; // any
 	  p++; while (*p == ' ') p++;
 	}
       }
@@ -340,48 +372,48 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 	switch (*p) {
 	case 'B':
 	case 'b':
-	  rankFloor[cur] = Card::Jack;
-	  rankCeil[cur] = Card::Ace;
+	  m_rankFloor[cur] = Card::Jack;
+	  m_rankCeil[cur] = Card::Ace;
 	  break;
 	case 'R':
 	case  'r':
-	  rankFloor[cur] = Card::Ten;
-	  rankCeil[cur] = Card::Ace;
+	  m_rankFloor[cur] = Card::Ten;
+	  m_rankCeil[cur] = Card::Ace;
 	  break;
 	case 'F':
 	case 'f':
-	  rankFloor[cur] = Card::Jack;
-	  rankCeil[cur] = Card::King;
+	  m_rankFloor[cur] = Card::Jack;
+	  m_rankCeil[cur] = Card::King;
 	  break;
 	case 'M':
 	case 'm':
-	  rankFloor[cur] = Card::Seven;
-	  rankCeil[cur] = Card::Ten;
+	  m_rankFloor[cur] = Card::Seven;
+	  m_rankCeil[cur] = Card::Ten;
 	  break;
 	case 'Z':
 	case 'z':
-	  rankFloor[cur] = Card::Two;
-	  rankCeil[cur] = Card::Six;
+	  m_rankFloor[cur] = Card::Two;
+	  m_rankCeil[cur] = Card::Six;
 	  break;
 	case 'L':
 	case 'l':
-	  rankFloor[cur] = Card::Two;
-	  rankCeil[cur] = Card::Eight;
+	  m_rankFloor[cur] = Card::Two;
+	  m_rankCeil[cur] = Card::Eight;
 	  break;
 	case 'N':
 	case 'n':
-	  rankFloor[cur] = Card::Nine;
-	  rankCeil[cur] = Card::King;
+	  m_rankFloor[cur] = Card::Nine;
+	  m_rankCeil[cur] = Card::King;
 	  break;
 	case 'Y':
 	case 'y':
-	  rankFloor[cur] = Card::Two;
-	  rankCeil[cur] = Card::Five;
+	  m_rankFloor[cur] = Card::Two;
+	  m_rankCeil[cur] = Card::Five;
 	  break;
 	case 'X':
 	case 'x':
-	  rankFloor[cur] = Card::Two;
-	  rankCeil[cur] = Card::Ace;
+	  m_rankFloor[cur] = Card::Two;
+	  m_rankCeil[cur] = Card::Ace;
 	  break;
 	default:
 	  printf("%c not in \"BbRrFfMmZzLlNnYyXx\"\n", *p);
@@ -397,32 +429,32 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 	  goto error;
 	}
 	
-	curSuit[cur] = Specific;
-	dbg_printf("curSuit[%d] = Specific, %s\n", cur, p);
-	suitCeil[cur] = Card::CharToSuit(*p);
-	suitFloor[cur] = Card::CharToSuit(*p);
+	m_suitType[cur] = Specific;
+	dbg_printf("m_suitType[%d] = Specific, %s\n", cur, p);
+	m_suitCeil[cur] = Card::CharToSuit(*p);
+	m_suitFloor[cur] = Card::CharToSuit(*p);
 	
 	p++; while (*p == ' ') p++;
       }
       else {
-	suitCeil[cur] = 3; // max suit
-	suitFloor[cur] = 0; // min suit
+	m_suitCeil[cur] = 3; // max suit
+	m_suitFloor[cur] = 0; // min suit
 	
 	if (isSuited) {
-	  if (!firstSuit && curSuit[cur] != New) {
-	    curSuit[cur] = Current;
-	    dbg_printf("curSuit[%d] = Current, %s\n", cur, p);
+	  if (!firstSuit && m_suitType[cur] != New) {
+	    m_suitType[cur] = Current;
+	    dbg_printf("m_suitType[%d] = Current, %s\n", cur, p);
 	  }
 	  firstSuit = false;
 	}
 	else {
-	  curSuit[cur] = Any;
-	  dbg_printf("curSuit[%d] = Any, %s\n", cur, p);
+	  m_suitType[cur] = Any;
+	  dbg_printf("m_suitType[%d] = Any, %s\n", cur, p);
 	}
       }
-      dbg_printf("rankFloor[%d]: %d, rankCeil[%d]: %d, suitFloor[%d]: %d, suitCeil[%d]: %d\n",
-	     cur, rankFloor[cur], cur, rankCeil[cur], cur, suitFloor[cur], cur, suitCeil[cur]);
-      seenCards++;
+      dbg_printf("m_rankFloor[%d]: %d, m_rankCeil[%d]: %d, m_suitFloor[%d]: %d, m_suitCeil[%d]: %d\n",
+	     cur, m_rankFloor[cur], cur, m_rankCeil[cur], cur, m_suitFloor[cur], cur, m_suitCeil[cur]);
+      m_seenCards++;
       cur++;
     }
     else {
@@ -436,8 +468,8 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
     goto error;
   }
 
-  if (seenCards != 4) {
-    printf("Need to specify 4 cards per hand, specified: %d\n", seenCards);
+  if (m_seenCards != OMAHA_MAXHOLE) {
+    printf("Need to specify 4 cards per hand, specified: %d\n", m_seenCards);
     goto error;
   }
   
@@ -449,13 +481,13 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       if (NULL != strchr("Nn", *p)) {
 	  p++;
 	  if (NULL != strchr("Pp", *p)) {
-	    isNoPair = true;
+	    m_isNoPair = true;
 	  }
 	  else if (NULL != strchr("Tt", *p)) {
-	    isNoTrips = true;
+	    m_isNoTrips = true;
 	  }
 	  else if (NULL != strchr("Qq", *p)) {
-	    isNoQuads = true;
+	    m_isNoQuads = true;
 	  }
 	  else {
 	    printf("Unrecognized filter /n%c\n", *p);
@@ -467,22 +499,22 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       else if (NULL != strchr("Oo", *p)) {
 	p++;
 	if (NULL != strchr("Pp", *p)) {
-	  isOnePair = true;
+	  m_isOnePair = true;
 	}
 	else if (NULL != strchr("Ss", *p)) {
-	  isOneSuited = true;
+	  m_isOneSuited = true;
 	}
       }
       else if (NULL != strchr("Tt", *p)) {
 	p++;
 	if (NULL != strchr("Pp", *p)) {
-	  isTwoPair = true;
+	  m_isTwoPair = true;
 	}
 	else if (NULL != strchr("Rr", *p)) {
-	  isTrips = true;
+	  m_isTrips = true;
 	}
 	else if (NULL != strchr("Ss", *p)) {
-	  isThreeOfSuit = true;
+	  m_isThreeOfSuit = true;
 	}
 	else {
 	  printf("Unrecognized filter /t%c\n", *p);
@@ -493,7 +525,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       else if (NULL != strchr("Qq", *p)) {
 	p++;
 	if (NULL != strchr("Uu", *p)) {
-	  isQuads = true;
+	  m_isQuads = true;
 	}
 	else {
 	  printf("Unrecognized filter /q%c\n", *p);	  
@@ -504,7 +536,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       else if (NULL != strchr("Rr", *p)) {
 	p++;
 	if (NULL != strchr("Bb", *p)) {
-	  isRainbow = true;
+	  m_isRainbow = true;
 	}
 	else {
 	  printf("Unrecognized filter /r%c\n", *p);
@@ -515,7 +547,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       else if (NULL != strchr("Oo", *p)) {
 	p++;
 	if (NULL != strchr("Ss", *p)) {
-	  isOneSuited = true;
+	  m_isOneSuited = true;
 	}
 	else {
 	  printf("Unrecognized filter /o%c\n", *p);
@@ -526,7 +558,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       else if (NULL != strchr("Dd", *p)) {
 	p++;
 	if (NULL != strchr("Ss", *p)) {
-	  isDoubleSuited = true;
+	  m_isDoubleSuited = true;
 	}
 	else {
 	  printf("Unrecognized filter /d%c\n", *p);
@@ -537,7 +569,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       else if (NULL != strchr("Mm", *p)) {
 	p++;
 	if (NULL != strchr("Tt", *p)) {
-	  isMonotone = true;
+	  m_isMonotone = true;
 	}
 	else {
 	  printf("Unrecognized filter /m%c\n", *p);
@@ -548,15 +580,15 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
       else if (NULL != strchr("Ss", *p)) {
 	p++;
 	if (NULL != strchr("Ss", *p)) {
-	  isSingleSuited = true;
+	  m_isSingleSuited = true;
 	}
 	else if (NULL != strchr("Aa", *p)) {
-	  isSuitedAce = true;
+	  m_isSuitedAce = true;
 	}
 	else if (NULL != strchr("Nn", *p)) {
 	  p++;
 	  if (NULL != strchr("Aa", *p)) {
-	    isSuitedNonAce = true;
+	    m_isSuitedNonAce = true;
 	  }
 	  else {
 	    printf("Unrecognized filter /sn%c\n", *p);
@@ -576,10 +608,10 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 	  if (NULL != strchr("Tt", *p)) {
 	    p++;
 	    if (NULL != strchr("Ss", *p)) {
-	      isAtLeastThreeSuit = true;
+	      m_isAtLeastThreeSuit = true;
 	    }
 	    else if (NULL != strchr("Rr", *p)) {
-	      isAtLeastTrips = true;
+	      m_isAtLeastTrips = true;
 	    }
 	    else {
 	      printf("Unrecognized filter /alt%c\n", *p);
@@ -594,7 +626,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 	else if (NULL != strchr("Ss", *p)) {
 	  p++;
 	  if (NULL != strchr("Ss", *p)) {
-	    isAtLeastSingleSuit = true;
+	    m_isAtLeastSingleSuit = true;
 	  }
 	  else {
 	    printf("Unrecognized filter /as%c\n", *p);
@@ -604,7 +636,7 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 	else if (NULL != strchr("Oo", *p)) {
 	  p++;
 	  if (NULL != strchr("Pp", *p)) {
-	    isAtLeastOnePair = true;
+	    m_isAtLeastOnePair = true;
 	  }
 	  else {
 	    printf("Unrecognized filter /ao%c\n", *p);
@@ -627,19 +659,70 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
     goto error;
   }
   dbg_printf("1:%d-%d/%d-%d, 2:%d-%d/%d-%d, 3:%d-%d/%d-%d, 4:%d-%d/%d-%d\n",
-	 rankFloor[0], rankCeil[0], suitFloor[0], suitCeil[0],
-	 rankFloor[1], rankCeil[1], suitFloor[1], suitCeil[1],
-	 rankFloor[2], rankCeil[2], suitFloor[2], suitCeil[2],
-	 rankFloor[3], rankCeil[3], suitFloor[3], suitCeil[3]);
+	 m_rankFloor[0], m_rankCeil[0], m_suitFloor[0], m_suitCeil[0],
+	 m_rankFloor[1], m_rankCeil[1], m_suitFloor[1], m_suitCeil[1],
+	 m_rankFloor[2], m_rankCeil[2], m_suitFloor[2], m_suitCeil[2],
+	 m_rankFloor[3], m_rankCeil[3], m_suitFloor[3], m_suitCeil[3]);
+
+  return 1; // success
+
+ error:
+  printf("Error parsing %s, parsing at %s: %ld\n", handText, p, p-handText+1);
+  return 0; // failure
+}
+
+int OmahaAgnosticHand::Instantiate(const char* handText, const char* deadText, vector<StdDeck_CardMask>& specificHands)
+{
+  StdDeck_CardMask deadCards;
+  StdDeck_CardMask_RESET(deadCards);
+                
+  if (deadText && strlen(deadText)) {
+      int suit, rank;
+      StdDeck_CardMask hand;
+      for(const char* pCard = deadText; pCard != NULL; pCard += 2) {
+	rank = Card::CharToRank(*pCard);
+	suit = Card::CharToSuit(*(pCard+1));
+	hand = StdDeck_MASK( StdDeck_MAKE_CARD(rank, suit) );
+	StdDeck_CardMask_OR(deadCards, deadCards, hand);
+      }
+  }
+
+  return Instantiate(handText, deadCards, specificHands);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Take a given agnostic hand, such as "AKQJ" or "T+T+T+T+" or "A-TA-TTT-77", along with
+// an optional collection of "dead" cards, and boil it down into its constituent
+// specific Omaha hands, storing these in the 'specificHands' vector passed
+// in by the client.
+//
+// Returns the number of specific hands the agnostic hand contains.
+///////////////////////////////////////////////////////////////////////////////
+int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCards, vector<StdDeck_CardMask>& specificHands)
+{
+  if (strcmp(handText, "XXXX") == 0) {
+    return InstantiateRandom(deadCards, specificHands);
+  }
+
+  if (IsSpecificHand(handText)) {
+    specificHands.push_back(CardConverter::TextToPokerEval(handText));
+    return specificHands.size();
+  }
+
+  // we should have parsed the hand already using Parse().
+  if (m_seenCards != 4)
+    return 0;
 
   StdDeck_CardMask card1, card2, card3, card4;
+  StdDeck_CardMask hand;
+  int combos = 0;
 
   StdDeck_CardMask_RESET(hand);
 
   // first card
-  for (int rank0 = rankFloor[0]; rank0 <= rankCeil[0]; rank0++)
+  for (int rank0 = m_rankFloor[0]; rank0 <= m_rankCeil[0]; rank0++)
     {
-      for(int suit0 = suitFloor[0]; suit0 <= suitCeil[0]; suit0++)
+      for(int suit0 = m_suitFloor[0]; suit0 <= m_suitCeil[0]; suit0++)
         {
 	  StdDeck_CardMask used1;
 	  StdDeck_CardMask_RESET(used1);
@@ -648,13 +731,13 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 	  StdDeck_CardMask_OR(used1, used1, card1);
 
 	  // second card
-	  for (int rank1 = rankFloor[1]; rank1 <= rankCeil[1]; rank1++)
+	  for (int rank1 = m_rankFloor[1]; rank1 <= m_rankCeil[1]; rank1++)
             {
-	      if (gap[1] > 0 && gap[1] != (rank0-rank1)) continue;
+	      if (m_gap[1] > 0 && m_gap[1] != (rank0-rank1)) continue;
 
-	      for(int suit1 = suitFloor[1]; suit1 <= suitCeil[1]; suit1++)
+	      for(int suit1 = m_suitFloor[1]; suit1 <= m_suitCeil[1]; suit1++)
                 {
-		  switch (curSuit[1])
+		  switch (m_suitType[1])
                     {
 		    case New:
 		      if (suit1 == suit0) {
@@ -687,13 +770,13 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 		    continue; // in use card
                     
 		  // third card
-		  for (int rank2 = rankFloor[2]; rank2 <= rankCeil[2]; rank2++)
+		  for (int rank2 = m_rankFloor[2]; rank2 <= m_rankCeil[2]; rank2++)
                     {
-		      if (gap[2] > 0 && gap[2] != (rank1-rank2)) continue;
+		      if (m_gap[2] > 0 && m_gap[2] != (rank1-rank2)) continue;
 
-		      for(int suit2 = suitFloor[2]; suit2 <= suitCeil[2]; suit2++)
+		      for(int suit2 = m_suitFloor[2]; suit2 <= m_suitCeil[2]; suit2++)
                         {
-			  switch (curSuit[2])
+			  switch (m_suitType[2])
                             {
 			    case New:
 			      if (suit2 == suit0 || suit2 == suit1) {
@@ -725,13 +808,13 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 			    continue; // in use card
 
 			  // fourth card
-			  for (int rank3 = rankFloor[3]; rank3 <= rankCeil[3]; rank3++)
+			  for (int rank3 = m_rankFloor[3]; rank3 <= m_rankCeil[3]; rank3++)
                             {
-			      if (gap[3] > 0 && gap[3] != (rank2-rank3)) continue;
+			      if (m_gap[3] > 0 && m_gap[3] != (rank2-rank3)) continue;
 
-			      for(int suit3 = suitFloor[3]; suit3 <= suitCeil[3]; suit3++)
+			      for(int suit3 = m_suitFloor[3]; suit3 <= m_suitCeil[3]; suit3++)
                                 {
-				  switch (curSuit[3])
+				  switch (m_suitType[3])
                                     {
 				    case New:
 				      if (suit3 == suit0 || suit3 == suit1 || suit3 == suit2) {
@@ -755,44 +838,44 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
 				    continue; // in use card
 
 				  // now check filters one by one
-				  if (isNoPair && !funcIsNoPair(rank0, rank1, rank2, rank3))
+				  if (m_isNoPair && !funcIsNoPair(rank0, rank1, rank2, rank3))
 				    continue; // at least a pair is present
-				  if (isOnePair && !funcIsOnePair(rank0, rank1, rank2, rank3))
+				  if (m_isOnePair && !funcIsOnePair(rank0, rank1, rank2, rank3))
 				    continue; // one pair is not present
-				  if (isTwoPair && !funcIsTwoPair(rank0, rank1, rank2, rank3))
+				  if (m_isTwoPair && !funcIsTwoPair(rank0, rank1, rank2, rank3))
 				    continue; // two pair is not present
-				  if (isNoTrips && funcIsTrips(rank0, rank1, rank2, rank3))
+				  if (m_isNoTrips && funcIsTrips(rank0, rank1, rank2, rank3))
 				    continue; // at least a trips is present
-				  if (isTrips && !funcIsTrips(rank0, rank1, rank2, rank3))
+				  if (m_isTrips && !funcIsTrips(rank0, rank1, rank2, rank3))
 				    continue; // no trips is present
-				  if (isNoQuads && funcIsQuads(rank0, rank1, rank2, rank3))
+				  if (m_isNoQuads && funcIsQuads(rank0, rank1, rank2, rank3))
 				    continue; // at least quads is present
-				  if (isQuads && !funcIsQuads(rank0, rank1, rank2, rank3))
+				  if (m_isQuads && !funcIsQuads(rank0, rank1, rank2, rank3))
 				    continue; // no quads is present
-				  if (isAtLeastOnePair && !funcIsAtLeastOnePair(rank0, rank1, rank2, rank3))
+				  if (m_isAtLeastOnePair && !funcIsAtLeastOnePair(rank0, rank1, rank2, rank3))
 				    continue; // not at least one pair
-				  if (isAtLeastTrips && !funcIsAtLeastTrips(rank0, rank1, rank2, rank3))
+				  if (m_isAtLeastTrips && !funcIsAtLeastTrips(rank0, rank1, rank2, rank3))
 				    continue; // not at least trips
-				  if (isThreeOfSuit && !funcIsThreeOfSuit(suit0, suit1, suit2, suit3))
+				  if (m_isThreeOfSuit && !funcIsThreeOfSuit(suit0, suit1, suit2, suit3))
 				    continue; // not three of suit
-				  if (isRainbow && !funcIsRainbow(suit0, suit1, suit2, suit3))
+				  if (m_isRainbow && !funcIsRainbow(suit0, suit1, suit2, suit3))
 				    continue; // not rainbox
-				  if (isOneSuited && !funcIsOneSuited(suit0, suit1, suit2, suit3))
+				  if (m_isOneSuited && !funcIsOneSuited(suit0, suit1, suit2, suit3))
 				    continue;
-				  if (isSingleSuited && !funcIsSingleSuited(suit0, suit1, suit2, suit3))
+				  if (m_isSingleSuited && !funcIsSingleSuited(suit0, suit1, suit2, suit3))
 				    continue;
-				  if (isDoubleSuited && !funcIsDoubleSuited(suit0, suit1, suit2, suit3))
+				  if (m_isDoubleSuited && !funcIsDoubleSuited(suit0, suit1, suit2, suit3))
 				    continue;
-				  if (isMonotone && !funcIsMonotone(suit0, suit1, suit2, suit3))
+				  if (m_isMonotone && !funcIsMonotone(suit0, suit1, suit2, suit3))
 				    continue;
-				  if (isAtLeastSingleSuit && !funcIsAtLeastSingleSuit(suit0, suit1, suit2, suit3))
+				  if (m_isAtLeastSingleSuit && !funcIsAtLeastSingleSuit(suit0, suit1, suit2, suit3))
 				    continue;
-				  if (isAtLeastThreeSuit && !funcIsAtLeastThreeSuit(suit0, suit1, suit2, suit3))
+				  if (m_isAtLeastThreeSuit && !funcIsAtLeastThreeSuit(suit0, suit1, suit2, suit3))
 				    continue;
-				  if (isSuitedAce && !funcIsSuitedAce(rank0, rank1, rank2, rank3,
+				  if (m_isSuitedAce && !funcIsSuitedAce(rank0, rank1, rank2, rank3,
 								      suit0, suit1, suit2, suit3))
 				    continue;
-				  if (isSuitedNonAce && !funcIsSuitedNonAce(rank0, rank1, rank2, rank3,
+				  if (m_isSuitedNonAce && !funcIsSuitedNonAce(rank0, rank1, rank2, rank3,
 									    suit0, suit1, suit2, suit3))
 				    continue;
 
@@ -822,10 +905,6 @@ int OmahaAgnosticHand::Instantiate(const char* handText, StdDeck_CardMask deadCa
         }
     }
   return combos;
-
- error:
-  printf("Error parsing %s, parsing at %s:%ld\n", handText, p, p-handText+1);
-  return -1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -841,4 +920,26 @@ int OmahaAgnosticHand::InstantiateRandom(StdDeck_CardMask deadCards, vector<StdD
   StdDeck_CardMask curHand;
   DECK_ENUMERATE_4_CARDS_D(StdDeck, curHand, deadCards, specificHands.push_back(curHand); );
   return specificHands.size();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// This static function is just a quick way to look at a given textual hand
+// and determine if it's a specific/known hand such as "AhKhTh2d" or "2d2c2s2d".
+// This implementation is ugly - sorry.
+///////////////////////////////////////////////////////////////////////////////
+bool OmahaAgnosticHand::IsSpecificHand(const char* handText)
+{
+	if (strlen(handText) == 8)
+	{
+		return (NULL != strchr("SsHhDdCc", handText[1]) && 
+			NULL != strchr("SsHhDdCc", handText[3]) &&
+			NULL != strchr("SsHhDdCc", handText[5]) &&
+			NULL != strchr("SsHhDdCc", handText[7]) &&
+			NULL != strchr("23456789TtJjQqKkAa", handText[0]) &&
+			NULL != strchr("23456789TtJjQqKkAa", handText[2]) &&
+			NULL != strchr("23456789TtJjQqKkAa", handText[4]) &&
+			NULL != strchr("23456789TtJjQqKkAa", handText[6]));
+	}
+
+	return false;
 }
