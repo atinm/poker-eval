@@ -2,3 +2,7 @@ examples/HandRanks.dat
 TAGS
 *.so.*
 *.so
+autom4te.cache/
+examples/O8HandRanks.dat
+./tests/.deps/
+.deps/

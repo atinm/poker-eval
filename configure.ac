@@ -49,7 +49,7 @@ fi
 AC_PATH_PROG([VALGRIND], [valgrind])
 
 if test "$GCC" = "yes" ; then
-  CPPFLAGS="$CPPFLAGS -Wall -Wpointer-arith -Wstrict-prototypes"
+  CPPFLAGS="$CPPFLAGS -std=c99 -Wall -Wpointer-arith -Wstrict-prototypes"
 fi
 
 AC_EXEEXT

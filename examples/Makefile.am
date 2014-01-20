@@ -41,6 +41,7 @@ EXTRA_DIST = \
 	hcmpn2.vcproj \
 	omahacmp2.vcproj \
 	omahacmpn.vcproj \
+	generate_pokersource_table.vcproj \
 	pokenum.vcproj \
 	seven_card_hands.vcproj \
 	usedecks.vcproj
@@ -55,6 +56,7 @@ noinst_PROGRAMS = \
 	hcmpn \
 	omahacmp2 \
 	omahacmpn \
+	generate_pokersource_table \
 	pokenum \
 	seven_card_hands \
 	usedecks
@@ -93,6 +95,11 @@ omahacmpn_SOURCES = omahacmpn.c
 omahacmpn_LDADD = $(top_builddir)/lib/libpoker-eval.la
 omahacmpn_CPPFLAGS = ${GCOV_CPPFLAGS}
 omahacmpn_LDFLAGS = ${GCOV_LDFLAGS}
+
+generate_pokersource_table_SOURCES = generate_pokersource_table.c
+generate_pokersource_table_LDADD = $(top_builddir)/lib/libpoker-eval.la
+generate_pokersource_table_CPPFLAGS = ${GCOV_CPPFLAGS}
+generate_pokersource_table_LDFLAGS = ${GCOV_LDFLAGS}
 
 pokenum_SOURCES = pokenum.c
 pokenum_LDADD = $(top_builddir)/lib/libpoker-eval.la

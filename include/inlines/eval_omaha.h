@@ -173,12 +173,14 @@ StdDeck_OmahaHi_EVAL(StdDeck_CardMask hole, StdDeck_CardMask board,
 */
 
 static inline int
-StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
-                         HandVal *hival) {
+StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
+                             HandVal *hival, LowHandVal *loval) {
     int playerCards[4], nPlayerCards, boardCards[5], nBoardCards;
     int h1, h2, b1, b2, b3, i;
     int b11, b12, b13, h11, h12, h13;
+    int c11, c12, c13, l11, l12, l13;
     HandVal besthi = HandVal_NOTHING;
+    LowHandVal bestlo = LowHandVal_NOTHING;
 
     if (!lut_initialized) {
         memset(HR, 0, sizeof(HR));
@@ -189,6 +191,21 @@ StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
             return 1;
         }
         size_t bytesread = fread(HR, sizeof(HR), 1, fin);	// get the HandRank Array
+        if (bytesread <= 0) {
+            printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
+            fclose(fin);
+            return 2;
+        }
+        fclose(fin);
+
+        memset(O8HR, 0, sizeof(O8HR));
+        fin = fopen("./O8HandRanks.dat", "rb");
+        if (!fin) {
+            printf("Failed to read O8HandRanks.dat\n");
+            fclose(fin);
+            return 1;
+        }
+        bytesread = fread(O8HR, sizeof(O8HR), 1, fin);	// get the HandRank Array
         if (bytesread <= 0) {
             printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
             fclose(fin);
@@ -213,24 +230,41 @@ StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
     
     for (b1=0; b1<nBoardCards; b1++) {
         b11 =  HR[53 + boardCards[b1]];
+        c11 =  HR[53 + boardCards[b1]];
         for (b2=b1+1; b2<nBoardCards; b2++) {
             b12 = HR[b11 + boardCards[b2]];
+            c12 = HR[c11 + boardCards[b2]];
             for (b3=b2+1; b3<nBoardCards; b3++) {
                 b13 = HR[b12 + boardCards[b3]];
+                c13 = HR[c12 + boardCards[b3]];
                 for (h1=0; h1<nPlayerCards; h1++) {
                     h11 = HR[b13 + playerCards[h1]];
+                    l11 = HR[c13 + playerCards[h1]];
                     for (h2=h1+1; h2<nPlayerCards; h2++) {
                         h12 = HR[h11 + playerCards[h2]];
+                        l12 = HR[l11 + playerCards[h2]];
                         h13 = HR[h12 + 0];
+                        l13 = HR[l12 + 0];
                         if (besthi == HandVal_NOTHING || h13 > besthi)
                             besthi = h13;
+                        if (bestlo == LowHandVal_NOTHING || l13 < bestlo)
+                            bestlo = l13;
                     }
                 }
             }
         }
     }
     *hival = besthi;
+    if (loval != NULL)
+        *loval = bestlo;
+
     return 0;
+}
+
+static inline int
+StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
+                     HandVal *hival) {
+  return StdDeck_OmahaHiLow8_EVAL_LUT(hole, board, hival, NULL);
 }
 
 #endif

@@ -27,6 +27,7 @@
 
 // The handranks lookup table- loaded from HANDRANKS.DAT. (2+2 Evaluator)
 int HR[32487834];
+int O8HR[32487834];
 int lut_initialized = 0;
 
 /*

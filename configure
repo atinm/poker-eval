@@ -12489,7 +12489,7 @@ fi
 
 
 if test "$GCC" = "yes" ; then
-  CPPFLAGS="$CPPFLAGS -Wall -Wpointer-arith -Wstrict-prototypes"
+  CPPFLAGS="$CPPFLAGS -std=c99 -Wall -Wpointer-arith -Wstrict-prototypes"
 fi
 
 
