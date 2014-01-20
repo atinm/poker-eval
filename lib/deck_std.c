@@ -34,6 +34,7 @@ int tototo[8];
 int HR[32487834];
 int O8HR[32487834];
 int lut_initialized = 0;
+int low_lut_initialized = 0;
 
 int 
 StdDeck_cardToString(int cardIndex, char *outString) {
