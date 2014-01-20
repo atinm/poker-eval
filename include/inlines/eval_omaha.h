@@ -233,21 +233,21 @@ StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
     
     for (b1=0; b1<nBoardCards; b1++) {
         b11 =  HR[53 + boardCards[b1]];
-        c11 =  HR[53 + boardCards[b1]];
+        c11 =  O8HR[53 + boardCards[b1]];
         for (b2=b1+1; b2<nBoardCards; b2++) {
             b12 = HR[b11 + boardCards[b2]];
-            c12 = HR[c11 + boardCards[b2]];
+            c12 = O8HR[c11 + boardCards[b2]];
             for (b3=b2+1; b3<nBoardCards; b3++) {
                 b13 = HR[b12 + boardCards[b3]];
-                c13 = HR[c12 + boardCards[b3]];
+                c13 = O8HR[c12 + boardCards[b3]];
                 for (h1=0; h1<nPlayerCards; h1++) {
                     h11 = HR[b13 + playerCards[h1]];
-                    l11 = HR[c13 + playerCards[h1]];
+                    l11 = O8HR[c13 + playerCards[h1]];
                     for (h2=h1+1; h2<nPlayerCards; h2++) {
                         h12 = HR[h11 + playerCards[h2]];
-                        l12 = HR[l11 + playerCards[h2]];
+                        l12 = O8HR[l11 + playerCards[h2]];
                         h13 = HR[h12 + 0];
-                        l13 = HR[l12 + 0];
+                        l13 = O8HR[l12 + 0];
                         if (besthi == HandVal_NOTHING || h13 > besthi)
                             besthi = h13;
                         if (bestlo == LowHandVal_NOTHING || l13 < bestlo)

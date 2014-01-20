@@ -53,7 +53,7 @@
 #include "inlines/eval_omaha.h"
 
 #define MAX_PLAYERS 9
-
+int low = 0;
 int monteCarlo = 0;
 int lut = 0;
 // The handranks lookup table- loaded from HANDRANKS.DAT.
@@ -118,6 +118,9 @@ parseArgs(int argc, char **argv) {
                     StdDeck_CardMask_SET(gDeadCards, c);
                 };
             } 
+            else if (strcmp(argv[i], "-l") == 0) {
+                low = 1;
+            }
             else if (strcmp(argv[i], "-m") == 0) {
                 if (++i == argc) goto error;
                 gNIter = strtol(argv[i], NULL, 10);
@@ -127,24 +130,7 @@ parseArgs(int argc, char **argv) {
                 }
                 monteCarlo = 1;
             }
-            else if (strcmp(argv[i], "-lut") == 0) {
-                // Load the HandRanks.DAT file and map it into the HR array
-                printf("Loading HandRanks.DAT file...");
-                memset(HR, 0, sizeof(HR));
-                FILE * fin = fopen("./HandRanks.dat", "rb");
-                if (!fin) {
-                    printf("Failed to read HandRanks.dat\n");
-                    fclose(fin);
-                    goto error;
-                }
-                size_t bytesread = fread(HR, sizeof(HR), 1, fin);	// get the HandRank Array
-                if (bytesread <= 0) {
-                    printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
-                    fclose(fin);
-                    goto error;
-                }
-                fclose(fin);
-                printf("complete.\n\n");
+            else if (strcmp(argv[i], "-t") == 0) {
                 lut = 1;
             }
             else if (!strcmp(argv[i], "--"))
@@ -163,15 +149,15 @@ parseArgs(int argc, char **argv) {
                 ++gNCommon;
             }
             else {
-                int i = cardCount / 4;
-                StdDeck_CardMask_SET(gPlayerCards[i], c);
-                gNPlayers = i+1;
+                int cards = cardCount / 4;
+                StdDeck_CardMask_SET(gPlayerCards[cards], c);
+                gNPlayers = cards+1;
                 ++cardCount;
             };
         }
     }
     if (gNPlayers < 2 || gNPlayers > 9) {
-        printf("bad number of players: %d\n", gNPlayers);
+        printf("bad number of players: %d, %d\n", gNPlayers, cardCount);
         goto error;
     }
     if (gNCommon > 5) {
@@ -190,15 +176,19 @@ parseArgs(int argc, char **argv) {
 int main( int argc, char *argv[] )
 {
     CardMask cards, deadCards, board;
-    HandVal handval[MAX_PLAYERS], bestHand;
+    HandVal handval[MAX_PLAYERS], bestHand = HandVal_NOTHING;
+    LowHandVal lowhandval[MAX_PLAYERS], bestLowHand = LowHandVal_NOTHING;
     int i, players;
     unsigned long winCount[MAX_PLAYERS], loseCount[MAX_PLAYERS], 
-        tieCount[MAX_PLAYERS], handCount=0, nWinners;
+        tieCount[MAX_PLAYERS], handCount=0;
     float ev[MAX_PLAYERS];
-    int playerCards[4], nPlayerCards, boardCards[5], nBoardCards;
-    int h1, h2, b1, b2, b3;
-    int b11, b12, b13, h11, h12, h13;
     int handTypeSum[10];
+    int tiedPlayerIndexes[MAX_PLAYERS];
+    int tiedLowPlayerIndexes[MAX_PLAYERS];
+    int isTie = 0;
+    int isLowTie = 0;
+    int numTies = 0, numLowTies = 0;
+    int bestHiIndex = -1, bestLoIndex = -1;
 
     memset(handTypeSum, 0, sizeof(handTypeSum));
 
@@ -223,20 +213,20 @@ int main( int argc, char *argv[] )
         ENUMERATE_N_CARDS_D(cards, 5-gNCommon, deadCards, 
                             {
                                 ++handCount;
-                                nWinners = 0;
-                                bestHand = lut ? 0 : HandVal_NOTHING;
+                                bestHand = HandVal_NOTHING;
+                                bestLowHand = LowHandVal_NOTHING;
                                 for (players=0; players<gNPlayers; players++) {
                                     handval[players] = lut ? 0 : HandVal_NOTHING;
                                     CardMask_OR(board, gCommonCards, cards);
                                     if (!lut) {
-                                        int ret = StdDeck_OmahaHi_EVAL(gPlayerCards[players], board, &handval[players]);
+                                        int ret = StdDeck_OmahaHiLow8_EVAL(gPlayerCards[players], board, &handval[players], low ? &lowhandval[players] : NULL);
                                         if (ret) {
                                             printf("Error calculating OmahaHi: %d\n", ret);
                                             exit(-1);
                                         }
                                     }
                                     else {
-                                        int ret = StdDeck_OmahaHi_EVAL_LUT(gPlayerCards[players], board, &handval[players]);
+                                        int ret = StdDeck_OmahaHiLow8_EVAL_LUT(gPlayerCards[players], board, &handval[players], low ? &lowhandval[players] : NULL);
                                         if (ret) {
                                             printf("Error calculating OmahaHi: %d\n", ret);
                                             exit(-1);
@@ -244,27 +234,94 @@ int main( int argc, char *argv[] )
                                     }
 
                                     if (handval[players] > bestHand) {
-                                        nWinners = 1;
                                         bestHand = handval[players];
+                                        isTie = 0;
+                                        numTies = 0;
+                                        bestHiIndex = players;
                                     }
-                                    else if (handval[players] == bestHand)  {
-                                        ++nWinners;
+                                    // Otherwise, if this hand ties another, adjust some state...
+                                    else if (handval[players] == bestHand)	{
+                                        if (numTies == 0) {
+                                            tiedPlayerIndexes[0] = bestHiIndex;
+                                            tiedPlayerIndexes[1] = players;
+                                        }
+                                        else {
+                                            tiedPlayerIndexes[numTies + 1] = players;
+                                        }
+
+                                        isTie = 1;
+                                        numTies++;
+                                    }
+
+                                    // If this hand is the best low hand we've seen so far, adjust some state...
+                                    if (low) {
+                                        if (lowhandval[players] != LowHandVal_NOTHING && (bestLowHand == LowHandVal_NOTHING || lowhandval[players] < bestLowHand)) {
+                                            bestLowHand = lowhandval[players];
+                                            isLowTie = 0;
+                                            numLowTies = 0;;
+                                            bestLoIndex = players;
+                                        }
+                                        
+                                        // Otherwise, if this hand ties another low, add ties
+                                        else if (lowhandval[players] != LowHandVal_NOTHING && lowhandval[players] == bestLowHand) {
+                                            if (numLowTies == 0) {
+                                                tiedLowPlayerIndexes[0] = bestLoIndex;
+                                                tiedLowPlayerIndexes[1] = players;
+                                            }
+                                            else {
+                                                tiedLowPlayerIndexes[numLowTies + 1] = players;
+                                            }
+                                            
+                                            isLowTie = 1;
+                                            numLowTies++;
+                                        }
+                                    }
+                                }
+
+                                // max part of pot any player can win
+                                float maxPotSize = 1.0f;
+                                if (low && bestLowHand != LowHandVal_NOTHING)
+                                    maxPotSize = 0.5f; // split pot
+                                
+                                // divide up the high half
+                                if (!isTie) {
+                                    // besthi gets the maxPotSize for hi side, could be all
+                                    ev[bestHiIndex] += maxPotSize;
+                                    if (bestLowHand == LowHandVal_NOTHING)
+                                        ++winCount[bestHiIndex];
+                                    else {
+                                        if (bestHiIndex == bestLoIndex)
+                                            ++winCount[bestHiIndex];
+                                        else 
+                                            ++tieCount[bestHiIndex];
+                                    }
+                                }
+                                else {
+                                    // split the high half between ties
+                                    double partialHiWin = maxPotSize / ((double)numTies + 1.0f);
+                                    for (int i = 0; i <= numTies; i++) {
+                                        ev[ tiedPlayerIndexes[i] ] += partialHiWin;
+                                        ++tieCount[ tiedPlayerIndexes[i] ];
                                     }
                                 }
                                 
-                                for (i=0; i<gNPlayers; i++) {
-                                    if (handval[i] == bestHand) {
-                                        if (nWinners == 1) {
-                                            ++winCount[i];
-                                            ev[i] += 1.0;
+                                // if there is a low side of the pot, divide the low half
+                                if (low && bestLowHand != LowHandVal_NOTHING) {
+                                    if (!isLowTie) {
+                                        // bestlo gets tie unless we are also the high
+                                        if (bestHiIndex != bestLoIndex) {
+                                            ++tieCount[ bestLoIndex ];
                                         }
-                                        else {
-                                            ++tieCount[i];
-                                            ev[i] += (1.0 / nWinners);
-                                        };
+                                        ev[bestLoIndex] += maxPotSize;
                                     }
-                                    else
-                                        ++loseCount[i];
+                                    else {
+                                        // split the low half between ties
+                                        double partialLoWin = maxPotSize / ((double)numLowTies + 1.0f);
+                                        for (int i = 0; i <= numLowTies; i++) {
+                                            ev[ tiedLowPlayerIndexes[i] ] += partialLoWin;
+                                            ++tieCount[ tiedLowPlayerIndexes[i] ];
+                                        }
+                                    }
                                 }
                             }
                             );
@@ -274,74 +331,118 @@ int main( int argc, char *argv[] )
         DECK_MONTECARLO_N_CARDS_D(StdDeck, cards, deadCards, 5-gNCommon, gNIter,
                                   {
                                       ++handCount;
-                                      nWinners = 0;
-                                      bestHand = lut ? 0 : HandVal_NOTHING;
+                                      bestHand = HandVal_NOTHING;
+                                      bestLowHand = LowHandVal_NOTHING;
                                       for (players=0; players<gNPlayers; players++) {
                                           handval[players] = lut ? 0 : HandVal_NOTHING;
                                           CardMask_OR(board, gCommonCards, cards);
                                           if (!lut) {
-                                              int ret = StdDeck_OmahaHi_EVAL(gPlayerCards[players], board, &handval[players]);
+                                              int ret = StdDeck_OmahaHiLow8_EVAL(gPlayerCards[players], board, &handval[players], low ? &lowhandval[players] : NULL);
                                               if (ret) {
                                                   printf("Error calculating OmahaHi: %d\n", ret);
                                                   exit(-1);
                                               }
                                           }
                                           else {
-                                              nPlayerCards = StdDeck.maskToCards(&gPlayerCards[players], playerCards);
-                                              for (i=0;i<nPlayerCards;i++) {
-                                                  playerCards[i] = (4 * StdDeck_RANK(playerCards[i])) + StdDeck_SUIT(playerCards[i]) + 1;
-                                              }
-                                              nBoardCards = StdDeck.maskToCards(&board, boardCards);
-                                              for (i=0;i<nBoardCards;i++) {
-                                                  boardCards[i] = (4 * StdDeck_RANK(boardCards[i])) + StdDeck_SUIT(boardCards[i]) + 1;
-                                              }
-                                              for (b1=0; b1<nBoardCards; b1++) {
-                                                  b11 =  HR[53 + boardCards[b1]];
-                                                  for (b2=b1+1; b2<nBoardCards; b2++) {
-                                                      b12 = HR[b11 + boardCards[b2]];
-                                                      for (b3=b2+1; b3<nBoardCards; b3++) {
-                                                          b13 = HR[b12 + boardCards[b3]];
-                                                          for (h1=0; h1<nPlayerCards; h1++) {
-                                                              h11 = HR[b13 + playerCards[h1]];
-                                                              for (h2=h1+1; h2<nPlayerCards; h2++) {
-                                                                  h12 = HR[h11 + playerCards[h2]];
-                                                                  h13 = HR[h12 + 0];
-                                                                  if (h13 > handval[players])
-                                                                      handval[players] = h13;
-                                                              }
-                                                          }
-                                                      }
-                                                  }
+                                              int ret = StdDeck_OmahaHiLow8_EVAL_LUT(gPlayerCards[players], board, &handval[players], low ? &lowhandval[players] : NULL);
+                                              if (ret) {
+                                                  printf("Error calculating OmahaHi: %d\n", ret);
+                                                  exit(-1);
                                               }
                                           }
-                                          
                                           if (handval[players] > bestHand) {
-                                              nWinners = 1;
                                               bestHand = handval[players];
+                                              isTie = 0;
+                                              numTies = 0;
+                                              bestHiIndex = players;
                                           }
-                                          else if (handval[players] == bestHand) 
-                                              ++nWinners;
-                                      }
-                                      
-                                      for (i=0; i<gNPlayers; i++) {
-                                          if (handval[i] == bestHand) {
-                                              if (nWinners == 1) {
-                                                  ++winCount[i];
-                                                  ev[i] += 1.0;
+                                          // Otherwise, if this hand ties another, adjust some state...
+                                          else if (handval[players] == bestHand)	{
+                                              if (numTies == 0) {
+                                                  tiedPlayerIndexes[0] = bestHiIndex;
+                                                  tiedPlayerIndexes[1] = players;
                                               }
                                               else {
-                                                  ++tieCount[i];
-                                                  ev[i] += (1.0 / nWinners);
-                                              };
+                                                  tiedPlayerIndexes[numTies + 1] = players;
+                                              }
+
+                                              isTie = 1;
+                                              numTies++;
                                           }
-                                          else
-                                              ++loseCount[i];
+
+                                          if (low) {
+                                              // If this hand is the best low hand we've seen so far, adjust some state...
+                                              if (lowhandval[players] != LowHandVal_NOTHING && (bestLowHand == LowHandVal_NOTHING || lowhandval[players] < bestLowHand)) {
+                                                  bestLowHand = lowhandval[players];
+                                                  isLowTie = 0;
+                                                  numLowTies = 0;;
+                                                  bestLoIndex = players;
+                                              }
+                                    
+                                              // Otherwise, if this hand ties another low, add ties
+                                              else if (lowhandval[players] != LowHandVal_NOTHING && lowhandval[players] == bestLowHand) {
+                                                  if (numLowTies == 0) {
+                                                      tiedLowPlayerIndexes[0] = bestLoIndex;
+                                                      tiedLowPlayerIndexes[1] = players;
+                                                  }
+                                                  else {
+                                                      tiedLowPlayerIndexes[numLowTies + 1] = players;
+                                                  }
+                                            
+                                                  isLowTie = 1;
+                                                  numLowTies++;
+                                              }
+                                          }
+                                      }
+
+                                      // max part of pot any player can win
+                                      float maxPotSize = 1.0f;
+                                      if (low && bestLowHand != LowHandVal_NOTHING)
+                                          maxPotSize = 0.5f; // split pot
+                                
+                                      // divide up the high half
+                                      if (!isTie) {
+                                          // besthi gets the maxPotSize for hi side, could be all
+                                          ev[bestHiIndex] += maxPotSize;
+                                          if (bestLowHand == LowHandVal_NOTHING)
+                                              ++winCount[bestHiIndex];
+                                          else {
+                                              if (bestHiIndex == bestLoIndex)
+                                                  ++winCount[bestHiIndex];
+                                              else 
+                                                  ++tieCount[bestHiIndex];
+                                          }
+                                      }
+                                      else {
+                                          // split the high half between ties
+                                          double partialHiWin = maxPotSize / ((double)numTies + 1.0f);
+                                          for (int i = 0; i <= numTies; i++) {
+                                              ev[ tiedPlayerIndexes[i] ] += partialHiWin;
+                                              ++tieCount[ tiedPlayerIndexes[i] ];
+                                          }
+                                      }
+                                
+                                      // if there is a low side of the pot, divide the low half
+                                      if (low && bestLowHand != LowHandVal_NOTHING) {
+                                          if (!isLowTie) {
+                                              // bestlo gets half the pot
+                                              ev[bestLoIndex] += maxPotSize;
+                                              ++tieCount[ bestLoIndex ];
+                                          }
+                                          else {
+                                              // split the low half between ties
+                                              double partialLoWin = maxPotSize / ((double)numLowTies + 1.0f);
+                                              for (int i = 0; i <= numLowTies; i++) {
+                                                  ev[ tiedLowPlayerIndexes[i] ] += partialLoWin;
+                                                  ++tieCount[ tiedLowPlayerIndexes[i] ];
+                                              }
+                                          }
                                       }
                                   }
                                   );
     }
     
-            printf("%ld boards", handCount);
+    printf("%ld boards", handCount);
     if (gNCommon > 0) 
         printf(" containing %s ", Deck_maskString(gCommonCards));
     if (gNDead) 
