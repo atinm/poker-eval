@@ -29,6 +29,9 @@
 #ifndef __EVAL_OMAHA_H__
 #define __EVAL_OMAHA_H__
 
+#include <errno.h>
+#include <string.h>
+
 #include "inlines/eval.h"
 #include "inlines/eval_low8.h"
 #include "deck_std.h"
@@ -106,8 +109,8 @@ StdDeck_OmahaHiLow8_EVAL(StdDeck_CardMask hole, StdDeck_CardMask board,
         for (b2=b1+1; b2<nboard-1; b2++) {
           StdDeck_CardMask_OR(n4, n3, board1[b2]);
           for (b3=b2+1; b3<nboard; b3++) {
-            if (hival != NULL) {
-              StdDeck_CardMask_OR(n5, n4, board1[b3]);
+	    StdDeck_CardMask_OR(n5, n4, board1[b3]);
+	    if (hival != NULL) {
               curhi = StdDeck_StdRules_EVAL_N(n5, 5);
               if (curhi > besthi || besthi == HandVal_NOTHING)
                 besthi = curhi;

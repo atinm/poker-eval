@@ -16,8 +16,26 @@ You can also check out the pokersource user group at
 http://groups.yahoo.com/group/pokersource or the mailing list
 at https://mail.gna.org/listinfo/pokersource-users/
 
-The Hold'em Hand distribution code is from James Devlin.
+There are two new functions added for doing the 2+2 Evaluator instead
+of the StdDeck_StdRules_EVAL_N and StdDeck_OmahaHi_EVAL_N called
+StdDeck_StdRules_EVAL_LUT_N and StdDeck_OmahaHi_EVAL_LUT_N
+and these use the 2+2 table do the evaluation instead of the standard
+pokersource tables but these two cannot be intermingled with calls
+to the other evalution routines of the pokersource libray.
+StdDeck_Initialize_LUT has to be called with the HandRank.dat file
+descriptor (Note: descriptor is used instead of the filepath or FILE*
+so that it is easier to call the function from Java JNI using the
+FileDescriptor that is used when using the file within an Android
+resource. The interface can be changed to filepath or FILE* easily).
+
+Hand parsing code is added to the handdist subdir.
+
+The Hold'em Hand distribution parsing code is from James Devlin with
+minor bug fixes.
 
 Omaha Hand Distrbution parsing code is original by Atin Malaviya using the
-same interface as James' Hold'em code. The input text syntax is different
-for Omaha and follows the Omaha Equilab syntax.
+same interface as James' Hold'em code so make it easy for one program to call
+either kind of parser, albeit supporting different syntax for Holdem and Omaha.
+The Holdem syntax is the commonly used PokerStove syntax but the input text
+syntax is different for Omaha with syntax similar to the Omaha Equilab syntax
+with minor changes.

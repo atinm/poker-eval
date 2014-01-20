@@ -126,17 +126,17 @@ class OmahaHandDistribution;
 class OmahaCalculator
 {
 public:
-	OmahaCalculator();
+	OmahaCalculator(bool omahaHilo = false);
 	virtual ~OmahaCalculator();
 
 	// Calculate using either Monte Carlo or exhaustive enumeration.
-	int Calculate(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, double* results);
+	int Calculate(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, int* combos, double* results);
 
 	// Calculate using Monte Carlo only.
-	int CalculateMC(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, double* results);
+	int CalculateMC(const char* hands, const char* board, const char* dead, int64_t numberOfTrials, int* combos, double* results);
 
 	// Calculate using exhaustive enumeration only.
-	int CalculateEE(const char* hands, const char* board, const char* dead, double* results);
+	int CalculateEE(const char* hands, const char* board, const char* dead, int* combos, double* results);
 
 	// Get/set the "Monte Carlo" threshhold, the number of outcomes above which
 	void SetMCThreshhold(uint64_t t);
@@ -144,7 +144,7 @@ public:
 
 private:
 
-	void	PreCalculate(const char* hands, const char* board, const char* dead, int numberOfTrials, double* results);
+	void	PreCalculate(const char* hands, const char* board, const char* dead, int numberOfTrials, int* combos, double* results);
 	int64_t	PostCalculate();
 
 	int		CalculateExhaustive();
@@ -154,7 +154,7 @@ private:
 	void	EvalOneTrial( StdDeck_CardMask boardFragment, int playerCount);
 
 	void	Reset();
-	void	Store(const char* hands, const char* board, const char* dead, int trialCount, double* outResults);
+	void	Store(const char* hands, const char* board, const char* dead, int trialCount, int* outCombos, double* outResults);
 	int		CreateHandDistributions(const char* hands);
 	bool	IsDeterministic();
 	void	LinkHandDistributions();
@@ -170,6 +170,7 @@ private:
 	int m_totalHands;
 	int m_collisions;
 	double* m_pResults;
+	int* m_pCombos;
 	uint64_t m_indicatedTrials;
 	uint64_t m_actualTrials;
 	uint64_t m_possibleOutcomes;
@@ -177,6 +178,9 @@ private:
 	vector<OmahaHandDistribution*> m_dists;
 	double m_wins[23];
 	int m_handVals[23];
+	int m_lowHandVals[23];
 	int m_tiedPlayerIndexes[23];
+	int m_tiedLowPlayerIndexes[23];
 	bool m_wasMonteCarlo;
+	bool m_omahaHiLo;
 };

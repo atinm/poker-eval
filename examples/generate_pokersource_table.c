@@ -398,8 +398,6 @@ int main(int argc, char* argv[])
 
 	printf("Training seconds = %.2f\n", (float)timer/CLOCKS_PER_SEC);  // display training time
 
-	int64_t timings, endtimings;	// for high precision timing
-
 	timer = clock();   // now get current time for Testing!  
 
 	// another algorithm right off the thread

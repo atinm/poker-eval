@@ -17,7 +17,7 @@
 // relying on it. The user must assume the entire risk of using the source code.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+#include <unistd.h>
 #include "HandDistributions.h"
 #include "HoldemCalculator.h"
 
@@ -40,6 +40,20 @@ int main(int argc, char* argv[])
 	// deviate by more than 1%.
 
 	int numberOfTrials = 1000000;
+
+	FILE* f = fopen("HandRanks.dat", "rb");
+	if (f) {
+	  int fd = fileno(f);
+	  int myfd = dup(fd);
+	  StdDeck_Initialize_LUT(myfd, 0);
+	  fclose(f);
+	}
+
+	{
+		// Typical 3-way matchup - pocket pair vs. loose-ish vs. tight-ish
+	  double expected[] = { 39.07, 19.5, 41.42 };
+	  performMatchup("TsTc|AXs|QQ+,AQ+", NULL, NULL, numberOfTrials, false, expected);
+	}
 
 	{
 		// 7-way matchup involving 2 specific hands, 2 ranged hands, and 3 random hands, on the flop
@@ -107,7 +121,7 @@ int main(int argc, char* argv[])
 	}
 
 	printf("\n\nAll tests concluded with %d errors.", errorCount);
-    printf("\nPress any character to exit.\n");
+	printf("\nPress any character to exit.\n");
 	getchar();
 
 	return 0;
@@ -117,7 +131,9 @@ int main(int argc, char* argv[])
 
 void performMatchup(const char* hands, const char* board, const char* dead, int numberOfTrials, bool withExhaustive, double *expected)
 {
+  int combos[23];
 	double results[23];
+  memset(combos, 0, sizeof(combos));
 	memset(results, 0, sizeof(results));
 
 	int numberOfHands = std::count(hands, hands + strlen(hands), '|') + 1;
@@ -125,7 +141,7 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 	// First, let's run the matchup using Monte Carlo...
 
 	HoldemCalculator calc;
-	calc.CalculateMC(hands, board, dead, numberOfTrials, results);
+	calc.CalculateMC(hands, board, dead, numberOfTrials, combos, results);
 
 	if (expected)
 	{
@@ -143,8 +159,9 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 			
 			if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
 			{
+			  printf("Expected[%d]: %2.2f, Result[%d]: %2.2f\n", h, expected[h], h, results[h]);
 				errorCount++;
-				ASSERT(0);
+				//ASSERT(0);
 			}
 		}
 	}
@@ -154,7 +171,7 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 
 	// Then let's run it with Exhaustive Enumeration...
 
-	calc.CalculateEE(hands, board, dead, results);
+	calc.CalculateEE(hands, board, dead, combos, results);
 
 	if (expected)
 	{
@@ -172,8 +189,9 @@ void performMatchup(const char* hands, const char* board, const char* dead, int 
 			
 			if (expected[h] > results[h] + 1.0 || expected[h] < results[h] - 1.0)
 			{
+			  printf("Expected[%d]: %2.2f, Result[%d]: %2.2f\n", h, expected[h], h, results[h]);
 				errorCount++;
-				ASSERT(0);
+				//ASSERT(0);
 			}
 		}
 	}
