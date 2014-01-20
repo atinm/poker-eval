@@ -32,16 +32,16 @@
    Loading HandRanks.DAT file...complete.
 
    100000 boards
-   cards            win  %win       loss  %lose       tie  %tie      EV
-   Ts 7c Ad Jh    43517  43.52     48490  48.49      7993   7.99      47.51%
-   Ks Ac 6d Th    48490  48.49     43517  43.52      7993   7.99      52.49%
+   cards            win  %win       tie  %tie      EV
+   Ts 7c Ad Jh    43517  43.52     7993   7.99      47.51%
+   Ks Ac 6d Th    48490  48.49     7993   7.99      52.49%
 
    Simulation using pokersource omaha enumeration
    $ ./omahacmpn ad jh ts 7c  6d th ks ac --
    1086008 boards
-   cards            win  %win       loss  %lose       tie  %tie      EV
-   Ts 7c Ad Jh   473562  43.61    526022  48.44     86424   7.96      47.58%
-   Ks Ac 6d Th   526022  48.44    473562  43.61     86424   7.96      52.42%
+   cards            win  %win       tie  %tie      EV
+   Ts 7c Ad Jh   473562  43.61    86424   7.96      47.58%
+   Ks Ac 6d Th   526022  48.44    86424   7.96      52.42%
 */
 
 #include <stdio.h>
@@ -179,8 +179,9 @@ int main( int argc, char *argv[] )
     HandVal handval[MAX_PLAYERS], bestHand = HandVal_NOTHING;
     LowHandVal lowhandval[MAX_PLAYERS], bestLowHand = LowHandVal_NOTHING;
     int i, players;
-    unsigned long winCount[MAX_PLAYERS], loseCount[MAX_PLAYERS], 
-        tieCount[MAX_PLAYERS], handCount=0;
+    unsigned long winCount[MAX_PLAYERS],
+        tieCount[MAX_PLAYERS], winLoCount[MAX_PLAYERS],
+        tieLoCount[MAX_PLAYERS], handCount=0;
     float ev[MAX_PLAYERS];
     int handTypeSum[10];
     int tiedPlayerIndexes[MAX_PLAYERS];
@@ -199,7 +200,8 @@ int main( int argc, char *argv[] )
         CardMask_RESET(gPlayerCards[i]);
         winCount[i] = 0;
         tieCount[i] = 0;
-        loseCount[i] = 0;
+        winLoCount[i] = 0;
+        tieLoCount[i] = 0;
         ev[i] = 0;
     };
     parseArgs(argc, argv);
@@ -287,14 +289,7 @@ int main( int argc, char *argv[] )
                                 if (!isTie) {
                                     // besthi gets the maxPotSize for hi side, could be all
                                     ev[bestHiIndex] += maxPotSize;
-                                    if (bestLowHand == LowHandVal_NOTHING)
-                                        ++winCount[bestHiIndex];
-                                    else {
-                                        if (bestHiIndex == bestLoIndex)
-                                            ++winCount[bestHiIndex];
-                                        else 
-                                            ++tieCount[bestHiIndex];
-                                    }
+                                    ++winCount[bestHiIndex];
                                 }
                                 else {
                                     // split the high half between ties
@@ -309,9 +304,7 @@ int main( int argc, char *argv[] )
                                 if (low && bestLowHand != LowHandVal_NOTHING) {
                                     if (!isLowTie) {
                                         // bestlo gets tie unless we are also the high
-                                        if (bestHiIndex != bestLoIndex) {
-                                            ++tieCount[ bestLoIndex ];
-                                        }
+                                        ++winLoCount[ bestLoIndex ];
                                         ev[bestLoIndex] += maxPotSize;
                                     }
                                     else {
@@ -319,7 +312,7 @@ int main( int argc, char *argv[] )
                                         double partialLoWin = maxPotSize / ((double)numLowTies + 1.0f);
                                         for (int i = 0; i <= numLowTies; i++) {
                                             ev[ tiedLowPlayerIndexes[i] ] += partialLoWin;
-                                            ++tieCount[ tiedLowPlayerIndexes[i] ];
+                                            ++tieLoCount[ tiedLowPlayerIndexes[i] ];
                                         }
                                     }
                                 }
@@ -404,14 +397,7 @@ int main( int argc, char *argv[] )
                                       if (!isTie) {
                                           // besthi gets the maxPotSize for hi side, could be all
                                           ev[bestHiIndex] += maxPotSize;
-                                          if (bestLowHand == LowHandVal_NOTHING)
-                                              ++winCount[bestHiIndex];
-                                          else {
-                                              if (bestHiIndex == bestLoIndex)
-                                                  ++winCount[bestHiIndex];
-                                              else 
-                                                  ++tieCount[bestHiIndex];
-                                          }
+                                          ++winCount[bestHiIndex];
                                       }
                                       else {
                                           // split the high half between ties
@@ -427,14 +413,14 @@ int main( int argc, char *argv[] )
                                           if (!isLowTie) {
                                               // bestlo gets half the pot
                                               ev[bestLoIndex] += maxPotSize;
-                                              ++tieCount[ bestLoIndex ];
+                                              ++winLoCount[ bestLoIndex ];
                                           }
                                           else {
                                               // split the low half between ties
                                               double partialLoWin = maxPotSize / ((double)numLowTies + 1.0f);
                                               for (int i = 0; i <= numLowTies; i++) {
                                                   ev[ tiedLowPlayerIndexes[i] ] += partialLoWin;
-                                                  ++tieCount[ tiedLowPlayerIndexes[i] ];
+                                                  ++tieLoCount[ tiedLowPlayerIndexes[i] ];
                                               }
                                           }
                                       }
@@ -449,14 +435,27 @@ int main( int argc, char *argv[] )
         printf(" with %s removed ", Deck_maskString(gDeadCards));
     printf("\n");
 
-    printf("  cards            win  %%win       loss  %%lose       tie  %%tie      EV\n");
+    if (low)
+        printf("  cards            wins hi  %%win       ties hi  %%tie      wins lo  %%win       ties lo  %%tie      EV\n");
+    else
+        printf("  cards            win  %%win       tie  %%tie      EV\n");
     for (i=0; i<gNPlayers; i++) 
-        printf("  %s  %7ld %6.2f   %7ld %6.2f   %7ld %6.2f     %6.2f%%\n", 
-               Deck_maskString(gPlayerCards[i]), 
-               winCount[i], 100.0*winCount[i]/handCount, 
-               loseCount[i], 100.0*loseCount[i]/handCount, 
-               tieCount[i], 100.0*tieCount[i]/handCount, 
-               (ev[i] / handCount) * 100.0);
+        if (low) {
+            printf("  %s     %7ld %6.2f   %7ld    %6.2f     %7ld %6.2f   %7ld    %6.2f     %6.2f%%\n", 
+                   Deck_maskString(gPlayerCards[i]), 
+                   winCount[i], 100.0*winCount[i]/handCount, 
+                   tieCount[i], 100.0*tieCount[i]/handCount, 
+                   winLoCount[i], 100.0*winLoCount[i]/handCount, 
+                   tieLoCount[i], 100.0*tieLoCount[i]/handCount, 
+                   (ev[i] / handCount) * 100.0);
+        }
+        else {
+            printf("  %s  %7ld %6.2f   %7ld %6.2f     %6.2f%%\n", 
+                   Deck_maskString(gPlayerCards[i]), 
+                   winCount[i], 100.0*winCount[i]/handCount, 
+                   tieCount[i], 100.0*tieCount[i]/handCount, 
+                   (ev[i] / handCount) * 100.0);
+        }
 
     return 0;
 }
