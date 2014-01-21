@@ -26,32 +26,46 @@
 #include <assert.h>
 #include <strings.h>
 #include <errno.h>
+#include <stdio.h>
 
 // The handranks lookup table- loaded from HANDRANKS.DAT. (2+2 Evaluator)
 extern int HR[32487834];
+extern int O8HR[32487834];
 extern int lut_initialized;
+extern int low_lut_initialized;
 
 static inline int
-StdDeck_Initialize_LUT(int fd, long offset)
+StdDeck_Initialize_LUT(int fd, long offset, int low)
 {
  if (!lut_initialized) {
    memset(HR, 0, sizeof(HR));
    FILE * fin = fdopen(fd, "rb");
    if (!fin) {
-     //printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
+       //printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
+       if (low)
+           low_lut_initialized = 0;
+       else
+           lut_initialized = 0;
    }
    fseek(fin, offset, SEEK_SET);
-
-   size_t bytesread = fread(HR, sizeof(HR), 1, fin);	// get the HandRank Array
+   size_t bytesread = fread(low ? O8HR : HR, low ? sizeof(O8HR) : sizeof(HR), 1, fin);	// get the HandRank Array
    if (bytesread <= 0) {
-     //printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
-     fclose(fin);
+       //printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
+       if (low)
+           low_lut_initialized = 0;
+       else
+           lut_initialized = 0;
+       fclose(fin);
    }
    fclose(fin);
+
    //printf("Successfully initialized LUT\n");
-   lut_initialized = 1;
+   if (low)
+       low_lut_initialized = 1;
+   else
+       lut_initialized = 1;
  }
- return lut_initialized;
+ return low ? low_lut_initialized : lut_initialized;
 }
 
 /*
@@ -290,7 +304,6 @@ StdDeck_StdRules_EVAL_N( StdDeck_CardMask cards, int n_cards )
 
   /* Should never happen */
   assert(!"Logic error in StdDeck_StdRules_EVAL_N");
-  return HandVal_NOTHING;
 }
 
 #undef SC
