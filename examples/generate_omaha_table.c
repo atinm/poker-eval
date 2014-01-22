@@ -18,7 +18,8 @@ const char HandRanks[][16] = {"BAD!!","High Card","Pair","Two Pair","Three of a 
 
 int64_t IDs[107928];
 int HandRank[5720184];   
-
+char *filename = NULL;
+char *variable = NULL;
 int numIDs = 1;
 int numcards = 0;
 int maxHR = 0;
@@ -283,6 +284,14 @@ int main(int argc, char* argv[])
             if (strcmp(argv[i], "-l") == 0) {
                 low = 1;
             }
+            else if (strcmp(argv[i], "-f") == 0) {
+                if (++i == argc) goto error;
+                filename = argv[i];
+            }
+            else if (strcmp(argv[i], "-v") == 0) {
+                if (++i == argc) goto error;
+                variable = argv[i];
+            }
         }
     }
 
@@ -428,16 +437,37 @@ int main(int argc, char* argv[])
 	printf("\nValidation seconds = %.4lf\n", (double)timer/CLOCKS_PER_SEC);
 
 	// output the array now that I have it!!
-	FILE * fout = fopen("HandRanks.dat", "wb");
-	if (!fout) {
-		printf("Problem creating the Output File!\n");
-		return 1;
-	}
-	fwrite(HandRank, sizeof(HandRank), 1, fout);  // big write, but quick
-
-	fclose(fout);
+    if (filename && variable) {
+        printf("Printing out C struct %s in %s file\n", variable, filename);
+        FILE * fout = fopen(filename, "wb");
+        if (!fout) {
+            printf("Problem creating the Output File!\n");
+            return 1;
+        }
+        fprintf(fout, "int %s[] = {\n", variable);
+        for (int i=0; i<5720184; i++) {
+            fprintf(fout, "%d,\n", HandRank[i]);
+        }
+        fprintf(fout, "};\n");
+        fclose(fout);
+    }
+    else {
+        printf("Creating file HandRanks.dat");
+        FILE * fout = fopen("HandRanks.dat", "wb");
+        if (!fout) {
+            printf("Problem creating the Output File!\n");
+            return 1;
+        }
+        fwrite(HandRank, sizeof(HandRank), 1, fout);  // big write, but quick
+        
+        fclose(fout);
+    }
 
 	return 0;
+
+  error:
+    fprintf(stderr, "Usage: generate_omaha_table [ -l ] [ -f filename ]\n");
+    exit(0);
 }
 
 ///////////////////////////////// end code!!
