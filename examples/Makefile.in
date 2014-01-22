@@ -54,7 +54,7 @@ host_triplet = @host@
 target_triplet = @target@
 noinst_PROGRAMS = eval$(EXEEXT) fish$(EXEEXT) five_card_hands$(EXEEXT) \
 	hcmp2$(EXEEXT) hcmpn$(EXEEXT) omahacmp2$(EXEEXT) \
-	omahacmpn$(EXEEXT) omahalutcmpn$(EXEEXT) generate_pokersource_table$(EXEEXT) \
+	omahacmpn$(EXEEXT) generate_omaha_table$(EXEEXT) \
 	pokenum$(EXEEXT) seven_card_hands$(EXEEXT) usedecks$(EXEEXT)
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -92,14 +92,14 @@ five_card_hands_DEPENDENCIES = $(top_builddir)/lib/libpoker-eval.la
 five_card_hands_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(five_card_hands_LDFLAGS) $(LDFLAGS) -o $@
-am_generate_pokersource_table_OBJECTS = generate_pokersource_table-generate_pokersource_table.$(OBJEXT)
-generate_pokersource_table_OBJECTS =  \
-	$(am_generate_pokersource_table_OBJECTS)
-generate_pokersource_table_DEPENDENCIES =  \
+am_generate_omaha_table_OBJECTS = generate_omaha_table-generate_omaha_table.$(OBJEXT)
+generate_omaha_table_OBJECTS =  \
+	$(am_generate_omaha_table_OBJECTS)
+generate_omaha_table_DEPENDENCIES =  \
 	$(top_builddir)/lib/libpoker-eval.la
-generate_pokersource_table_LINK = $(LIBTOOL) --tag=CC \
+generate_omaha_table_LINK = $(LIBTOOL) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(AM_CFLAGS) $(CFLAGS) $(generate_pokersource_table_LDFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS) $(generate_omaha_table_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_hcmp2_OBJECTS = hcmp2-hcmp2.$(OBJEXT)
 hcmp2_OBJECTS = $(am_hcmp2_OBJECTS)
@@ -125,12 +125,6 @@ omahacmpn_DEPENDENCIES = $(top_builddir)/lib/libpoker-eval.la
 omahacmpn_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(omahacmpn_LDFLAGS) $(LDFLAGS) -o $@
-am_omahalutcmpn_OBJECTS = omahalutcmpn-omahalutcmpn.$(OBJEXT)
-omahalutcmpn_OBJECTS = $(am_omahalutcmpn_OBJECTS)
-omahalutcmpn_DEPENDENCIES = $(top_builddir)/lib/libpoker-eval.la
-omahalutcmpn_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(omahalutcmpn_LDFLAGS) $(LDFLAGS) -o $@
 am_pokenum_OBJECTS = pokenum-pokenum.$(OBJEXT)
 pokenum_OBJECTS = $(am_pokenum_OBJECTS)
 pokenum_DEPENDENCIES = $(top_builddir)/lib/libpoker-eval.la
@@ -164,14 +158,14 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(eval_SOURCES) $(fish_SOURCES) $(five_card_hands_SOURCES) \
-	$(generate_pokersource_table_SOURCES) $(hcmp2_SOURCES) \
-	$(hcmpn_SOURCES) $(omahacmp2_SOURCES) $(omahacmpn_SOURCES) $(omahalutcmpn_SOURCES) \
+	$(generate_omaha_table_SOURCES) $(hcmp2_SOURCES) \
+	$(hcmpn_SOURCES) $(omahacmp2_SOURCES) $(omahacmpn_SOURCES) \
 	$(pokenum_SOURCES) $(seven_card_hands_SOURCES) \
 	$(usedecks_SOURCES)
 DIST_SOURCES = $(eval_SOURCES) $(fish_SOURCES) \
 	$(five_card_hands_SOURCES) \
-	$(generate_pokersource_table_SOURCES) $(hcmp2_SOURCES) \
-	$(hcmpn_SOURCES) $(omahacmp2_SOURCES) $(omahacmpn_SOURCES) $(omahalutcmpn_SOURCES) \
+	$(generate_omaha_table_SOURCES) $(hcmp2_SOURCES) \
+	$(hcmpn_SOURCES) $(omahacmp2_SOURCES) $(omahacmpn_SOURCES) \
 	$(pokenum_SOURCES) $(seven_card_hands_SOURCES) \
 	$(usedecks_SOURCES)
 am__can_run_installinfo = \
@@ -348,8 +342,7 @@ EXTRA_DIST = \
 	hcmpn2.vcproj \
 	omahacmp2.vcproj \
 	omahacmpn.vcproj \
-	omahalutcmpn.vcproj \
-	generate_pokersource_table.vcproj \
+	generate_omaha_table.vcproj \
 	pokenum.vcproj \
 	seven_card_hands.vcproj \
 	usedecks.vcproj
@@ -382,14 +375,10 @@ omahacmpn_SOURCES = omahacmpn.c
 omahacmpn_LDADD = $(top_builddir)/lib/libpoker-eval.la
 omahacmpn_CPPFLAGS = ${GCOV_CPPFLAGS}
 omahacmpn_LDFLAGS = ${GCOV_LDFLAGS}
-omahalutcmpn_SOURCES = omahalutcmpn.c
-omahalutcmpn_LDADD = $(top_builddir)/lib/libpoker-eval.la
-omahalutcmpn_CPPFLAGS = ${GCOV_CPPFLAGS}
-omahalutcmpn_LDFLAGS = ${GCOV_LDFLAGS}
-generate_pokersource_table_SOURCES = generate_pokersource_table.c
-generate_pokersource_table_LDADD = $(top_builddir)/lib/libpoker-eval.la
-generate_pokersource_table_CPPFLAGS = ${GCOV_CPPFLAGS}
-generate_pokersource_table_LDFLAGS = ${GCOV_LDFLAGS}
+generate_omaha_table_SOURCES = generate_omaha_table.c
+generate_omaha_table_LDADD = $(top_builddir)/lib/libpoker-eval.la
+generate_omaha_table_CPPFLAGS = ${GCOV_CPPFLAGS}
+generate_omaha_table_LDFLAGS = ${GCOV_LDFLAGS}
 pokenum_SOURCES = pokenum.c
 pokenum_LDADD = $(top_builddir)/lib/libpoker-eval.la
 pokenum_CPPFLAGS = ${GCOV_CPPFLAGS}
@@ -454,9 +443,9 @@ fish$(EXEEXT): $(fish_OBJECTS) $(fish_DEPENDENCIES) $(EXTRA_fish_DEPENDENCIES)
 five_card_hands$(EXEEXT): $(five_card_hands_OBJECTS) $(five_card_hands_DEPENDENCIES) $(EXTRA_five_card_hands_DEPENDENCIES) 
 	@rm -f five_card_hands$(EXEEXT)
 	$(five_card_hands_LINK) $(five_card_hands_OBJECTS) $(five_card_hands_LDADD) $(LIBS)
-generate_pokersource_table$(EXEEXT): $(generate_pokersource_table_OBJECTS) $(generate_pokersource_table_DEPENDENCIES) $(EXTRA_generate_pokersource_table_DEPENDENCIES) 
-	@rm -f generate_pokersource_table$(EXEEXT)
-	$(generate_pokersource_table_LINK) $(generate_pokersource_table_OBJECTS) $(generate_pokersource_table_LDADD) $(LIBS)
+generate_omaha_table$(EXEEXT): $(generate_omaha_table_OBJECTS) $(generate_omaha_table_DEPENDENCIES) $(EXTRA_generate_omaha_table_DEPENDENCIES) 
+	@rm -f generate_omaha_table$(EXEEXT)
+	$(generate_omaha_table_LINK) $(generate_omaha_table_OBJECTS) $(generate_omaha_table_LDADD) $(LIBS)
 hcmp2$(EXEEXT): $(hcmp2_OBJECTS) $(hcmp2_DEPENDENCIES) $(EXTRA_hcmp2_DEPENDENCIES) 
 	@rm -f hcmp2$(EXEEXT)
 	$(hcmp2_LINK) $(hcmp2_OBJECTS) $(hcmp2_LDADD) $(LIBS)
@@ -469,9 +458,6 @@ omahacmp2$(EXEEXT): $(omahacmp2_OBJECTS) $(omahacmp2_DEPENDENCIES) $(EXTRA_omaha
 omahacmpn$(EXEEXT): $(omahacmpn_OBJECTS) $(omahacmpn_DEPENDENCIES) $(EXTRA_omahacmpn_DEPENDENCIES) 
 	@rm -f omahacmpn$(EXEEXT)
 	$(omahacmpn_LINK) $(omahacmpn_OBJECTS) $(omahacmpn_LDADD) $(LIBS)
-omahalutcmpn$(EXEEXT): $(omahalutcmpn_OBJECTS) $(omahalutcmpn_DEPENDENCIES) $(EXTRA_omahalutcmpn_DEPENDENCIES) 
-	@rm -f omahalutcmpn$(EXEEXT)
-	$(omahalutcmpn_LINK) $(omahalutcmpn_OBJECTS) $(omahalutcmpn_LDADD) $(LIBS)
 pokenum$(EXEEXT): $(pokenum_OBJECTS) $(pokenum_DEPENDENCIES) $(EXTRA_pokenum_DEPENDENCIES) 
 	@rm -f pokenum$(EXEEXT)
 	$(pokenum_LINK) $(pokenum_OBJECTS) $(pokenum_LDADD) $(LIBS)
@@ -491,12 +477,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eval-eval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fish-fish.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/five_card_hands-five_card_hands.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/generate_pokersource_table-generate_pokersource_table.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/generate_omaha_table-generate_omaha_table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hcmp2-hcmp2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hcmpn-hcmpn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/omahacmp2-omahacmp2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/omahacmpn-omahacmpn.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/omahalutcmpn-omahalutcmpn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pokenum-pokenum.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seven_card_hands-seven_card_hands.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/usedecks-usedecks.Po@am__quote@
@@ -564,19 +549,19 @@ five_card_hands-five_card_hands.obj: five_card_hands.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(five_card_hands_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o five_card_hands-five_card_hands.obj `if test -f 'five_card_hands.c'; then $(CYGPATH_W) 'five_card_hands.c'; else $(CYGPATH_W) '$(srcdir)/five_card_hands.c'; fi`
 
-generate_pokersource_table-generate_pokersource_table.o: generate_pokersource_table.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generate_pokersource_table_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT generate_pokersource_table-generate_pokersource_table.o -MD -MP -MF $(DEPDIR)/generate_pokersource_table-generate_pokersource_table.Tpo -c -o generate_pokersource_table-generate_pokersource_table.o `test -f 'generate_pokersource_table.c' || echo '$(srcdir)/'`generate_pokersource_table.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/generate_pokersource_table-generate_pokersource_table.Tpo $(DEPDIR)/generate_pokersource_table-generate_pokersource_table.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='generate_pokersource_table.c' object='generate_pokersource_table-generate_pokersource_table.o' libtool=no @AMDEPBACKSLASH@
+generate_omaha_table-generate_omaha_table.o: generate_omaha_table.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generate_omaha_table_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT generate_omaha_table-generate_omaha_table.o -MD -MP -MF $(DEPDIR)/generate_omaha_table-generate_omaha_table.Tpo -c -o generate_omaha_table-generate_omaha_table.o `test -f 'generate_omaha_table.c' || echo '$(srcdir)/'`generate_omaha_table.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/generate_omaha_table-generate_omaha_table.Tpo $(DEPDIR)/generate_omaha_table-generate_omaha_table.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='generate_omaha_table.c' object='generate_omaha_table-generate_omaha_table.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generate_pokersource_table_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o generate_pokersource_table-generate_pokersource_table.o `test -f 'generate_pokersource_table.c' || echo '$(srcdir)/'`generate_pokersource_table.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generate_omaha_table_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o generate_omaha_table-generate_omaha_table.o `test -f 'generate_omaha_table.c' || echo '$(srcdir)/'`generate_omaha_table.c
 
-generate_pokersource_table-generate_pokersource_table.obj: generate_pokersource_table.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generate_pokersource_table_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT generate_pokersource_table-generate_pokersource_table.obj -MD -MP -MF $(DEPDIR)/generate_pokersource_table-generate_pokersource_table.Tpo -c -o generate_pokersource_table-generate_pokersource_table.obj `if test -f 'generate_pokersource_table.c'; then $(CYGPATH_W) 'generate_pokersource_table.c'; else $(CYGPATH_W) '$(srcdir)/generate_pokersource_table.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/generate_pokersource_table-generate_pokersource_table.Tpo $(DEPDIR)/generate_pokersource_table-generate_pokersource_table.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='generate_pokersource_table.c' object='generate_pokersource_table-generate_pokersource_table.obj' libtool=no @AMDEPBACKSLASH@
+generate_omaha_table-generate_omaha_table.obj: generate_omaha_table.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generate_omaha_table_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT generate_omaha_table-generate_omaha_table.obj -MD -MP -MF $(DEPDIR)/generate_omaha_table-generate_omaha_table.Tpo -c -o generate_omaha_table-generate_omaha_table.obj `if test -f 'generate_omaha_table.c'; then $(CYGPATH_W) 'generate_omaha_table.c'; else $(CYGPATH_W) '$(srcdir)/generate_omaha_table.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/generate_omaha_table-generate_omaha_table.Tpo $(DEPDIR)/generate_omaha_table-generate_omaha_table.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='generate_omaha_table.c' object='generate_omaha_table-generate_omaha_table.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generate_pokersource_table_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o generate_pokersource_table-generate_pokersource_table.obj `if test -f 'generate_pokersource_table.c'; then $(CYGPATH_W) 'generate_pokersource_table.c'; else $(CYGPATH_W) '$(srcdir)/generate_pokersource_table.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generate_omaha_table_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o generate_omaha_table-generate_omaha_table.obj `if test -f 'generate_omaha_table.c'; then $(CYGPATH_W) 'generate_omaha_table.c'; else $(CYGPATH_W) '$(srcdir)/generate_omaha_table.c'; fi`
 
 hcmp2-hcmp2.o: hcmp2.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(hcmp2_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT hcmp2-hcmp2.o -MD -MP -MF $(DEPDIR)/hcmp2-hcmp2.Tpo -c -o hcmp2-hcmp2.o `test -f 'hcmp2.c' || echo '$(srcdir)/'`hcmp2.c
@@ -633,20 +618,6 @@ omahacmpn-omahacmpn.obj: omahacmpn.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='omahacmpn.c' object='omahacmpn-omahacmpn.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(omahacmpn_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o omahacmpn-omahacmpn.obj `if test -f 'omahacmpn.c'; then $(CYGPATH_W) 'omahacmpn.c'; else $(CYGPATH_W) '$(srcdir)/omahacmpn.c'; fi`
-
-omahalutcmpn-omahalutcmpn.o: omahalutcmpn.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(omahalutcmpn_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT omahalutcmpn-omahalutcmpn.o -MD -MP -MF $(DEPDIR)/omahalutcmpn-omahalutcmpn.Tpo -c -o omahalutcmpn-omahalutcmpn.o `test -f 'omahalutcmpn.c' || echo '$(srcdir)/'`omahalutcmpn.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/omahalutcmpn-omahalutcmpn.Tpo $(DEPDIR)/omahalutcmpn-omahalutcmpn.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='omahalutcmpn.c' object='omahalutcmpn-omahalutcmpn.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(omahalutcmpn_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o omahalutcmpn-omahalutcmpn.o `test -f 'omahalutcmpn.c' || echo '$(srcdir)/'`omahalutcmpn.c
-
-omahalutcmpn-omahalutcmpn.obj: omahalutcmpn.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(omahalutcmpn_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT omahalutcmpn-omahalutcmpn.obj -MD -MP -MF $(DEPDIR)/omahalutcmpn-omahalutcmpn.Tpo -c -o omahalutcmpn-omahalutcmpn.obj `if test -f 'omahalutcmpn.c'; then $(CYGPATH_W) 'omahalutcmpn.c'; else $(CYGPATH_W) '$(srcdir)/omahalutcmpn.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/omahalutcmpn-omahalutcmpn.Tpo $(DEPDIR)/omahalutcmpn-omahalutcmpn.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='omahalutcmpn.c' object='omahalutcmpn-omahalutcmpn.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(omahalutcmpn_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o omahalutcmpn-omahalutcmpn.obj `if test -f 'omahalutcmpn.c'; then $(CYGPATH_W) 'omahalutcmpn.c'; else $(CYGPATH_W) '$(srcdir)/omahalutcmpn.c'; fi`
 
 pokenum-pokenum.o: pokenum.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(pokenum_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pokenum-pokenum.o -MD -MP -MF $(DEPDIR)/pokenum-pokenum.Tpo -c -o pokenum-pokenum.o `test -f 'pokenum.c' || echo '$(srcdir)/'`pokenum.c
