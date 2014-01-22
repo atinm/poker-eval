@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
-#include "generate_tables.h"
+#include "generate_omaha_table.h"
 #include "poker_defs.h"
 #include "inlines/eval.h"
 #include "inlines/eval_low8.h"
@@ -16,8 +16,8 @@
 
 const char HandRanks[][16] = {"BAD!!","High Card","Pair","Two Pair","Three of a Kind","Straight","Flush","Full House","Four of a Kind","Straight Flush"};
 
-int64_t IDs[612978];
-int HR[32487834];   
+int64_t IDs[107927];
+int OHR[5720183];   
 
 int numIDs = 1;
 int numcards = 0;
@@ -38,8 +38,8 @@ int64_t MakeID(int64_t IDin, int newcard)  // adding a new card to this ID
 	memset(rankcount, 0, sizeof(rankcount));
 	memset(suitcount, 0, sizeof(suitcount));
 
-	// can't have more than 6 cards!
-	for (cardnum = 0; cardnum < 6; cardnum++)
+	// can't have more than 5 cards!
+	for (cardnum = 0; cardnum < 5; cardnum++)
 	{  
 		workcards[cardnum + 1] =  (int) ((IDin >> (8 * cardnum)) & 0xff);  // leave the 0 hole for new card
 	}
@@ -93,22 +93,15 @@ int64_t MakeID(int64_t IDin, int newcard)  // adding a new card to this ID
 	// Sort Using XOR.  Network for N=7, using Bose-Nelson Algorithm: Thanks to the thread!
 #define SWAP(I,J) {if (workcards[I] < workcards[J]) {workcards[I]^=workcards[J]; workcards[J]^=workcards[I]; workcards[I]^=workcards[J];}}		
 
-	SWAP(0, 4);		
-	SWAP(1, 5);		
-	SWAP(2, 6);		
-	SWAP(0, 2);		
-	SWAP(1, 3);		
-	SWAP(4, 6);		
-	SWAP(2, 4);		
-	SWAP(3, 5);		
-	SWAP(0, 1);		
-	SWAP(2, 3);		
-	SWAP(4, 5);		
-	SWAP(1, 4);		
-	SWAP(3, 6);		
-	SWAP(1, 2);		
-	SWAP(3, 4);		
-	SWAP(5, 6);	
+    SWAP(0, 1);
+    SWAP(3, 4);
+    SWAP(2, 4);
+    SWAP(2, 3);
+    SWAP(0, 3);
+    SWAP(0, 2);
+    SWAP(1, 4);
+    SWAP(1, 3);
+    SWAP(1, 2);
 
 	// long winded way to put the pieces into a int64_t 
 	// cards in bytes --66554433221100	 
@@ -117,9 +110,7 @@ int64_t MakeID(int64_t IDin, int newcard)  // adding a new card to this ID
 		((int64_t) workcards[1] << 8) +
 		((int64_t) workcards[2] << 16) + 
 		((int64_t) workcards[3] << 24) +
-		((int64_t) workcards[4] << 32) +
-		((int64_t) workcards[5] << 40) +
-		((int64_t) workcards[6] << 48);    
+		((int64_t) workcards[4] << 32);
 
 	return ID;
 }
@@ -186,8 +177,8 @@ int DoEval(int64_t IDin)
 
 	if (IDin)
 	{	 // if I have a good ID then do it...
-		for (cardnum = 0; cardnum < 7; cardnum++)
-		{  // convert all 7 cards (0s are ok)
+		for (cardnum = 0; cardnum < 5; cardnum++)
+		{  // convert all 5 cards (0s are ok)
 			holdcards[cardnum] =  (int) ((IDin >> (8 * cardnum)) & 0xff); 
 			if (holdcards[cardnum] == 0) break;	// once I hit a 0 I know I am done
 			numevalcards++;						// if not 0 then count the card
@@ -252,33 +243,6 @@ int DoEval(int64_t IDin)
                 //printf("\n");
                 //holdrank = eval_5hand_fast(workcards[0],workcards[1],workcards[2],workcards[3],workcards[4]);
 				break;
-				// if 6 cards I would like to find HandRank for them 
-				// Cactus Key is 1 = highest - 7362 lowest I need to get the min for the permutations
-			case 6 : 
-                if (low)
-                    holdrank = Hand_EVAL_LOW8(cards, 6);
-                else
-                    holdrank = Hand_EVAL_N(cards, 6);
-                //printf("holdrank: %d ", holdrank);
-                //StdDeck_printMask(cards);
-                //printf("\n");
-                //holdrank = eval_5hand_fast(workcards[0],workcards[1],workcards[2],workcards[3],workcards[4]);
-				//holdrank = __min(holdrank, eval_5hand_fast(workcards[0],workcards[1],workcards[2],workcards[3],workcards[5]));
-				//holdrank = __min(holdrank, eval_5hand_fast(workcards[0],workcards[1],workcards[2],workcards[4],workcards[5]));
-				//holdrank = __min(holdrank, eval_5hand_fast(workcards[0],workcards[1],workcards[3],workcards[4],workcards[5]));
-				//holdrank = __min(holdrank, eval_5hand_fast(workcards[0],workcards[2],workcards[3],workcards[4],workcards[5]));
-				//holdrank = __min(holdrank, eval_5hand_fast(workcards[1],workcards[2],workcards[3],workcards[4],workcards[5]));
-				break;
-			case 7 :
-                if (low)
-                    holdrank = Hand_EVAL_LOW8(cards, 7);
-                else
-                    holdrank = Hand_EVAL_N(cards, 7);
-                //printf("holdrank: %d ", holdrank);
-                //StdDeck_printMask(cards);
-                //printf("\n");
-                //holdrank = eval_7hand(workcards);  
-				break;
 			default : // problem!!  shouldn't hit this... 
 				printf("    Problem with numcards = %d!!\n", numcards);
 				break;
@@ -331,7 +295,7 @@ int main(int argc, char* argv[])
 	// Clear our arrays
 	memset(handTypeSum, 0, sizeof(handTypeSum));
 	memset(IDs, 0, sizeof(IDs));
-	memset(HR, 0, sizeof(HR));
+	memset(OHR, 0, sizeof(OHR));
 
 
 	// step through the ID array - always shifting the current ID and adding 52 cards to the end of the array.
@@ -354,7 +318,7 @@ int main(int argc, char* argv[])
 		{	
 			// the ids above contain cards upto the current card.  Now add a new card 
 			ID = MakeID(IDs[IDnum], card);   // get the new ID for it
-			if (numcards < 7) holdid = SaveID(ID);   // and save it in the list if I am not on the 7th card
+			if (numcards < 5) holdid = SaveID(ID);   // and save it in the list if I am not on the 7th card
 		}
 		printf("\rID - %d", IDnum);	  // just to show the progress -- this will count up to  612976
 	}
@@ -369,7 +333,7 @@ int main(int argc, char* argv[])
 		{
 			ID = MakeID(IDs[IDnum], card);
 			
-			if (numcards < 7)
+			if (numcards < 5)
 			{
 				IDslot = SaveID(ID) * 53 + 53;  // when in the index mode (< 7 cards) get the id to save
 			}
@@ -379,14 +343,7 @@ int main(int argc, char* argv[])
 			}
 
 			maxHR = IDnum * 53 + card + 53;	// find where to put it 
-			HR[maxHR] = IDslot;				// and save the pointer to the next card or the handrank
-		}
-
-		if (numcards == 6 || numcards == 7)
-		{  
-			// an extra, If you want to know what the handrank when there is 5 or 6 cards
-			// you can just do HR[u3] or HR[u4] from below code for Handrank of the 5 or 6 card hand
-			HR[IDnum * 53 + 53] = DoEval(IDs[IDnum]);  // this puts the above handrank into the array  
+			OHR[maxHR] = IDslot;				// and save the pointer to the next card or the handrank
 		}
 
 		printf("\rID - %d", IDnum);	  // just to show the progress -- this will count up to  612976 same as above!
@@ -402,67 +359,59 @@ int main(int argc, char* argv[])
 
 	// another algorithm right off the thread
 
-	int c0, c1, c2, c3, c4, c5, c6;
-	int u0, u1, u2, u3, u4, u5;
+	int c0, c1, c2, c3, c4;
+	int u0, u1, u2, u3;
 
 	//QueryPerformanceCounter(&timings);				    // start High Precision clock
 
 	for (c0 = 1; c0 < 53; c0++) {
-		u0 = HR[53+c0];
+		u0 = OHR[53+c0];
 		for (c1 = c0+1; c1 < 53; c1++) {
-			u1 = HR[u0+c1];
+			u1 = OHR[u0+c1];
 			for (c2 = c1+1; c2 < 53; c2++) {
-				u2 = HR[u1+c2];
+				u2 = OHR[u1+c2];
 				for (c3 = c2+1; c3 < 53; c3++) {
-					u3 = HR[u2+c3];
+					u3 = OHR[u2+c3];
 					for (c4 = c3+1; c4 < 53; c4++) {
-						u4 = HR[u3+c4];
-						for (c5 = c4+1; c5 < 53; c5++) {
-							u5 = HR[u4+c5];
-							for (c6 = c5+1; c6 < 53; c6++) {
-                                HandVal hv = HR[u5+c6];
-                                //printf("\rhv - %"PRIu64"", hv);	  // just to show the progress -- this will count up to  612976
-                                
-                                switch (HandVal_HANDTYPE(hv)) {
-                                    case HandType_STFLUSH:
-                                        handTypeSum[9]++;
-                                        break;
-                                    case HandType_QUADS:
-                                        handTypeSum[8]++;
-                                        break;
-                                    case HandType_FULLHOUSE:
-                                        handTypeSum[7]++;
-                                        break;
-                                    case HandType_FLUSH:
-                                        handTypeSum[6]++;
-                                        break;
-                                    case HandType_STRAIGHT:
-                                        handTypeSum[5]++;
-                                        break;
-                                    case HandType_TRIPS:
-                                        handTypeSum[4]++;
-                                        break;
-                                    case HandType_TWOPAIR:
-                                        handTypeSum[3]++;
-                                        break;
-                                    case HandType_ONEPAIR:
-                                        handTypeSum[2]++;
-                                        break;
-                                    case HandType_NOPAIR:
-                                        handTypeSum[1]++;
-                                        break;
-                                    default:
-                                        handTypeSum[0]++;
-                                        break;
-                                }
-								count++;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+						HandVal hv = OHR[u3+c4];
+                        switch (HandVal_HANDTYPE(hv)) {
+                            case HandType_STFLUSH:
+                                handTypeSum[9]++;
+                                break;
+                            case HandType_QUADS:
+                                handTypeSum[8]++;
+                                break;
+                            case HandType_FULLHOUSE:
+                                handTypeSum[7]++;
+                                break;
+                            case HandType_FLUSH:
+                                handTypeSum[6]++;
+                                break;
+                            case HandType_STRAIGHT:
+                                handTypeSum[5]++;
+                                break;
+                            case HandType_TRIPS:
+                                handTypeSum[4]++;
+                                break;
+                            case HandType_TWOPAIR:
+                                handTypeSum[3]++;
+                                break;
+                            case HandType_ONEPAIR:
+                                handTypeSum[2]++;
+                                break;
+                            case HandType_NOPAIR:
+                                handTypeSum[1]++;
+                                break;
+                            default:
+                                handTypeSum[0]++;
+                                break;
+                        }
+                        count++;
+                    }
+                }
+            }
+        }
+    }
 
 	//QueryPerformanceCounter(&endtimings);	  // end the high precision clock
 
@@ -485,7 +434,7 @@ int main(int argc, char* argv[])
 		printf("Problem creating the Output File!\n");
 		return 1;
 	}
-	fwrite(HR, sizeof(HR), 1, fout);  // big write, but quick
+	fwrite(OHR, sizeof(OHR), 1, fout);  // big write, but quick
 
 	fclose(fout);
 
