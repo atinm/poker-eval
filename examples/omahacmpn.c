@@ -168,7 +168,7 @@ parseArgs(int argc, char **argv) {
     return;
 
   error:
-    fprintf(stderr, "Usage: omahacmpn [ -m <iterations> ] [ -d dead-card ] p1-cards .. p9-cards [ -- common-cards ]\n");
+    fprintf(stderr, "Usage: omahacmpn [ -l ] [ -t ] [ -m <iterations> ] [ -d dead-card ] p1-cards .. p9-cards [ -- common-cards ]\n");
     exit(0);
 }
 

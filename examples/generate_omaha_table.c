@@ -311,7 +311,6 @@ int main(int argc, char* argv[])
 	// stepping through the ID array is perfect!!
 
 	int IDnum;
-	int holdid;
 
 	printf("\nGetting Card IDs!\n");
 
@@ -326,7 +325,7 @@ int main(int argc, char* argv[])
 		{	
 			// the ids above contain cards upto the current card.  Now add a new card 
 			ID = MakeID(IDs[IDnum], card);   // get the new ID for it
-			if (numcards < 5) holdid = SaveID(ID);   // and save it in the list if I am not on the 7th card
+			if (numcards < 5) SaveID(ID);   // and save it in the list if I am not on the 7th card
 		}
 		printf("\rID - %d", IDnum);	  // just to show the progress -- this will count up to  612976
 	}
@@ -444,7 +443,7 @@ int main(int argc, char* argv[])
             printf("Problem creating the Output File!\n");
             return 1;
         }
-        fprintf(fout, "int %s[] = {\n", variable);
+        fprintf(fout, "int %s[5720184] = {\n", variable);
         for (int i=0; i<5720184; i++) {
             fprintf(fout, "%d,\n", HandRank[i]);
         }

@@ -12,19 +12,6 @@
 
 #define	RANK(x)		((x >> 8) & 0xF)
 
-static char *value_str[] = {
-	"",
-	"Straight Flush",
-	"Four of a Kind",
-	"Full House",
-	"Flush",
-	"Straight",
-	"Three of a Kind",
-	"Two Pair",
-	"One Pair",
-	"High Card"
-};
-
 #define CLUB	0x8000
 #define DIAMOND 0x4000
 #define HEART   0x2000
