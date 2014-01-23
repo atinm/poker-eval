@@ -36,8 +36,9 @@
 #include "inlines/eval_low8.h"
 #include "deck_std.h"
 #include "rules_std.h"
-#include "inlines/omahahi.h"
-#include "inlines/omahalow8.h"
+
+extern int omahaHiHandRanks[5720184];
+extern int omahaLow8HandRanks[5720184];
 
 #define OMAHA_MINHOLE 4		/* must be at least 2 */
 #define OMAHA_MAXHOLE 4		/* could be larger */
