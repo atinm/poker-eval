@@ -16,9 +16,10 @@
 
 const char HandRanks[][16] = {"BAD!!","High Card","Pair","Two Pair","Three of a Kind","Straight","Flush","Full House","Four of a Kind","Straight Flush"};
 
-int64_t IDs[107927];
-int OHR[5720183];   
-
+int64_t IDs[107928];
+int HandRank[5720184];   
+char *filename = NULL;
+char *variable = NULL;
 int numIDs = 1;
 int numcards = 0;
 int maxHR = 0;
@@ -38,8 +39,8 @@ int64_t MakeID(int64_t IDin, int newcard)  // adding a new card to this ID
 	memset(rankcount, 0, sizeof(rankcount));
 	memset(suitcount, 0, sizeof(suitcount));
 
-	// can't have more than 5 cards!
-	for (cardnum = 0; cardnum < 5; cardnum++)
+	// can't have more than 4 cards!
+	for (cardnum = 0; cardnum < 4; cardnum++)
 	{  
 		workcards[cardnum + 1] =  (int) ((IDin >> (8 * cardnum)) & 0xff);  // leave the 0 hole for new card
 	}
@@ -92,7 +93,6 @@ int64_t MakeID(int64_t IDin, int newcard)  // adding a new card to this ID
 
 	// Sort Using XOR.  Network for N=7, using Bose-Nelson Algorithm: Thanks to the thread!
 #define SWAP(I,J) {if (workcards[I] < workcards[J]) {workcards[I]^=workcards[J]; workcards[J]^=workcards[I]; workcards[I]^=workcards[J];}}		
-
     SWAP(0, 1);
     SWAP(3, 4);
     SWAP(2, 4);
@@ -284,6 +284,14 @@ int main(int argc, char* argv[])
             if (strcmp(argv[i], "-l") == 0) {
                 low = 1;
             }
+            else if (strcmp(argv[i], "-f") == 0) {
+                if (++i == argc) goto error;
+                filename = argv[i];
+            }
+            else if (strcmp(argv[i], "-v") == 0) {
+                if (++i == argc) goto error;
+                variable = argv[i];
+            }
         }
     }
 
@@ -295,7 +303,7 @@ int main(int argc, char* argv[])
 	// Clear our arrays
 	memset(handTypeSum, 0, sizeof(handTypeSum));
 	memset(IDs, 0, sizeof(IDs));
-	memset(OHR, 0, sizeof(OHR));
+	memset(HandRank, 0, sizeof(HandRank));
 
 
 	// step through the ID array - always shifting the current ID and adding 52 cards to the end of the array.
@@ -303,7 +311,6 @@ int main(int argc, char* argv[])
 	// stepping through the ID array is perfect!!
 
 	int IDnum;
-	int holdid;
 
 	printf("\nGetting Card IDs!\n");
 
@@ -318,7 +325,7 @@ int main(int argc, char* argv[])
 		{	
 			// the ids above contain cards upto the current card.  Now add a new card 
 			ID = MakeID(IDs[IDnum], card);   // get the new ID for it
-			if (numcards < 5) holdid = SaveID(ID);   // and save it in the list if I am not on the 7th card
+			if (numcards < 5) SaveID(ID);   // and save it in the list if I am not on the 7th card
 		}
 		printf("\rID - %d", IDnum);	  // just to show the progress -- this will count up to  612976
 	}
@@ -343,7 +350,7 @@ int main(int argc, char* argv[])
 			}
 
 			maxHR = IDnum * 53 + card + 53;	// find where to put it 
-			OHR[maxHR] = IDslot;				// and save the pointer to the next card or the handrank
+			HandRank[maxHR] = IDslot;				// and save the pointer to the next card or the handrank
 		}
 
 		printf("\rID - %d", IDnum);	  // just to show the progress -- this will count up to  612976 same as above!
@@ -365,15 +372,15 @@ int main(int argc, char* argv[])
 	//QueryPerformanceCounter(&timings);				    // start High Precision clock
 
 	for (c0 = 1; c0 < 53; c0++) {
-		u0 = OHR[53+c0];
+		u0 = HandRank[53+c0];
 		for (c1 = c0+1; c1 < 53; c1++) {
-			u1 = OHR[u0+c1];
+			u1 = HandRank[u0+c1];
 			for (c2 = c1+1; c2 < 53; c2++) {
-				u2 = OHR[u1+c2];
+				u2 = HandRank[u1+c2];
 				for (c3 = c2+1; c3 < 53; c3++) {
-					u3 = OHR[u2+c3];
+					u3 = HandRank[u2+c3];
 					for (c4 = c3+1; c4 < 53; c4++) {
-						HandVal hv = OHR[u3+c4];
+                        HandVal hv = HandRank[u3+c4];
                         switch (HandVal_HANDTYPE(hv)) {
                             case HandType_STFLUSH:
                                 handTypeSum[9]++;
@@ -429,18 +436,38 @@ int main(int argc, char* argv[])
 	printf("\nValidation seconds = %.4lf\n", (double)timer/CLOCKS_PER_SEC);
 
 	// output the array now that I have it!!
-	FILE * fout = fopen("HandRanks.dat", "wb");
-	if (!fout) {
-		printf("Problem creating the Output File!\n");
-		return 1;
-	}
-	fwrite(OHR, sizeof(OHR), 1, fout);  // big write, but quick
-
-	fclose(fout);
+    if (filename && variable) {
+        printf("Printing out C struct %s in %s file\n", variable, filename);
+        FILE * fout = fopen(filename, "wb");
+        if (!fout) {
+            printf("Problem creating the Output File!\n");
+            return 1;
+        }
+        fprintf(fout, "int %s[5720184] = {\n", variable);
+        for (int i=0; i<5720184; i++) {
+            fprintf(fout, "%d,\n", HandRank[i]);
+        }
+        fprintf(fout, "};\n");
+        fclose(fout);
+    }
+    else {
+        printf("Creating file HandRanks.dat");
+        FILE * fout = fopen("HandRanks.dat", "wb");
+        if (!fout) {
+            printf("Problem creating the Output File!\n");
+            return 1;
+        }
+        fwrite(HandRank, sizeof(HandRank), 1, fout);  // big write, but quick
+        
+        fclose(fout);
+    }
 
 	return 0;
+
+  error:
+    fprintf(stderr, "Usage: generate_omaha_table [ -l ] [ -f filename ]\n");
+    exit(0);
 }
 
 ///////////////////////////////// end code!!
-
 
