@@ -182,8 +182,8 @@ StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
                              HandVal *hival, LowHandVal *loval) {
     int playerCards[4], nPlayerCards, boardCards[5], nBoardCards;
     int h1, h2, b1, b2, b3, i;
-    int b11, b12, b13, h11, h12, h13;
-    int c11, c12, c13, l11, l12, l13;
+    int b11, b12, b13, h11, h12;
+    int c11, c12, c13, l11, l12;
     HandVal besthi = HandVal_NOTHING;
     LowHandVal bestlo = LowHandVal_NOTHING;
 
@@ -215,12 +215,10 @@ StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
                     for (h2=h1+1; h2<nPlayerCards; h2++) {
                         h12 = omahaHiHandRanks[h11 + playerCards[h2]];
                         l12 = omahaLow8HandRanks[l11 + playerCards[h2]];
-                        h13 = omahaHiHandRanks[h12 + 0];
-                        l13 = omahaLow8HandRanks[l12 + 0];
-                        if (besthi == HandVal_NOTHING || h13 > besthi)
-                            besthi = h13;
-                        if (bestlo == LowHandVal_NOTHING || l13 < bestlo)
-                            bestlo = l13;
+                        if (besthi == HandVal_NOTHING || h12 > besthi)
+                            besthi = h12;
+                        if (bestlo == LowHandVal_NOTHING || l12 < bestlo)
+                            bestlo = l12;
                     }
                 }
             }
@@ -238,7 +236,7 @@ StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
                      HandVal *hival) {
     int playerCards[4], nPlayerCards, boardCards[5], nBoardCards;
     int h1, h2, b1, b2, b3, i;
-    int b11, b12, b13, h11, h12, h13;
+    int b11, b12, b13, h11, h12;
     HandVal besthi = HandVal_NOTHING;
 
     nPlayerCards = StdDeck.maskToCards(&hole, playerCards);
@@ -264,9 +262,8 @@ StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
                     h11 = omahaHiHandRanks[b13 + playerCards[h1]];
                     for (h2=h1+1; h2<nPlayerCards; h2++) {
                         h12 = omahaHiHandRanks[h11 + playerCards[h2]];
-                        h13 = omahaHiHandRanks[h12 + 0];
-                        if (besthi == HandVal_NOTHING || h13 > besthi)
-                            besthi = h13;
+                        if (besthi == HandVal_NOTHING || h12 > besthi)
+                            besthi = h12;
                     }
                 }
             }

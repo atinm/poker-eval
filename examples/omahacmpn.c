@@ -221,14 +221,22 @@ int main( int argc, char *argv[] )
                                     handval[players] = lut ? 0 : HandVal_NOTHING;
                                     CardMask_OR(board, gCommonCards, cards);
                                     if (!lut) {
-                                        int ret = StdDeck_OmahaHiLow8_EVAL(gPlayerCards[players], board, &handval[players], low ? &lowhandval[players] : NULL);
+                                        int ret = 0;
+                                        if (low)
+                                            StdDeck_OmahaHiLow8_EVAL(gPlayerCards[players], board, &handval[players], &lowhandval[players]);
+                                        else
+                                            StdDeck_OmahaHi_EVAL(gPlayerCards[players], board, &handval[players]);
                                         if (ret) {
                                             printf("Error calculating OmahaHi: %d\n", ret);
                                             exit(-1);
                                         }
                                     }
                                     else {
-                                        int ret = StdDeck_OmahaHiLow8_EVAL_LUT(gPlayerCards[players], board, &handval[players], low ? &lowhandval[players] : NULL);
+                                        int ret =  0;
+                                        if (low)
+                                            ret = StdDeck_OmahaHiLow8_EVAL_LUT(gPlayerCards[players], board, &handval[players], &lowhandval[players]);
+                                        else
+                                            ret = StdDeck_OmahaHi_EVAL_LUT(gPlayerCards[players], board, &handval[players]);
                                         if (ret) {
                                             printf("Error calculating OmahaHi: %d\n", ret);
                                             exit(-1);
@@ -330,14 +338,23 @@ int main( int argc, char *argv[] )
                                           handval[players] = lut ? 0 : HandVal_NOTHING;
                                           CardMask_OR(board, gCommonCards, cards);
                                           if (!lut) {
-                                              int ret = StdDeck_OmahaHiLow8_EVAL(gPlayerCards[players], board, &handval[players], low ? &lowhandval[players] : NULL);
+                                              int ret = 0;
+                                              if (low)
+                                                  ret = StdDeck_OmahaHiLow8_EVAL(gPlayerCards[players], board, &handval[players], &lowhandval[players]);
+                                              else
+                                                  ret = StdDeck_OmahaHi_EVAL(gPlayerCards[players], board, &handval[players]);
+                                                  
                                               if (ret) {
                                                   printf("Error calculating OmahaHi: %d\n", ret);
                                                   exit(-1);
                                               }
                                           }
                                           else {
-                                              int ret = StdDeck_OmahaHiLow8_EVAL_LUT(gPlayerCards[players], board, &handval[players], low ? &lowhandval[players] : NULL);
+                                              int ret = 0;
+                                              if (low)
+                                                  ret = StdDeck_OmahaHiLow8_EVAL_LUT(gPlayerCards[players], board, &handval[players], &lowhandval[players]);
+                                              else
+                                                  ret = StdDeck_OmahaHi_EVAL_LUT(gPlayerCards[players], board, &handval[players]);
                                               if (ret) {
                                                   printf("Error calculating OmahaHi: %d\n", ret);
                                                   exit(-1);
