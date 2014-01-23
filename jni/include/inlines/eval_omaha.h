@@ -37,6 +37,9 @@
 #include "deck_std.h"
 #include "rules_std.h"
 
+extern int omahaHiHandRanks[5720184];
+extern int omahaLow8HandRanks[5720184];
+
 #define OMAHA_MINHOLE 4		/* must be at least 2 */
 #define OMAHA_MAXHOLE 4		/* could be larger */
 #define OMAHA_MINBOARD 3	/* must be at least 3 */
@@ -180,43 +183,10 @@ StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
                              HandVal *hival, LowHandVal *loval) {
     int playerCards[4], nPlayerCards, boardCards[5], nBoardCards;
     int h1, h2, b1, b2, b3, i;
-    int b11, b12, b13, h11, h12, h13;
-    int c11, c12, c13, l11, l12, l13;
+    int b11, b12, b13, h11, h12;
+    int c11, c12, c13, l11, l12;
     HandVal besthi = HandVal_NOTHING;
     LowHandVal bestlo = LowHandVal_NOTHING;
-
-    if (!lut_initialized) {
-        memset(HR, 0, sizeof(HR));
-        FILE * fin = fopen("./HandRanks.dat", "rb");
-        if (!fin) {
-            printf("Failed to read HandRanks.dat\n");
-            fclose(fin);
-            return 1;
-        }
-        size_t bytesread = fread(HR, sizeof(HR), 1, fin);	// get the HandRank Array
-        if (bytesread <= 0) {
-            printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
-            fclose(fin);
-            return 2;
-        }
-        fclose(fin);
-
-        memset(O8HR, 0, sizeof(O8HR));
-        fin = fopen("./O8HandRanks.dat", "rb");
-        if (!fin) {
-            printf("Failed to read O8HandRanks.dat\n");
-            fclose(fin);
-            return 1;
-        }
-        bytesread = fread(O8HR, sizeof(O8HR), 1, fin);	// get the HandRank Array
-        if (bytesread <= 0) {
-            printf("Failed to read HandRanks.dat, %s(%d)\n", strerror(errno), errno);
-            fclose(fin);
-            return 2;
-        }
-        fclose(fin);
-        lut_initialized = 1;
-    }
 
     nPlayerCards = StdDeck.maskToCards(&hole, playerCards);
     for (i=0;i<nPlayerCards;i++) {
@@ -232,26 +202,24 @@ StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
         return 5;                                   /* wrong # of board cards */
     
     for (b1=0; b1<nBoardCards; b1++) {
-        b11 =  HR[53 + boardCards[b1]];
-        c11 =  O8HR[53 + boardCards[b1]];
+        b11 =  omahaHiHandRanks[53 + boardCards[b1]];
+        c11 =  omahaLow8HandRanks[53 + boardCards[b1]];
         for (b2=b1+1; b2<nBoardCards; b2++) {
-            b12 = HR[b11 + boardCards[b2]];
-            c12 = O8HR[c11 + boardCards[b2]];
+            b12 = omahaHiHandRanks[b11 + boardCards[b2]];
+            c12 = omahaLow8HandRanks[c11 + boardCards[b2]];
             for (b3=b2+1; b3<nBoardCards; b3++) {
-                b13 = HR[b12 + boardCards[b3]];
-                c13 = O8HR[c12 + boardCards[b3]];
+                b13 = omahaHiHandRanks[b12 + boardCards[b3]];
+                c13 = omahaLow8HandRanks[c12 + boardCards[b3]];
                 for (h1=0; h1<nPlayerCards; h1++) {
-                    h11 = HR[b13 + playerCards[h1]];
-                    l11 = O8HR[c13 + playerCards[h1]];
+                    h11 = omahaHiHandRanks[b13 + playerCards[h1]];
+                    l11 = omahaLow8HandRanks[c13 + playerCards[h1]];
                     for (h2=h1+1; h2<nPlayerCards; h2++) {
-                        h12 = HR[h11 + playerCards[h2]];
-                        l12 = O8HR[l11 + playerCards[h2]];
-                        h13 = HR[h12 + 0];
-                        l13 = O8HR[l12 + 0];
-                        if (besthi == HandVal_NOTHING || h13 > besthi)
-                            besthi = h13;
-                        if (bestlo == LowHandVal_NOTHING || l13 < bestlo)
-                            bestlo = l13;
+                        h12 = omahaHiHandRanks[h11 + playerCards[h2]];
+                        l12 = omahaLow8HandRanks[l11 + playerCards[h2]];
+                        if (besthi == HandVal_NOTHING || h12 > besthi)
+                            besthi = h12;
+                        if (bestlo == LowHandVal_NOTHING || l12 < bestlo)
+                            bestlo = l12;
                     }
                 }
             }
@@ -267,7 +235,44 @@ StdDeck_OmahaHiLow8_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
 static inline int
 StdDeck_OmahaHi_EVAL_LUT(StdDeck_CardMask hole, StdDeck_CardMask board,
                      HandVal *hival) {
-  return StdDeck_OmahaHiLow8_EVAL_LUT(hole, board, hival, NULL);
+    int playerCards[4], nPlayerCards, boardCards[5], nBoardCards;
+    int h1, h2, b1, b2, b3, i;
+    int b11, b12, b13, h11, h12;
+    HandVal besthi = HandVal_NOTHING;
+
+    nPlayerCards = StdDeck.maskToCards(&hole, playerCards);
+    for (i=0;i<nPlayerCards;i++) {
+        playerCards[i] = (4 * StdDeck_RANK(playerCards[i])) + StdDeck_SUIT(playerCards[i]) + 1;
+    }
+    nBoardCards = StdDeck.maskToCards(&board, boardCards);
+    for (i=0;i<nBoardCards;i++) {
+        boardCards[i] = (4 * StdDeck_RANK(boardCards[i])) + StdDeck_SUIT(boardCards[i]) + 1;
+    }
+    if (nPlayerCards < OMAHA_MINHOLE || nPlayerCards > OMAHA_MAXHOLE)
+        return 4;                                   /* wrong # of hole cards */
+    if (nBoardCards < OMAHA_MINBOARD || nBoardCards > OMAHA_MAXBOARD)
+        return 5;                                   /* wrong # of board cards */
+    
+    for (b1=0; b1<nBoardCards; b1++) {
+        b11 =  omahaHiHandRanks[53 + boardCards[b1]];
+        for (b2=b1+1; b2<nBoardCards; b2++) {
+            b12 = omahaHiHandRanks[b11 + boardCards[b2]];
+            for (b3=b2+1; b3<nBoardCards; b3++) {
+                b13 = omahaHiHandRanks[b12 + boardCards[b3]];
+                for (h1=0; h1<nPlayerCards; h1++) {
+                    h11 = omahaHiHandRanks[b13 + playerCards[h1]];
+                    for (h2=h1+1; h2<nPlayerCards; h2++) {
+                        h12 = omahaHiHandRanks[h11 + playerCards[h2]];
+                        if (besthi == HandVal_NOTHING || h12 > besthi)
+                            besthi = h12;
+                    }
+                }
+            }
+        }
+    }
+    *hival = besthi;
+
+    return 0;
 }
 
 #endif

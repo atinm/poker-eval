@@ -22,19 +22,13 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "poker_defs.h"
-
-
+#include "inlines/omahahi.h"
+#include "inlines/omahalow8.h"
 
 char StdDeck_rankChars[] = "23456789TJQKA";
 char StdDeck_suitChars[] = "hdcs";
 
 int tototo[8];
-
-// The handranks lookup table- loaded from HANDRANKS.DAT. (2+2 Evaluator)
-int HR[32487834];
-int O8HR[32487834];
-int lut_initialized = 0;
-int low_lut_initialized = 0;
 
 int 
 StdDeck_cardToString(int cardIndex, char *outString) {
