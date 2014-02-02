@@ -1,0 +1,12 @@
+There are two files missing from this repo as github does not like files to be larger than 50MB:
+jni/include/inlines/omahahi.h
+jni/include/inlines/omahalow8.h
+
+These files are generated files using the generate_table program that is committed into the master
+branch under examples/generate_omaha_table.c. Steps to create the files:
+1. run make in the examples directory to make the executable
+2. ./generate_omaha_table -f omahahi.h -v omahaHighHandRanks
+This will create the omahahi.h file that you copy into jni/include/inlines
+3. ./generate_omaha_table -f omahalow8.h -v omahaLow8HandRanks
+This will create the omahalow8.h file that you copy into jni/include/inlines
+
