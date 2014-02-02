@@ -443,11 +443,14 @@ int main(int argc, char* argv[])
             printf("Problem creating the Output File!\n");
             return 1;
         }
+        fprintf(fout, "#ifndef V_%s_H\n", variable);
+        fprintf(fout, "#define V_%s_H\n", variable);
         fprintf(fout, "int %s[5720184] = {\n", variable);
         for (int i=0; i<5720184; i++) {
             fprintf(fout, "%d,\n", HandRank[i]);
         }
         fprintf(fout, "};\n");
+        fprintf(fout, "#endif /* V_%s_H */\n");
         fclose(fout);
     }
     else {
